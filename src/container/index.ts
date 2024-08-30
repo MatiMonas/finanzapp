@@ -3,7 +3,7 @@ import Container from 'container/container';
 import prismaClient from 'infrastructure/db/prisma';
 import UserUseCase from 'users/usecase';
 import UserRouter from 'users/http/router';
-import UserRepository from 'users/repository/mysql-repository';
+import UserRepository from 'users/repository/user-repository';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];

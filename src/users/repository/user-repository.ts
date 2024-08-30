@@ -6,4 +6,13 @@ export default class UserRepository {
   constructor(prismaClient: PrismaClient) {
     this.prismaClient = prismaClient;
   }
+
+  async getUser(userEmail: string) {
+    const foundUser = await this.prismaClient.users.findUnique({
+      where: {
+        email: userEmail,
+      },
+    });
+    return foundUser;
+  }
 }
