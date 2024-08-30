@@ -1,0 +1,63 @@
+version: '3.4'
+services:
+  finanzapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: finanzapp
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./nodemon.json:/app/nodemon.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./prisma:/app/prisma
+      - ./jest.config.js:/app/jest.config.js
+      - ./.env:/app/.env
+      - ./.env.test:/app/.env.test
+      - ./node_modules:/app/node_modules
+      - ./package.json:/app/package.json
+    ports:
+      - '${DOCKER_PORT}:3000'
+      - '9240:9229'
+    networks:
+      - backend
+    command: ['npm', 'run', 'dev']
+
+  finanzapp-db:
+    image: mysql:8.0
+    container_name: finanzapp-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: finanzapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - finanzapp-db-volume:/var/lib/mysql
+    ports:
+      - '3307:3306'
+    networks:
+      - backend
+
+  # finanzapp-test-db:
+  #   image: mysql:8.0
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   container_name: finanzapp-test-db
+  #   environment:
+  #     MYSQL_DATABASE: finanzapp-test
+  #     MYSQL_ROOT_PASSWORD: test
+  #   volumes:
+  #     - finanzapp-test-db-volume:/var/lib/mysql
+  #   ports:
+  #     - '${DB_TEST_PORT}:3306'
+  #   networks:
+  #     - backend
+volumes:
+  # finanzapp-test-db-volume:
+  finanzapp-db-volume:
+
+networks:
+  backend:
+    external:
+      name: ${DOCKER_NETWORK}

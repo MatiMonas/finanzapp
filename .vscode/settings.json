@@ -1,0 +1,5 @@
+{
+  "node.modulePaths": [
+    "/var/lib/docker/volumes/finanzapp_node_modules/_data"
+  ]
+}
