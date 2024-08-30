@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id            Int            @id @default(autoincrement()) @db.UnsignedInt
+  email         String         @unique @db.VarChar(255)
+  password      String         @db.VarChar(255)
+  monthly_wages MonthlyWages[]
+  budgets       Budgets[]
+  expenses      Expenses[]
+  investments   Investments[]
+  debts         Debts[]
+  credit_cards  CreditCards[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  @@map("users")
+}
+
+model MonthlyWages {
+  id      Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id Int       @db.UnsignedInt
+  user    Users     @relation(fields: [user_id], references: [id])
+  amount  Float     @default(0.0) @db.Float
+  date    DateTime  @default(now())
+  budgets Budgets[] @relation("MonthlyWagesBudgets")
+
+  @@map("monthly_wages")
+}
+
+model Budgets {
+  id                   Int    @id @default(autoincrement()) @db.UnsignedInt
+  user_id              Int    @db.UnsignedInt
+  user                 Users  @relation(fields: [user_id], references: [id])
+  name                 String @db.VarChar(100)
+  percentage           Float  @default(0.0) @db.Float
+  remaining_allocation Float  @default(0.0) @db.Float
+
+  // ID del presupuesto al que se transfieren los sobrantes
+  transfer_to_budget_id Int?     @unique @db.UnsignedInt
+  transfer_to_budget    Budgets? @relation("TransferBudgets", fields: [transfer_to_budget_id], references: [id])
+
+  // Relación inversa
+  transfer_from_budget Budgets? @relation("TransferBudgets")
+
+  monthly_wage_id Int?          @db.UnsignedInt
+  monthly_wage    MonthlyWages? @relation("MonthlyWagesBudgets", fields: [monthly_wage_id], references: [id])
+
+  categories Categories[]
+  alerts     Alerts[]
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  @@map("budgets")
+}
+
+model Categories {
+  id        Int        @id @default(autoincrement()) @db.UnsignedInt
+  name      String     @db.VarChar(50)
+  budget_id Int        @db.UnsignedInt
+  budget    Budgets    @relation(fields: [budget_id], references: [id])
+  expenses  Expenses[]
+
+  @@map("categories")
+}
+
+model Alerts {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  budget_id  Int      @db.UnsignedInt
+  budget     Budgets  @relation(fields: [budget_id], references: [id])
+  threshold  Float    @db.Float
+  color      String   @db.VarChar(10)
+  created_at DateTime @default(now())
+
+  @@map("alerts")
+}
+
+model Expenses {
+  id          Int        @id @default(autoincrement()) @db.UnsignedInt
+  user_id     Int        @db.UnsignedInt
+  user        Users      @relation(fields: [user_id], references: [id])
+  category_id Int        @db.UnsignedInt
+  category    Categories @relation(fields: [category_id], references: [id])
+  title       String     @db.VarChar(100)
+  amount      Float      @default(0.0) @db.Float
+  date        DateTime   @default(now())
+  is_monthly  Boolean    @default(false)
+
+  @@map("expenses")
+}
+
+model Investments {
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id        Int       @db.UnsignedInt
+  user           Users     @relation(fields: [user_id], references: [id])
+  name           String    @db.VarChar(100)
+  purchase_date  DateTime
+  purchase_value Float     @default(0.0) @db.Float
+  sale_date      DateTime?
+  sale_value     Float?    @db.Float
+
+  @@map("investments")
+}
+
+model Debts {
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id      Int       @db.UnsignedInt
+  user         Users     @relation(fields: [user_id], references: [id])
+  creditor     String    @db.VarChar(100)
+  amount       Float     @default(0.0) @db.Float
+  due_date     DateTime
+  is_paid      Boolean   @default(false)
+  payment_date DateTime?
+
+  @@map("debts")
+}
+
+model CreditCards {
+  id            Int            @id @default(autoincrement()) @db.UnsignedInt
+  user_id       Int            @db.UnsignedInt
+  user          Users          @relation(fields: [user_id], references: [id])
+  name          String         @db.VarChar(50)
+  total_credit  Float          @default(0.0) @db.Float
+  total_debt    Float          @default(0.0) @db.Float
+  card_expenses CardExpenses[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  @@map("credit_cards")
+}
+
+model CardExpenses {
+  id                     Int         @id @default(autoincrement()) @db.UnsignedInt
+  credit_card_id         Int         @db.UnsignedInt
+  credit_card            CreditCards @relation(fields: [credit_card_id], references: [id])
+  title                  String      @db.VarChar(100)
+  amount                 Float       @default(0.0) @db.Float
+  start_date             DateTime
+  end_date               DateTime
+  installments           Int         @db.UnsignedInt
+  remaining_installments Int         @db.UnsignedInt
+  created_at             DateTime    @default(now())
+
+  @@map("card_expenses")
+}
