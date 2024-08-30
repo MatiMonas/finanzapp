@@ -8,6 +8,7 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import env from 'utils/env';
+import { ExceptionError } from 'errors/exceptionErrors';
 const { PORT } = env;
 
 type NormalMiddleware = (
@@ -16,7 +17,7 @@ type NormalMiddleware = (
   next: NextFunction
 ) => any;
 type ErrorMiddleware = (
-  error: Error,
+  error: ExceptionError,
   req: Request,
   res: Response,
   next: NextFunction
@@ -51,7 +52,7 @@ export default class Express {
 
   listen() {
     this.app.listen(this.port, () => {
-      console.log(`FINANZAPP API Listening at http://localhost:${this.port}`);
+      console.log(`Finanzapp listening at http://localhost:${this.port}`);
     });
   }
   getServer() {
