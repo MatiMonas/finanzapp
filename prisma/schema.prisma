@@ -12,6 +12,7 @@ model Users {
   id            Int            @id @default(autoincrement()) @db.UnsignedInt
   email         String         @unique @db.VarChar(255)
   password      String         @db.VarChar(255)
+  role          String         @db.VarChar(10)
   monthly_wages MonthlyWages[]
   budgets       Budgets[]
   expenses      Expenses[]
