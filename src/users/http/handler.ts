@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { PostUserParams } from 'users/types';
 import UserUseCase from 'users/usecase';
 
 export default class UsersHandler {
@@ -11,5 +12,9 @@ export default class UsersHandler {
   /* GET */
   test = (req: Request<any, any, any, any>) => {
     return this.usersUseCase.test();
+  };
+
+  post = (req: Request<any, any, any, PostUserParams>) => {
+    return this.usersUseCase.createUser(req.body);
   };
 }

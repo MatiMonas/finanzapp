@@ -18,6 +18,10 @@ export default class UsersRouter {
 
     /**GET */
     router.get('/users', createHandler(this.handler.test));
+
+    /* POST */
+    // Not making a login yet
+    router.post('/users', createHandler(this.handler.post));
   }
 
   getRouter() {
