@@ -9,29 +9,40 @@ datasource db {
 }
 
 model Users {
-  id            Int            @id @default(autoincrement()) @db.UnsignedInt
-  email         String         @unique @db.VarChar(30)
-  password      String         @db.VarChar(255)
-  role          String         @db.VarChar(10)
-  monthly_wages MonthlyWages[]
-  budgets       Budgets[]
-  expenses      Expenses[]
-  investments   Investments[]
-  debts         Debts[]
-  credit_cards  CreditCards[]
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  roles         Roles[]        @relation("UserRoles")
+  id           Int            @id @default(autoincrement()) @db.UnsignedInt
+  email        String         @unique @db.VarChar(30)
+  password     String         @db.VarChar(255)
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  roles        UserRoles[]    @relation("UserRolesToRoles")
+  MonthlyWages MonthlyWages[]
+  Budgets      Budgets[]
+  Expenses     Expenses[]
+  Investments  Investments[]
+  Debts        Debts[]
+  CreditCards  CreditCards[]
 
   @@map("users")
 }
 
 model Roles {
-  id    Int     @id @default(autoincrement()) @db.UnsignedInt
-  name  String  @db.VarChar(10)
-  users Users[] @relation("UserRoles")
+  id         Int         @id @default(autoincrement()) @db.UnsignedInt
+  name       String      @db.VarChar(10)
+  users      UserRoles[] @relation("UserRolesToRoles")
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
 
   @@map("roles")
+}
+
+model UserRoles {
+  userId Int   @db.UnsignedInt
+  roleId Int   @db.UnsignedInt
+  user   Users @relation("UserRolesToRoles", fields: [userId], references: [id])
+  role   Roles @relation("UserRolesToRoles", fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("user_roles")
 }
 
 model MonthlyWages {
