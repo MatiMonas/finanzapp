@@ -19,12 +19,11 @@ export class ValidatorUserEmailExists extends Validator {
 
   async validate(body: BodyValidatorEmail) {
     const { email } = body;
-    const user = await this.userRepository.getUser(email);
+    const user = await this.userRepository.findUserByEmail(email);
 
-    if (!user)
-      throw new UserNotFoundError(
-        `El usuario con el email ${email} no existe.`
-      );
+    if (!user) {
+      throw new UserNotFoundError(`User with email "${email}" not found.`);
+    }
 
     return super.validate(body);
   }
