@@ -4,6 +4,7 @@ import {
   ExceptionError,
   ExceptionValidationError,
 } from 'errors/exceptionErrors';
+import { DatabaseError } from 'errors';
 
 const { NODE_ENV } = env;
 
@@ -17,12 +18,17 @@ export default function errorHandler(
     return res.status(400).json({ code: 400, errors: error.errors });
   }
 
-  let { statusCode = 500, message } = error;
+  let statusCode = error.statusCode || 500;
+  let message = error.message || 'An unexpected error occurred.';
 
-  if (statusCode === 500) {
-    if (NODE_ENV !== 'production') console.log(error);
-
-    message = 'Something went wrong.';
+  if (error instanceof DatabaseError) {
+    statusCode = error.statusCode;
+    message = 'An unexpected error occurred. Please try again later.';
   }
-  return res.status(statusCode).json({ code: statusCode, data: message });
+
+  if (statusCode === 500 && NODE_ENV !== 'production') {
+    console.error(error);
+  }
+
+  return res.status(statusCode).json({ code: statusCode, message });
 }
