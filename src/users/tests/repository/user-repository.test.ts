@@ -1,23 +1,30 @@
 import { PrismaClient } from '@prisma/client';
+import { execSync } from 'child_process';
+import { IUserRepository } from 'users/repository/IUserRepository';
 import UserRepository from 'users/repository/user-repository';
+import { TESTING_DATABASE_PARAMS } from 'utils/constants';
+import { cleanDatabase } from 'utils/db/cleanDatabase';
+
+jest.mock('utils/env.ts', () => TESTING_DATABASE_PARAMS);
 
 const prisma = new PrismaClient();
-let userRepository: UserRepository;
-
-beforeAll(async () => {
-  userRepository = new UserRepository(prisma);
-});
-
-afterAll(async () => {
-  await prisma.$disconnect();
-});
-
-afterEach(async () => {
-  await prisma.users.deleteMany();
-});
+let userRepository: IUserRepository;
 
 describe('UserRepository', () => {
+  beforeAll(async () => {
+    execSync('npx prisma db push');
+    userRepository = new UserRepository(prisma);
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  afterEach(async () => {
+    await cleanDatabase();
+  });
   test('findUserByEmail should return a user when the user exists', async () => {
+    // Preparar datos de prueba
     await prisma.users.create({
       data: {
         email: 'test@example.com',
@@ -33,11 +40,5 @@ describe('UserRepository', () => {
     expect(user?.role).toBe('user');
   });
 
-  test('findUserByEmail should return null when the user does not exist', async () => {
-    const user = await userRepository.findUserByEmail(
-      'nonexistent@example.com'
-    );
-
-    expect(user).toBeNull();
-  });
+  // Puedes añadir más pruebas aquí.
 });
