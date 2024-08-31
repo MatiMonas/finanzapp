@@ -5,3 +5,4 @@ src/generated
 build
 secret*.yml
 package-lock.json
+coverage

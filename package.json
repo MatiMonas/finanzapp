@@ -8,6 +8,7 @@
     "dev": "nodemon -L --inspect=0.0.0.0:9229 --signal SIGINT --nolazy src/app.ts",
     "build": "npx rimraf ./build && npx prisma generate && npx prisma generate --schema=prisma/platform.prisma && tsc -p tsconfig.build.json",
     "test": "env-cmd -f .env.test jest",
+    "coverage": "env-cmd -f .env.test npx jest --coverage",
     "setup": "./setup.sh",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --create-only",
