@@ -2,7 +2,7 @@ import { mockUserRepository } from '__mocks__/UserRepository';
 import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';
-import { UserBaseData } from 'users/types/db_model';
+import { FindByUserEmailRequestData } from 'users/types/db_model';
 import UserUseCase from 'users/usecase';
 import Validator from 'validator';
 
@@ -22,7 +22,7 @@ describe('UserUseCase', () => {
 
     const mockValidatedUserData = { ...mockUserData, role: 'admin' };
 
-    const mockUser: UserBaseData = {
+    const mockUser: FindByUserEmailRequestData = {
       id: 1,
       email: 'test@example.com',
       role: 'admin',

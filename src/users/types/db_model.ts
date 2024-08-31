@@ -1,7 +1,5 @@
-export type UserBaseData = {
+export type FindByUserEmailRequestData = {
   id: number;
   email: string;
   role: string;
-  createdAt?: string;
-  updatedAt?: string;
 };

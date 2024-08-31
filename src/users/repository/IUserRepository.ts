@@ -1,5 +1,7 @@
-import { UserBaseData } from 'users/types/db_model';
+import { FindByUserEmailRequestData } from 'users/types/db_model';
 
 export interface IUserRepository {
-  findUserByEmail(userEmail: string): Promise<UserBaseData | null>;
+  findUserByEmail(
+    userEmail: string
+  ): Promise<FindByUserEmailRequestData | null>;
 }
