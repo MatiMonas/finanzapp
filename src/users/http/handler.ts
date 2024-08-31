@@ -14,7 +14,7 @@ export default class UsersHandler {
     return this.usersUseCase.test();
   };
 
-  post = (req: Request<any, any, any, PostUserParams>) => {
+  create = (req: Request<any, any, any, PostUserParams>) => {
     return this.usersUseCase.create(req.body);
   };
 }

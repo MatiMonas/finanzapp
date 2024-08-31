@@ -28,7 +28,7 @@ describe('UsersHandler', () => {
     const mockUserData: PostUserParams = {
       email: 'test@example.com',
       password: 'password123',
-      role: 'admin',
+      roles: [1],
     };
 
     (mockUserUseCase.create as jest.Mock).mockResolvedValue(true);
@@ -39,7 +39,7 @@ describe('UsersHandler', () => {
     const res = {} as Response;
     res.json = jest.fn();
 
-    await usersHandler.post(req);
+    await usersHandler.create(req);
 
     expect(mockUserUseCase.create).toHaveBeenCalledWith(mockUserData);
   });

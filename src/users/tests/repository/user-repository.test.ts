@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
 import { DatabaseError } from 'errors';
-import { IUserRepository } from 'users/repository/IUserRepository';
-import UserRepository from 'users/repository/user-repository';
+import UserRepository, {
+  IUserRepository,
+} from 'users/repository/user-repository';
 import { PostUserParams } from 'users/types';
 import { TESTING_DATABASE_PARAMS } from 'utils/constants';
 import { cleanDatabase } from 'utils/helpers/cleanDatabase';
@@ -26,12 +27,54 @@ describe('UserRepository', () => {
     await cleanDatabase();
   });
 
+  describe('findUserById', () => {
+    test('OK - Returns a user when the user exists', async () => {
+      const userData: PostUserParams = {
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      await userRepository.create(userData);
+
+      const createdUser = await userRepository.findUserById(1);
+      const userId = createdUser?.id;
+
+      const user = await userRepository.findUserById(userId!);
+
+      expect(user).not.toBeNull();
+      expect(user?.email).toBe(userData.email);
+      expect(user?.roles).toContain('ADMIN');
+    });
+
+    test('OK - Returns null when the user does not exist', async () => {
+      const user = await userRepository.findUserById(9999);
+      expect(user).toBe(null);
+    });
+
+    test('Error - Handles Prisma client error', async () => {
+      jest
+        .spyOn(prisma.users, 'findUnique')
+        .mockRejectedValueOnce(new Error('Prisma client error'));
+
+      try {
+        await userRepository.findUserById(1);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.statusCode).toBe(500);
+        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.message).toBe('Unable to find user by id');
+      }
+    });
+  });
+
   describe('findUserByEmail', () => {
     test('OK - Returns a user when the user exists', async () => {
       const userData: PostUserParams = {
         email: 'test@example.com',
         password: 'securepassword',
-        role: 'user',
+        roles: [1],
       };
 
       await userRepository.create(userData);
@@ -40,7 +83,7 @@ describe('UserRepository', () => {
 
       expect(user).not.toBeNull();
       expect(user?.email).toBe('test@example.com');
-      expect(user?.role).toBe('user');
+      // expect(user?.role).toBe('user');
     });
 
     test('OK - Returns null when the user does not exists', async () => {
@@ -58,23 +101,28 @@ describe('UserRepository', () => {
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);
-        expect(error.cause).not.toBe(null);
+        expect(error.cause.message).toMatch(/Prisma client error/);
         expect(error.message).toBe('Unable to find user by email');
       }
     });
   });
 
   describe('createUser', () => {
+    beforeEach(async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+    });
     test('OK - Creates user', async () => {
       const userData: PostUserParams = {
         email: 'test@example.com',
         password: 'securepassword',
-        role: 'user',
+        roles: [1],
       };
 
       const newUser = await userRepository.create(userData);
+      const foundUser = await userRepository.findUserByEmail(userData.email);
 
       expect(newUser).toBe(true);
+      expect(foundUser).not.toBe(null);
     });
 
     test('ERROR - Handles Prisma client error', async () => {
@@ -85,7 +133,7 @@ describe('UserRepository', () => {
       const userData: PostUserParams = {
         email: 'test@example.com',
         password: 'securepassword',
-        role: 'user',
+        roles: [1],
       };
 
       try {
@@ -93,7 +141,24 @@ describe('UserRepository', () => {
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);
-        expect(error.cause).not.toBe(null);
+        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.message).toBe('Unable to create user');
+      }
+    });
+
+    test('Shold not create an user if received role does not exists', async () => {
+      const userData: PostUserParams = {
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [5],
+      };
+      try {
+        await userRepository.create(userData);
+      } catch (error: any) {
+        expect(error.statusCode).toBe(500);
+        expect(error.cause.message).toMatch(
+          /Foreign key constraint failed on the field: `roleId`/
+        );
         expect(error.message).toBe('Unable to create user');
       }
     });

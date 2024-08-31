@@ -21,7 +21,7 @@ export default class UsersRouter {
 
     /* POST */
     // Not making a login yet
-    router.post('/users', createHandler(this.handler.post));
+    router.post('/users', createHandler(this.handler.create));
   }
 
   getRouter() {

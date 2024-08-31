@@ -7,6 +7,7 @@ export const mockUserUseCase = {
 } as unknown as UserUseCase;
 
 export const mockUserRepository = {
+  findUserById: jest.fn(),
   findUserByEmail: jest.fn(),
   create: jest.fn(),
 } as unknown as UserRepository;

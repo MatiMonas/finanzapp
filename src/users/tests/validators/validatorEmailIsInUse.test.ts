@@ -29,7 +29,7 @@ describe('ValidatorEmailIsInUse', () => {
   });
 
   test('ERROR - EmailAlreadyInUseError', async () => {
-    const userResponse = { id: 1, email: 'test@example.com', role: 'user' };
+    const userResponse = { email: 'test@example.com' };
 
     userRepository.findUserByEmail.mockResolvedValueOnce(userResponse);
 
