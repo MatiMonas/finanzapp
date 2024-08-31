@@ -5,11 +5,12 @@ import { PostUserParams } from 'users/types';
 import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
 import Validator from 'validator';
 import { IUserUseCase } from './IUserUsecase';
+import { IUserRepository } from 'users/repository/IUserRepository';
 
 export default class UserUseCase implements IUserUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: IUserRepository) {}
 
-  async createUser(userData: PostUserParams): Promise<Boolean> {
+  async create(userData: PostUserParams): Promise<Boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorEmailIsInUse(this.userRepository),
     ]);
@@ -18,9 +19,9 @@ export default class UserUseCase implements IUserUseCase {
 
     const builder = new UserBuilder();
     const director = new UserDirector(builder);
-    const newUser = await director.buildUser(validatedUserData);
+    const userPayload = await director.buildUser(validatedUserData);
 
-    // TODO: Pending repository execution and proper testing
+    const newUser = await this.userRepository.create(userPayload);
 
     return !!newUser;
   }

@@ -5,7 +5,7 @@ import { IUserRepository } from 'users/repository/IUserRepository';
 import UserRepository from 'users/repository/user-repository';
 import { PostUserParams } from 'users/types';
 import { TESTING_DATABASE_PARAMS } from 'utils/constants';
-import { cleanDatabase } from 'utils/db/cleanDatabase';
+import { cleanDatabase } from 'utils/helpers/cleanDatabase';
 
 jest.mock('utils/env.ts', () => TESTING_DATABASE_PARAMS);
 

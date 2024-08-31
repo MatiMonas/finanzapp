@@ -1,4 +1,4 @@
-import { mockUserRepository } from 'users/tests/__mocks__/UserRepository';
+import { mockUserRepository } from 'users/tests/__mocks__';
 import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';
@@ -13,36 +13,62 @@ describe('UserUseCase', () => {
     userUseCase = new UserUseCase(mockUserRepository as any);
   });
 
-  it('should create a new user successfully', async () => {
-    const mockUserData: PostUserParams = {
-      email: 'test@example.com',
-      password: 'password123',
-      role: 'admin',
-    };
+  describe('create', () => {
+    it('OK - should return true if user was succesfully created', async () => {
+      const mockUserData: PostUserParams = {
+        email: 'test@example.com',
+        password: 'password123',
+        role: 'admin',
+      };
 
-    const mockValidatedUserData = { ...mockUserData, role: 'admin' };
+      const mockValidatedUserData = { ...mockUserData };
 
-    const mockUser: FindByUserEmailRequestData = {
-      id: 1,
-      email: 'test@example.com',
-      role: 'admin',
-    };
+      Validator.createValidatorChain = jest.fn().mockReturnValue({
+        validate: jest.fn().mockResolvedValue(mockValidatedUserData),
+      });
 
-    Validator.createValidatorChain = jest.fn().mockReturnValue({
-      validate: jest.fn().mockResolvedValue(mockValidatedUserData),
+      const mockBuilder = new UserBuilder();
+      const mockDirector = new UserDirector(mockBuilder);
+      mockDirector.buildUser = jest
+        .fn()
+        .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
+
+      userUseCase = new UserUseCase(mockUserRepository as any);
+
+      (mockUserRepository.create as jest.Mock).mockResolvedValue(true);
+
+      const result = await userUseCase.create(mockUserData);
+
+      expect(result).toBe(true);
     });
 
-    const mockBuilder = new UserBuilder();
-    const mockDirector = new UserDirector(mockBuilder);
-    mockDirector.buildUser = jest.fn().mockResolvedValue(mockUser);
+    it('OK - should return false if user was not created', async () => {
+      const mockUserData: PostUserParams = {
+        email: 'test@example.com',
+        password: 'password123',
+        role: 'admin',
+      };
 
-    userUseCase = new UserUseCase(mockUserRepository as any);
+      const mockValidatedUserData = { ...mockUserData };
 
-    const result = await userUseCase.createUser(mockUserData);
+      Validator.createValidatorChain = jest.fn().mockReturnValue({
+        validate: jest.fn().mockResolvedValue(mockValidatedUserData),
+      });
 
-    // TODO: pending repository execution and proper testing
+      const mockBuilder = new UserBuilder();
+      const mockDirector = new UserDirector(mockBuilder);
+      mockDirector.buildUser = jest
+        .fn()
+        .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
 
-    expect(result).toBe(true);
+      userUseCase = new UserUseCase(mockUserRepository as any);
+
+      (mockUserRepository.create as jest.Mock).mockResolvedValue(false);
+
+      const result = await userUseCase.create(mockUserData);
+
+      expect(result).toBe(false);
+    });
   });
 
   it('should return "ok" when calling test method', () => {
