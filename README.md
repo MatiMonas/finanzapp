@@ -1,3 +1,5 @@
+# FinanazAPI
+
 TODO: build instructions to start the project, roadmap, docs, etc
 
 ## Docker
