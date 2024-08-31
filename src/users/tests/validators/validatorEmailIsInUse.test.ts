@@ -1,7 +1,7 @@
 import UserRepository from 'users/repository/user-repository';
 import { EmailAlreadyInUseError } from 'errors';
 import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
-import ERROR_STATUS_CODES, { ERROR_CODES, ERROR_NAMES } from 'utils/constants';
+import { ERROR_STATUS_CODES, ERROR_CODES, ERROR_NAMES } from 'utils/constants';
 
 const mockUserRepository = () => {
   return {
