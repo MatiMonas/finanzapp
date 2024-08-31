@@ -1,14 +1,15 @@
 import { PrismaClient } from '@prisma/client';
-import { FindUserByEmail } from 'users/types/db_model';
+import { UserBaseData } from 'users/types/db_model';
+import { IUserRepository } from './IUserRepository';
 
-export default class UserRepository {
+export default class UserRepository implements IUserRepository {
   prismaClient: PrismaClient;
 
   constructor(prismaClient: PrismaClient) {
     this.prismaClient = prismaClient;
   }
 
-  async findUserByEmail(userEmail: string): Promise<FindUserByEmail | null> {
+  async findUserByEmail(userEmail: string): Promise<UserBaseData | null> {
     const foundUser = await this.prismaClient.users.findUnique({
       where: {
         email: userEmail,

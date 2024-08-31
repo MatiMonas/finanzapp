@@ -1,19 +1,19 @@
 import bcrypt from 'bcrypt';
 import { User } from '.';
 
-interface UserBuilderInterface {
-  setEmail(email: string): Promise<this>;
+interface IUserBuilder {
+  setEmail(email: string): this;
   setPassword(password: string): Promise<this>;
-  setRole(role: string): Promise<this>;
-  build(): Promise<User>;
+  setRole(role: string): this;
+  build(): User;
 }
 
-export class UserBuilder implements UserBuilderInterface {
+export class UserBuilder implements IUserBuilder {
   private email!: string;
   private password!: string;
   private role!: string;
 
-  async setEmail(email: string): Promise<this> {
+  setEmail(email: string): this {
     this.email = email;
     return this;
   }
@@ -24,12 +24,12 @@ export class UserBuilder implements UserBuilderInterface {
     return this;
   }
 
-  async setRole(role: string): Promise<this> {
+  setRole(role: string): this {
     this.role = role;
     return this;
   }
 
-  async build(): Promise<User> {
+  build(): User {
     return new User(this.email, this.password, this.role);
   }
 }

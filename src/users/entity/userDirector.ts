@@ -12,9 +12,9 @@ export class UserDirector {
   }
 
   async buildUser(userData: PostUserParams): Promise<User> {
-    await this.builder.setEmail(userData.email);
+    this.builder.setEmail(userData.email);
     await this.builder.setPassword(userData.password);
-    await this.builder.setRole(userData.role);
+    this.builder.setRole(userData.role);
 
     return this.builder.build();
   }
