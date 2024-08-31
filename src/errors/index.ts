@@ -1,4 +1,4 @@
-import { ERROR_CODES, ERROR_NAMES } from 'utils/constants';
+import { ERROR_CODES, ERROR_NAMES, ERROR_STATUS_CODES } from 'utils/constants';
 
 export interface IError {
   [error: string]: string[];
@@ -33,15 +33,21 @@ const errorFactory = ({ name, statusCode, code }: ErrorFactoryParams) => {
 
 const UserNotFoundError = errorFactory({
   name: ERROR_NAMES.USER_NOT_FOUND,
-  statusCode: 404,
+  statusCode: ERROR_STATUS_CODES.NOT_FOUND,
   code: ERROR_CODES.USER_NOT_FOUND,
 });
 
 const EmailAlreadyInUseError = errorFactory({
   name: ERROR_NAMES.EMAIL_ALREADY_IN_USE,
-  statusCode: 409,
+  statusCode: ERROR_STATUS_CODES.CONFLICT,
   code: ERROR_CODES.EMAIL_ALREADY_IN_USE,
 });
 
+const DatabaseError = errorFactory({
+  name: ERROR_NAMES.DATABASE_ERROR,
+  statusCode: ERROR_STATUS_CODES.INTERNAL_SERVER_ERROR,
+  code: ERROR_CODES.DATABASE_ERROR,
+});
+
 // Export the errors
-export { UserNotFoundError, EmailAlreadyInUseError };
+export { UserNotFoundError, EmailAlreadyInUseError, DatabaseError };

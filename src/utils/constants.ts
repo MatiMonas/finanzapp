@@ -1,11 +1,13 @@
 export const ERROR_CODES = {
   USER_NOT_FOUND: 'USER_NOT_FOUND',
   EMAIL_ALREADY_IN_USE: 'EMAIL_ALREADY_IN_USE',
+  DATABASE_ERROR: 'DATABASE_ERROR',
 };
 
 export const ERROR_NAMES = {
   USER_NOT_FOUND: 'UserNotFoundError',
   EMAIL_ALREADY_IN_USE: 'EmailAlreadyInUse',
+  DATABASE_ERROR: 'DatabaseError',
 };
 
 export const ERROR_STATUS_CODES = {
