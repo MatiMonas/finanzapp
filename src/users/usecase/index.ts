@@ -1,11 +1,10 @@
 import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
-import UserRepository from 'users/repository/user-repository';
+import { IUserRepository } from 'users/repository/user-repository';
 import { PostUserParams } from 'users/types';
 import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
 import Validator from 'validator';
 import { IUserUseCase } from './IUserUsecase';
-import { IUserRepository } from 'users/repository/IUserRepository';
 
 export default class UserUseCase implements IUserUseCase {
   constructor(private userRepository: IUserRepository) {}

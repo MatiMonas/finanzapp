@@ -3,8 +3,9 @@ import Container from 'container/container';
 import prismaClient from 'infrastructure/db/prisma';
 import UserUseCase from 'users/usecase';
 import UserRouter from 'users/http/router';
-import UserRepository from 'users/repository/user-repository';
-import { IUserRepository } from 'users/repository/IUserRepository';
+import UserRepository, {
+  IUserRepository,
+} from 'users/repository/user-repository';
 import { IUserUseCase } from 'users/usecase/IUserUsecase';
 
 type IContainer<T> = {
