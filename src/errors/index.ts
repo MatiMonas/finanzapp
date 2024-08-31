@@ -37,5 +37,11 @@ const UserNotFoundError = errorFactory({
   code: ERROR_CODES.USER_NOT_FOUND,
 });
 
+const EmailAlreadyInUseError = errorFactory({
+  name: ERROR_NAMES.EMAIL_ALREADY_IN_USE,
+  statusCode: 409,
+  code: ERROR_CODES.EMAIL_ALREADY_IN_USE,
+});
+
 // Export the errors
-export { UserNotFoundError };
+export { UserNotFoundError, EmailAlreadyInUseError };
