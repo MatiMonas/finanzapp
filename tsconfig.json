@@ -6,7 +6,10 @@
     "rootDir": "./src",
     "outDir": "./build",
     "strict": true,
-    "typeRoots": ["./node_modules/@types", "./src/@types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ],
     "sourceMap": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -14,13 +17,15 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
-    "lib":["ES2022", "dom"]
+    "lib": [
+      "ES2022",
+      "dom"
+    ]
   },
   "include": [
     "src/enviroment.d.ts",
     "./src/**/*",
-    "./tests/**/*"
-, "@types"  ],
+  ],
   "exclude": [
     "./node_modules"
   ]
