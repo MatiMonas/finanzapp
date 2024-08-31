@@ -10,7 +10,7 @@ datasource db {
 
 model Users {
   id            Int            @id @default(autoincrement()) @db.UnsignedInt
-  email         String         @unique @db.VarChar(255)
+  email         String         @unique @db.VarChar(30)
   password      String         @db.VarChar(255)
   role          String         @db.VarChar(10)
   monthly_wages MonthlyWages[]
@@ -21,8 +21,17 @@ model Users {
   credit_cards  CreditCards[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  roles         Roles[]        @relation("UserRoles")
 
   @@map("users")
+}
+
+model Roles {
+  id    Int     @id @default(autoincrement()) @db.UnsignedInt
+  name  String  @db.VarChar(10)
+  users Users[] @relation("UserRoles")
+
+  @@map("roles")
 }
 
 model MonthlyWages {
