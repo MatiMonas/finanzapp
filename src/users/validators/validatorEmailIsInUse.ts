@@ -1,18 +1,14 @@
 import { EmailAlreadyInUseError } from 'errors';
-import UserRepository from 'users/repository/user-repository';
+import { IUserRepository } from 'users/repository/IUserRepository';
 import Validator from 'validator';
 
 type BodyValidatorEmail = {
   email: string;
 };
-
 export class ValidatorEmailIsInUse extends Validator {
-  protected userRepository;
-  /**
-   *
-   * @param {import('../repository/user-repository.ts')} userRepository
-   */
-  constructor(userRepository: UserRepository) {
+  protected userRepository: IUserRepository;
+
+  constructor(userRepository: IUserRepository) {
     super();
     this.userRepository = userRepository;
   }

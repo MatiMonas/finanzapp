@@ -1,4 +1,5 @@
 import { UserNotFoundError } from 'errors';
+import { IUserRepository } from 'users/repository/IUserRepository';
 import UserRepository from 'users/repository/user-repository';
 import Validator from 'validator';
 
@@ -7,12 +8,12 @@ type BodyValidatorEmail = {
 };
 
 export class ValidatorUserEmailExists extends Validator {
-  protected userRepository;
+  protected userRepository: IUserRepository;
   /**
    *
    * @param {import('../repository/user-repository.ts')} userRepository
    */
-  constructor(userRepository: UserRepository) {
+  constructor(userRepository: IUserRepository) {
     super();
     this.userRepository = userRepository;
   }
