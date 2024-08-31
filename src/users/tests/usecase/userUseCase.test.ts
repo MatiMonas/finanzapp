@@ -1,11 +1,9 @@
 import { mockUserRepository } from '__mocks__/UserRepository';
-import { User } from 'users/entity';
 import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';
 import { UserBaseData } from 'users/types/db_model';
 import UserUseCase from 'users/usecase';
-import { verifyPassword } from 'users/utils/functions';
 import Validator from 'validator';
 
 describe('UserUseCase', () => {
