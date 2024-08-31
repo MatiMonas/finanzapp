@@ -1,5 +1,5 @@
 import { EmailAlreadyInUseError } from 'errors';
-import { IUserRepository } from 'users/repository/IUserRepository';
+import { IUserRepository } from 'users/repository/user-repository';
 import Validator from 'validator';
 
 type BodyValidatorEmail = {

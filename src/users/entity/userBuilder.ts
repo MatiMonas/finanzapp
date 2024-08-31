@@ -4,14 +4,14 @@ import { User } from '.';
 interface IUserBuilder {
   setEmail(email: string): this;
   setPassword(password: string): Promise<this>;
-  setRole(role: string): this;
+  setRole(role: number[]): this;
   build(): User;
 }
 
 export class UserBuilder implements IUserBuilder {
   private email!: string;
   private password!: string;
-  private role!: string;
+  private roles!: number[];
 
   setEmail(email: string): this {
     this.email = email;
@@ -24,12 +24,12 @@ export class UserBuilder implements IUserBuilder {
     return this;
   }
 
-  setRole(role: string): this {
-    this.role = role;
+  setRole(role: number[]): this {
+    this.roles = role;
     return this;
   }
 
   build(): User {
-    return new User(this.email, this.password, this.role);
+    return new User(this.email, this.password, this.roles);
   }
 }

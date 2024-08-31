@@ -18,7 +18,7 @@ describe('UserUseCase', () => {
       const mockUserData: PostUserParams = {
         email: 'test@example.com',
         password: 'password123',
-        role: 'admin',
+        roles: [1],
       };
 
       const mockValidatedUserData = { ...mockUserData };
@@ -46,7 +46,7 @@ describe('UserUseCase', () => {
       const mockUserData: PostUserParams = {
         email: 'test@example.com',
         password: 'password123',
-        role: 'admin',
+        roles: [1],
       };
 
       const mockValidatedUserData = { ...mockUserData };

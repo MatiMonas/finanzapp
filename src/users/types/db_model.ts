@@ -1,5 +1,9 @@
 export type FindByUserEmailRequestData = {
+  email: string;
+};
+
+export type FindUserBydIdRequestData = {
   id: number;
   email: string;
-  role: string;
+  roles: string[];
 };
