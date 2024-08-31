@@ -1,4 +1,4 @@
-import { mockUserRepository } from '__mocks__/UserRepository';
+import { mockUserRepository } from 'users/tests/__mocks__/UserRepository';
 import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';

@@ -26,4 +26,6 @@ export const ERROR_STATUS_CODES = {
   GATEWAY_TIMEOUT: 504,
 };
 
-export default ERROR_STATUS_CODES;
+export const TESTING_DATABASE_PARAMS = {
+  DATABASE_URL: 'file:dev.db?mode=memory&cache=shared',
+};
