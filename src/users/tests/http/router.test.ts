@@ -27,12 +27,14 @@ describe('UsersRouter', () => {
   it('should have a POST /users route', async () => {
     (mockUserUseCase.create as jest.Mock).mockResolvedValue(true);
 
-    const response = await request(app).post('/users').send({
-      username: 'test',
-      email: 'test@example.com',
-      password: 'password123',
-      role: 'admin',
-    });
+    const response = await request(app)
+      .post('/users')
+      .send({
+        username: 'validusername',
+        email: 'validemail@example.com',
+        password: 'Valid1Password!',
+        roles: [1, 2, 3],
+      });
 
     expect(response.status).toBe(STATUS_CODES.CREATED);
   });

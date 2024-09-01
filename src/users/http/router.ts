@@ -3,6 +3,7 @@ import { Router } from 'express';
 import createHandler from 'infrastructure/http/createHandler';
 import UserUseCase from 'users/usecase';
 import { STATUS_CODES } from 'utils/constants';
+import { createUserMiddleware } from './middlewares';
 
 const router = Router();
 export default class UsersRouter {
@@ -24,6 +25,7 @@ export default class UsersRouter {
     // Not making a login yet
     router.post(
       '/users',
+      createUserMiddleware,
       createHandler(this.handler.create, STATUS_CODES.CREATED)
     );
   }
