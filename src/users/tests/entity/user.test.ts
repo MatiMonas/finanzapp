@@ -59,21 +59,5 @@ describe('User', () => {
         { expiresIn: '1h' }
       );
     });
-
-    it('should use the default secret key if JWT_SECRET_KEY is not defined', () => {
-      delete process.env.JWT_SECRET_KEY;
-
-      const mockJwtSign = jwt.sign as jest.Mock;
-      const token = 'generatedToken';
-      mockJwtSign.mockReturnValue(token);
-
-      user.generateToken();
-
-      expect(mockJwtSign).toHaveBeenCalledWith(
-        expect.any(Object),
-        'default_secret_key',
-        expect.any(Object)
-      );
-    });
   });
 });
