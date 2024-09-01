@@ -159,3 +159,5 @@ ALTER TABLE `credit_cards` ADD CONSTRAINT `credit_cards_user_id_fkey` FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE `card_expenses` ADD CONSTRAINT `card_expenses_credit_card_id_fkey` FOREIGN KEY (`credit_card_id`) REFERENCES `credit_cards`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+SET GLOBAL time_zone = 'America/Argentina/Buenos_Aires';
