@@ -1,8 +1,8 @@
 // entity/UserDirector.ts
 
 import { PostUserParams } from 'users/types';
-import { UserBuilder } from './userBuilder';
 import { User } from '.';
+import { UserBuilder } from './userBuilder';
 
 export class UserDirector {
   private builder: UserBuilder;
@@ -12,6 +12,7 @@ export class UserDirector {
   }
 
   async buildUser(userData: PostUserParams): Promise<User> {
+    this.builder.setUsername(userData.username);
     this.builder.setEmail(userData.email);
     await this.builder.setPassword(userData.password);
     this.builder.setRole(userData.roles);

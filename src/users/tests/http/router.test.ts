@@ -4,6 +4,7 @@ import UserUseCase from 'users/usecase';
 import UsersRouter from 'users/http/router';
 import { mockUserUseCase } from '../__mocks__';
 import { countRoutes } from 'utils/helpers/countRouters';
+import { STATUS_CODES } from 'utils/constants';
 
 const app = express();
 
@@ -27,11 +28,12 @@ describe('UsersRouter', () => {
     (mockUserUseCase.create as jest.Mock).mockResolvedValue(true);
 
     const response = await request(app).post('/users').send({
+      username: 'test',
       email: 'test@example.com',
       password: 'password123',
       role: 'admin',
     });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(STATUS_CODES.CREATED);
   });
 });

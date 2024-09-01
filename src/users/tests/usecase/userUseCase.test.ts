@@ -1,10 +1,9 @@
 import { mockUserRepository } from 'users/tests/__mocks__';
-import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';
-import { FindByUserEmailRequestData } from 'users/types/db_model';
 import UserUseCase from 'users/usecase';
 import Validator from 'validator';
+import { UserBuilder } from 'users/entity/userBuilder';
 
 describe('UserUseCase', () => {
   let userUseCase: UserUseCase;
@@ -16,6 +15,7 @@ describe('UserUseCase', () => {
   describe('create', () => {
     it('OK - should return true if user was succesfully created', async () => {
       const mockUserData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'password123',
         roles: [1],
@@ -44,6 +44,7 @@ describe('UserUseCase', () => {
 
     it('OK - should return false if user was not created', async () => {
       const mockUserData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'password123',
         roles: [1],

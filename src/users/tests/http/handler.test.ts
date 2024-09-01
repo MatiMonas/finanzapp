@@ -26,6 +26,7 @@ describe('UsersHandler', () => {
 
   it('should call create method of UserUseCase with correct data', async () => {
     const mockUserData: PostUserParams = {
+      username: 'test',
       email: 'test@example.com',
       password: 'password123',
       roles: [1],

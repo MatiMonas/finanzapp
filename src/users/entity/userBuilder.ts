@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { User } from '.';
 
 interface IUserBuilder {
+  setUsername(username: string): this;
   setEmail(email: string): this;
   setPassword(password: string): Promise<this>;
   setRole(role: number[]): this;
@@ -9,9 +10,15 @@ interface IUserBuilder {
 }
 
 export class UserBuilder implements IUserBuilder {
+  private username!: string;
   private email!: string;
   private password!: string;
   private roles!: number[];
+
+  setUsername(username: string): this {
+    this.username = username;
+    return this;
+  }
 
   setEmail(email: string): this {
     this.email = email;
@@ -30,6 +37,6 @@ export class UserBuilder implements IUserBuilder {
   }
 
   build(): User {
-    return new User(this.email, this.password, this.roles);
+    return new User(this.username, this.email, this.password, this.roles);
   }
 }

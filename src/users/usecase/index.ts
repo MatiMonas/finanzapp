@@ -1,5 +1,5 @@
-import { UserBuilder } from 'users/entity/userBuilder';
 import { UserDirector } from 'users/entity/userDirector';
+import { UserBuilder } from 'users/entity/userBuilder';
 import { IUserRepository } from 'users/repository/user-repository';
 import { PostUserParams } from 'users/types';
 import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
@@ -22,7 +22,7 @@ export default class UserUseCase implements IUserUseCase {
 
     const newUser = await this.userRepository.create(userPayload);
 
-    return !!newUser;
+    return Boolean(newUser);
   }
 
   test() {

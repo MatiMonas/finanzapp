@@ -7,11 +7,11 @@ import { PostUserParams } from 'users/types';
 import { DatabaseError } from 'errors';
 
 export interface IUserRepository {
+  findUserById(userId: number): Promise<FindUserBydIdRequestData | null>;
   findUserByEmail(
     userEmail: string
   ): Promise<FindByUserEmailRequestData | null>;
   create(userData: PostUserParams): Promise<boolean>;
-  findUserById(userId: number): Promise<FindUserBydIdRequestData | null>;
 }
 
 export default class UserRepository implements IUserRepository {
@@ -62,9 +62,6 @@ export default class UserRepository implements IUserRepository {
         where: {
           email: userEmail,
         },
-        select: {
-          email: true,
-        },
       });
 
       return foundUser;
@@ -74,12 +71,13 @@ export default class UserRepository implements IUserRepository {
   }
 
   async create(userData: PostUserParams): Promise<boolean> {
-    const { email, password, roles } = userData;
+    const { email, password, roles, username } = userData;
 
     try {
       await this.prismaClient.$transaction(async (prisma) => {
         const newUser = await prisma.users.create({
           data: {
+            username,
             email,
             password,
           },

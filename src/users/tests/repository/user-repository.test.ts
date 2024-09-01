@@ -15,7 +15,7 @@ let userRepository: IUserRepository;
 
 describe('UserRepository', () => {
   beforeAll(async () => {
-    execSync('npx prisma db push');
+    execSync('npx prisma db push --accept-data-loss');
     userRepository = new UserRepository(prisma);
   });
 
@@ -30,6 +30,7 @@ describe('UserRepository', () => {
   describe('findUserById', () => {
     test('OK - Returns a user when the user exists', async () => {
       const userData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'securepassword',
         roles: [1],
@@ -72,6 +73,7 @@ describe('UserRepository', () => {
   describe('findUserByEmail', () => {
     test('OK - Returns a user when the user exists', async () => {
       const userData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'securepassword',
         roles: [1],
@@ -113,6 +115,7 @@ describe('UserRepository', () => {
     });
     test('OK - Creates user', async () => {
       const userData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'securepassword',
         roles: [1],
@@ -131,6 +134,7 @@ describe('UserRepository', () => {
         .mockRejectedValueOnce(new Error('Prisma client error'));
 
       const userData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'securepassword',
         roles: [1],
@@ -148,6 +152,7 @@ describe('UserRepository', () => {
 
     test('Shold not create an user if received role does not exists', async () => {
       const userData: PostUserParams = {
+        username: 'test',
         email: 'test@example.com',
         password: 'securepassword',
         roles: [5],
