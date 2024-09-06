@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Users {
-  id           Int            @id @default(autoincrement()) @db.UnsignedInt
+  id           String         @id @default(uuid()) @db.Char(36)
   email        String         @unique @db.VarChar(30)
   username     String         @unique @db.VarChar(25)
   password     String         @db.VarChar(255)
@@ -37,18 +37,18 @@ model Roles {
 }
 
 model UserRoles {
-  userId Int   @db.UnsignedInt
-  roleId Int   @db.UnsignedInt
-  user   Users @relation("UserRolesToRoles", fields: [userId], references: [id])
-  role   Roles @relation("UserRolesToRoles", fields: [roleId], references: [id])
+  user_id String @db.Char(36)
+  role_id Int    @db.UnsignedInt
+  user    Users  @relation("UserRolesToRoles", fields: [user_id], references: [id])
+  role    Roles  @relation("UserRolesToRoles", fields: [role_id], references: [id])
 
-  @@id([userId, roleId])
+  @@id([user_id, role_id])
   @@map("user_roles")
 }
 
 model MonthlyWages {
   id      Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id Int       @db.UnsignedInt
+  user_id String    @db.Char(36)
   user    Users     @relation(fields: [user_id], references: [id])
   amount  Float     @default(0.0) @db.Float
   date    DateTime  @default(now())
@@ -59,9 +59,9 @@ model MonthlyWages {
 
 model Budgets {
   id                   Int    @id @default(autoincrement()) @db.UnsignedInt
-  user_id              Int    @db.UnsignedInt
+  user_id              String @db.Char(36)
   user                 Users  @relation(fields: [user_id], references: [id])
-  name                 String @db.VarChar(100)
+  name                 String @db.VarChar(30)
   percentage           Float  @default(0.0) @db.Float
   remaining_allocation Float  @default(0.0) @db.Float
 
@@ -106,7 +106,7 @@ model Alerts {
 
 model Expenses {
   id          Int        @id @default(autoincrement()) @db.UnsignedInt
-  user_id     Int        @db.UnsignedInt
+  user_id     String     @db.Char(36)
   user        Users      @relation(fields: [user_id], references: [id])
   category_id Int        @db.UnsignedInt
   category    Categories @relation(fields: [category_id], references: [id])
@@ -120,7 +120,7 @@ model Expenses {
 
 model Investments {
   id             Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id        Int       @db.UnsignedInt
+  user_id        String    @db.Char(36)
   user           Users     @relation(fields: [user_id], references: [id])
   name           String    @db.VarChar(100)
   purchase_date  DateTime
@@ -133,7 +133,7 @@ model Investments {
 
 model Debts {
   id           Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id      Int       @db.UnsignedInt
+  user_id      String    @db.Char(36)
   user         Users     @relation(fields: [user_id], references: [id])
   creditor     String    @db.VarChar(100)
   amount       Float     @default(0.0) @db.Float
@@ -146,7 +146,7 @@ model Debts {
 
 model CreditCards {
   id            Int            @id @default(autoincrement()) @db.UnsignedInt
-  user_id       Int            @db.UnsignedInt
+  user_id       String         @db.Char(36)
   user          Users          @relation(fields: [user_id], references: [id])
   name          String         @db.VarChar(50)
   total_credit  Float          @default(0.0) @db.Float
