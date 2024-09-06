@@ -27,7 +27,7 @@ export default class BudgetRouter {
     /* POST */
     // Not making a login yet
     router.post(
-      '/users',
+      '/budgets',
       createBudgetMiddleware,
       createHandler(this.handler.create, STATUS_CODES.CREATED)
     );
