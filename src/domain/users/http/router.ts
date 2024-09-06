@@ -1,9 +1,9 @@
 import Handler from './handler';
 import { Router } from 'express';
 import createHandler from 'infrastructure/http/createHandler';
-import UserUseCase from 'users/usecase';
 import { STATUS_CODES } from 'utils/constants';
 import { createUserMiddleware } from './middlewares';
+import UserUseCase from '../usecase';
 
 const router = Router();
 export default class UsersRouter {

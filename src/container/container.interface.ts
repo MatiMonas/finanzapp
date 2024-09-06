@@ -1,17 +1,17 @@
 import { PrismaClient } from '@prisma/client';
+import BudgetRouter from 'domain/budgets/http/router';
+import BudgetRepository from 'domain/budgets/repository/budget-repository';
+import BudgetUsecase from 'domain/budgets/usecase';
+import UsersRouter from 'domain/users/http/router';
+import UserRepository from 'domain/users/repository/user-repository';
+import UserUseCase from 'domain/users/usecase';
 import { RedisClientType } from 'redis';
-import UserUsecase from 'users/usecase';
-import UserRouter from 'users/http/router';
-import UserRepository from 'users/repository/user-repository';
-import BudgetRepository from 'budgets/repository/budget-repository';
-import BudgetUsecase from 'budgets/usecase';
-import BudgetRouter from 'budgets/http/router';
 
 type ContainerServices = {
   prismaClient: PrismaClient;
   userRepository: UserRepository;
-  userUsecase: UserUsecase;
-  userRouter: UserRouter;
+  userUsecase: UserUseCase;
+  userRouter: UsersRouter;
   budgetRepository: BudgetRepository;
   budgetUsecase: BudgetUsecase;
   budgetRouter: BudgetRouter;

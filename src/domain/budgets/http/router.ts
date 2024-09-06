@@ -1,9 +1,9 @@
-import BudgetUsecase from 'budgets/usecase';
 import { Router } from 'express';
 import BudgetsHandler from './handler';
 import { createBudgetMiddleware } from './middlewares';
 import createHandler from 'infrastructure/http/createHandler';
 import { STATUS_CODES } from 'utils/constants';
+import BudgetUsecase from '../usecase';
 
 const router = Router();
 

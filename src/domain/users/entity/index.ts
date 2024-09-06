@@ -1,6 +1,6 @@
-import { verifyPassword } from 'users/utils/functions';
 import jwt from 'jsonwebtoken';
 import env from 'utils/env';
+import { verifyPassword } from '../utils/functions';
 const { JWT_SECRET_KEY } = env;
 interface IUser {
   isPasswordValid(enteredPassword: string): Promise<boolean>;

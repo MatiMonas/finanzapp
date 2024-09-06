@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { PostUserParams } from 'users/types';
-import UserUseCase from 'users/usecase';
+import UserUseCase from '../usecase';
+import { PostUserParams } from '../types';
 
 export default class UsersHandler {
   protected usersUseCase: UserUseCase;

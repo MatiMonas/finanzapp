@@ -1,7 +1,7 @@
 // entity/UserDirector.ts
 
-import { PostUserParams } from 'users/types';
 import { User } from '.';
+import { PostUserParams } from '../types';
 import { UserBuilder } from './userBuilder';
 
 export class UserDirector {

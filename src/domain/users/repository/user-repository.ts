@@ -1,10 +1,10 @@
 import { PrismaClient, Users } from '@prisma/client';
+import { DatabaseError } from 'errors';
 import {
   FindByUserEmailRequestData,
   FindUserBydIdRequestData,
-} from 'users/types/db_model';
-import { PostUserParams } from 'users/types';
-import { DatabaseError } from 'errors';
+} from '../types/db_model';
+import { PostUserParams } from '../types';
 
 export interface IUserRepository {
   findUserById(userId: number): Promise<FindUserBydIdRequestData | null>;

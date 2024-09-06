@@ -1,5 +1,5 @@
 import Validator from 'validator';
-import { IBudgetRepository } from 'budgets/repository/budget-repository';
+import { IBudgetRepository } from '../repository/budget-repository';
 
 export interface IBudgetUsecase {
   create(budgetData: any): Promise<Boolean>;

@@ -1,10 +1,10 @@
-import { UserDirector } from 'users/entity/userDirector';
-import { UserBuilder } from 'users/entity/userBuilder';
-import { IUserRepository } from 'users/repository/user-repository';
-import { PostUserParams } from 'users/types';
-import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
 import Validator from 'validator';
 import { IUserUseCase } from './IUserUsecase';
+import { IUserRepository } from '../repository/user-repository';
+import { PostUserParams } from '../types';
+import { ValidatorEmailIsInUse } from '../validators/validatorEmailIsInUse';
+import { UserBuilder } from '../entity/userBuilder';
+import { UserDirector } from '../entity/userDirector';
 
 export default class UserUseCase implements IUserUseCase {
   constructor(private userRepository: IUserRepository) {}

@@ -1,6 +1,5 @@
-import { IBudgetUsecase } from 'budgets/usecase';
 import { Request } from 'express';
-import { PostUserParams } from 'users/types';
+import { IBudgetUsecase } from '../usecase';
 
 export default class BudgetsHandler {
   protected budgetsUseCase: IBudgetUsecase;
