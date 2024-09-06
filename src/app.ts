@@ -3,18 +3,38 @@ import Server from 'infrastructure/http/express';
 import createHandler from 'infrastructure/http/createHandler';
 import errorHandler from 'infrastructure/http/errorHandler';
 
-const server = new Server();
-server.addRoute('/api/v1', container.userRouter.getRouter());
+const API_PREFIX = '/api/v1';
 
-server.addEndpoint(
-  'get',
-  '/health',
-  createHandler(async () => {
-    console.log('Health check');
-    return 'OK';
-  })
-);
+function setupRoutes(server: Server) {
+  server.addRoutes(API_PREFIX, [
+    container.userRouter.getRouter(),
+    container.budgetRouter.getRouter(),
+    // Agrega más routers aquí
+  ]);
 
-server.addMiddleware(errorHandler);
+  server.addEndpoint(
+    'get',
+    '/health',
+    createHandler(async () => {
+      console.log('Health check');
+      return 'OK';
+    })
+  );
 
-server.listen();
+  server.addMiddleware(errorHandler);
+}
+
+function startServer() {
+  const server = new Server();
+  setupRoutes(server);
+
+  server.listen((err?: Error) => {
+    if (err) {
+      console.error('Failed to start server:', err);
+      process.exit(1);
+    }
+    console.log('Server started successfully.');
+  });
+}
+
+startServer();
