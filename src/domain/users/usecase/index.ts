@@ -1,10 +1,14 @@
 import Validator from 'validator';
-import { IUserUseCase } from './IUserUsecase';
 import { IUserRepository } from '../repository/user-repository';
 import { PostUserParams } from '../types';
 import { ValidatorEmailIsInUse } from '../validators/validatorEmailIsInUse';
 import { UserBuilder } from '../entity/userBuilder';
 import { UserDirector } from '../entity/userDirector';
+
+export interface IUserUseCase {
+  create(userData: PostUserParams): Promise<Boolean>;
+  test(): string;
+}
 
 export default class UserUseCase implements IUserUseCase {
   constructor(private userRepository: IUserRepository) {}

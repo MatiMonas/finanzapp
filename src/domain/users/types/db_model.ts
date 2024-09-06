@@ -3,7 +3,7 @@ export type FindByUserEmailRequestData = {
 };
 
 export type FindUserBydIdRequestData = {
-  id: number;
+  id: string;
   email: string;
   roles: string[];
 };

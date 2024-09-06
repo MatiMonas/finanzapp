@@ -7,7 +7,7 @@ import {
 import { PostUserParams } from '../types';
 
 export interface IUserRepository {
-  findUserById(userId: number): Promise<FindUserBydIdRequestData | null>;
+  findUserById(userId: string): Promise<FindUserBydIdRequestData | null>;
   findUserByEmail(
     userEmail: string
   ): Promise<FindByUserEmailRequestData | null>;
@@ -21,7 +21,7 @@ export default class UserRepository implements IUserRepository {
     this.prismaClient = prismaClient;
   }
 
-  async findUserById(userId: number): Promise<FindUserBydIdRequestData | null> {
+  async findUserById(userId: string): Promise<FindUserBydIdRequestData | null> {
     try {
       const foundUser = await this.prismaClient.users.findUnique({
         where: {
@@ -83,17 +83,17 @@ export default class UserRepository implements IUserRepository {
           },
         });
 
-        for (const roleId of roles) {
+        for (const role_id of roles) {
           await prisma.userRoles.upsert({
             where: {
-              userId_roleId: {
-                userId: newUser.id,
-                roleId,
+              user_id_role_id: {
+                user_id: newUser.id,
+                role_id,
               },
             },
             create: {
-              userId: newUser.id,
-              roleId,
+              user_id: newUser.id,
+              role_id,
             },
             update: {},
           });

@@ -2,8 +2,7 @@ import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/db/prisma';
 import UsersRouter from 'domain/users/http/router';
-import { IUserUseCase } from 'domain/users/usecase/IUserUsecase';
-import UserUseCase from 'domain/users/usecase';
+import UserUseCase, { IUserUseCase } from 'domain/users/usecase';
 import UserRepository, {
   IUserRepository,
 } from 'domain/users/repository/user-repository';
