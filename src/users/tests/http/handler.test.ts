@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { PostUserParams } from 'users/types';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 import UsersHandler from 'users/http/handler';
 
 // Crear mocks para UserUseCase
 const mockUserUseCase = {
   test: jest.fn(),
   create: jest.fn(),
-} as unknown as UserUseCase;
+} as unknown as UserUsecase;
 
 const usersHandler = new UsersHandler(mockUserUseCase);
 

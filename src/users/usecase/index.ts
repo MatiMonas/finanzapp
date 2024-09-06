@@ -4,9 +4,13 @@ import { IUserRepository } from 'users/repository/user-repository';
 import { PostUserParams } from 'users/types';
 import { ValidatorEmailIsInUse } from 'users/validators/validatorEmailIsInUse';
 import Validator from 'validator';
-import { IUserUseCase } from './IUserUsecase';
 
-export default class UserUseCase implements IUserUseCase {
+export interface IUserUsecase {
+  create(userData: PostUserParams): Promise<Boolean>;
+  test(): string;
+}
+
+export default class UserUsecase implements IUserUsecase {
   constructor(private userRepository: IUserRepository) {}
 
   async create(userData: PostUserParams): Promise<Boolean> {

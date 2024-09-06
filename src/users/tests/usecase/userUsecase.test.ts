@@ -1,15 +1,15 @@
 import { mockUserRepository } from 'users/tests/__mocks__';
 import { UserDirector } from 'users/entity/userDirector';
 import { PostUserParams } from 'users/types';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 import Validator from 'validator';
 import { UserBuilder } from 'users/entity/userBuilder';
 
 describe('UserUseCase', () => {
-  let userUseCase: UserUseCase;
+  let userUseCase: UserUsecase;
 
   beforeEach(() => {
-    userUseCase = new UserUseCase(mockUserRepository as any);
+    userUseCase = new UserUsecase(mockUserRepository as any);
   });
 
   describe('create', () => {
@@ -33,7 +33,7 @@ describe('UserUseCase', () => {
         .fn()
         .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
 
-      userUseCase = new UserUseCase(mockUserRepository as any);
+      userUseCase = new UserUsecase(mockUserRepository as any);
 
       (mockUserRepository.create as jest.Mock).mockResolvedValue(true);
 
@@ -62,7 +62,7 @@ describe('UserUseCase', () => {
         .fn()
         .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
 
-      userUseCase = new UserUseCase(mockUserRepository as any);
+      userUseCase = new UserUsecase(mockUserRepository as any);
 
       (mockUserRepository.create as jest.Mock).mockResolvedValue(false);
 

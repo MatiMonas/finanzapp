@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 import UsersRouter from 'users/http/router';
 import { mockUserUseCase } from '../__mocks__';
 import { countRoutes } from 'utils/helpers/countRouters';

@@ -1,21 +1,27 @@
 import Handler from './handler';
 import { Router } from 'express';
 import createHandler from 'infrastructure/http/createHandler';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 import { STATUS_CODES } from 'utils/constants';
 import { createUserMiddleware } from './middlewares';
 
 const router = Router();
+
+export interface IUserRouter {
+  registerRouters(): void;
+  getRouter(): Router;
+}
+
 export default class UsersRouter {
-  protected userUseCase: UserUseCase;
+  protected userUseCase: UserUsecase;
   protected handler: Handler;
 
-  constructor(UserUseCase: UserUseCase) {
+  constructor(UserUseCase: UserUsecase) {
     this.userUseCase = UserUseCase;
     this.handler = new Handler(UserUseCase);
     this.registerRouters();
   }
-  registerRouters() {
+  registerRouters(): void {
     //TODO: add swagger
 
     /**GET */
@@ -30,7 +36,7 @@ export default class UsersRouter {
     );
   }
 
-  getRouter() {
+  getRouter(): Router {
     return router;
   }
 }

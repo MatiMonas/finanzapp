@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { PostUserParams } from 'users/types';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 
 export default class UsersHandler {
-  protected usersUseCase: UserUseCase;
+  protected usersUseCase: UserUsecase;
 
-  constructor(UsersUseCase: UserUseCase) {
+  constructor(UsersUseCase: UserUsecase) {
     this.usersUseCase = UsersUseCase;
   }
 

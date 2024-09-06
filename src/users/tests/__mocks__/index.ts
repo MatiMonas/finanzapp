@@ -1,10 +1,10 @@
 import UserRepository from 'users/repository/user-repository';
-import UserUseCase from 'users/usecase';
+import UserUsecase from 'users/usecase';
 
 export const mockUserUseCase = {
   test: jest.fn().mockResolvedValue('ok'),
   create: jest.fn(),
-} as unknown as UserUseCase;
+} as unknown as UserUsecase;
 
 export const mockUserRepository = {
   findUserById: jest.fn(),
