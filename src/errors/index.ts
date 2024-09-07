@@ -31,6 +31,7 @@ const errorFactory = ({ name, statusCode, code }: ErrorFactoryParams) => {
   };
 };
 
+// ----- Validation Errors -------
 const UserNotFoundError = errorFactory({
   name: ERROR_NAMES.USER_NOT_FOUND,
   statusCode: STATUS_CODES.NOT_FOUND,
@@ -43,6 +44,13 @@ const EmailAlreadyInUseError = errorFactory({
   code: ERROR_CODES.EMAIL_ALREADY_IN_USE,
 });
 
+const BudgetPercentageError = errorFactory({
+  name: ERROR_NAMES.BUDGET_PERCENTAGE_ERROR,
+  statusCode: STATUS_CODES.BAD_REQUEST,
+  code: ERROR_CODES.BUDGET_PERCENTAGE_ERROR,
+});
+// -------------------------------------
+
 const DatabaseError = errorFactory({
   name: ERROR_NAMES.DATABASE_ERROR,
   statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
@@ -50,4 +58,9 @@ const DatabaseError = errorFactory({
 });
 
 // Export the errors
-export { UserNotFoundError, EmailAlreadyInUseError, DatabaseError };
+export {
+  UserNotFoundError,
+  EmailAlreadyInUseError,
+  DatabaseError,
+  BudgetPercentageError,
+};
