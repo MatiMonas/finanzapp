@@ -14,6 +14,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
   async createBudget(budgetData: PostBudgetParams): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
+      // validator to check if budgetConfiguration name already exists for user
       new ValidatorBudgetPercentage(),
     ]);
 
@@ -22,7 +23,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
     );
 
     const { budget_configuration_name, budgets, user_id } = validatedBudgetData;
-    const budgetConfiguration =
+    const budgetConfigurationId =
       await this.budgetRepository.createBudgetConfiguration(
         budget_configuration_name,
         user_id
@@ -38,7 +39,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
         user_id,
         name,
         percentage,
-        budget_configuration_id: budgetConfiguration,
+        budget_configuration_id: budgetConfigurationId,
       };
       const budgetPayload = director.createBudget(budgetDataForDirector);
 

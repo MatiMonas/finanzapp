@@ -28,7 +28,6 @@ export default class BudgetRepository implements IBudgetRepository {
           return await prisma.budgetsConfigurations.create({
             data: {
               name: budgetConfigurationName,
-              total_percentage: 100,
               user_id,
             },
             select: {
