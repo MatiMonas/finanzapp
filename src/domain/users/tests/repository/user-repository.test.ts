@@ -16,7 +16,7 @@ let userRepository: IUserRepository;
 
 describe('UserRepository', () => {
   beforeAll(async () => {
-    execSync('npx prisma db push --accept-data-loss --force-reset');
+    execSync('npx prisma db push --accept-data-loss ');
     userRepository = new UserRepository(prisma);
   });
 
