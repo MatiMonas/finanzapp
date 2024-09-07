@@ -9,19 +9,21 @@ datasource db {
 }
 
 model Users {
-  id           Int            @id @default(autoincrement()) @db.UnsignedInt
-  email        String         @unique @db.VarChar(30)
-  username     String         @unique @db.VarChar(25)
-  password     String         @db.VarChar(255)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  roles        UserRoles[]    @relation("UserRolesToRoles")
-  MonthlyWages MonthlyWages[]
-  Budgets      Budgets[]
-  Expenses     Expenses[]
-  Investments  Investments[]
-  Debts        Debts[]
-  CreditCards  CreditCards[]
+  id                    String                  @id @default(uuid()) @db.Char(36)
+  email                 String                  @unique @db.VarChar(30)
+  username              String                  @unique @db.VarChar(25)
+  password              String                  @db.VarChar(255)
+  roles                 UserRoles[]             @relation("UserRolesToRoles")
+  MonthlyWages          MonthlyWages[]
+  Budgets               Budgets[]
+  Expenses              Expenses[]
+  Investments           Investments[]
+  Debts                 Debts[]
+  CreditCards           CreditCards[]
+  BudgetsConfigurations BudgetsConfigurations[] // Relación one-to-many con las configuraciones de presupuesto
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
+  deleted_at            DateTime?
 
   @@map("users")
 }
@@ -32,38 +34,58 @@ model Roles {
   users      UserRoles[] @relation("UserRolesToRoles")
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
+  deleted_at DateTime?
 
   @@map("roles")
 }
 
 model UserRoles {
-  userId Int   @db.UnsignedInt
-  roleId Int   @db.UnsignedInt
-  user   Users @relation("UserRolesToRoles", fields: [userId], references: [id])
-  role   Roles @relation("UserRolesToRoles", fields: [roleId], references: [id])
+  user_id String @db.Char(36)
+  role_id Int    @db.UnsignedInt
+  user    Users  @relation("UserRolesToRoles", fields: [user_id], references: [id])
+  role    Roles  @relation("UserRolesToRoles", fields: [role_id], references: [id])
 
-  @@id([userId, roleId])
+  @@id([user_id, role_id])
   @@map("user_roles")
 }
 
+model BudgetsConfigurations {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  name       String
+  budgets    Budgets[]
+  user_id    String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  Users      Users[]
+
+  @@map("budgets_configuration")
+}
+
 model MonthlyWages {
-  id      Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id Int       @db.UnsignedInt
-  user    Users     @relation(fields: [user_id], references: [id])
-  amount  Float     @default(0.0) @db.Float
-  date    DateTime  @default(now())
-  budgets Budgets[] @relation("MonthlyWagesBudgets")
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    String    @db.Char(36)
+  user       Users     @relation(fields: [user_id], references: [id])
+  amount     Float     @default(0.0) @db.Float
+  date       DateTime  @default(now())
+  budgets    Budgets[] @relation("MonthlyWagesBudgets")
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@map("monthly_wages")
 }
 
 model Budgets {
   id                   Int    @id @default(autoincrement()) @db.UnsignedInt
-  user_id              Int    @db.UnsignedInt
+  user_id              String @db.Char(36)
   user                 Users  @relation(fields: [user_id], references: [id])
-  name                 String @db.VarChar(100)
+  name                 String @db.VarChar(30)
   percentage           Float  @default(0.0) @db.Float
   remaining_allocation Float  @default(0.0) @db.Float
+
+  budget_configuration    BudgetsConfigurations? @relation(fields: [budget_configuration_id], references: [id])
+  budget_configuration_id Int?                   @db.UnsignedInt
 
   // ID del presupuesto al que se transfieren los sobrantes
   transfer_to_budget_id Int?     @unique @db.UnsignedInt
@@ -79,34 +101,40 @@ model Budgets {
   alerts     Alerts[]
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
+  deleted_at DateTime?
 
   @@map("budgets")
 }
 
 model Categories {
-  id        Int        @id @default(autoincrement()) @db.UnsignedInt
-  name      String     @db.VarChar(50)
-  budget_id Int        @db.UnsignedInt
-  budget    Budgets    @relation(fields: [budget_id], references: [id])
-  expenses  Expenses[]
+  id         Int        @id @default(autoincrement()) @db.UnsignedInt
+  name       String     @db.VarChar(50)
+  budget_id  Int        @db.UnsignedInt
+  budget     Budgets    @relation(fields: [budget_id], references: [id])
+  expenses   Expenses[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  deleted_at DateTime?
 
   @@map("categories")
 }
 
 model Alerts {
-  id         Int      @id @default(autoincrement()) @db.UnsignedInt
-  budget_id  Int      @db.UnsignedInt
-  budget     Budgets  @relation(fields: [budget_id], references: [id])
-  threshold  Float    @db.Float
-  color      String   @db.VarChar(10)
-  created_at DateTime @default(now())
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  budget_id  Int       @db.UnsignedInt
+  budget     Budgets   @relation(fields: [budget_id], references: [id])
+  threshold  Float     @db.Float
+  color      String    @db.VarChar(10)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@map("alerts")
 }
 
 model Expenses {
   id          Int        @id @default(autoincrement()) @db.UnsignedInt
-  user_id     Int        @db.UnsignedInt
+  user_id     String     @db.Char(36)
   user        Users      @relation(fields: [user_id], references: [id])
   category_id Int        @db.UnsignedInt
   category    Categories @relation(fields: [category_id], references: [id])
@@ -114,39 +142,48 @@ model Expenses {
   amount      Float      @default(0.0) @db.Float
   date        DateTime   @default(now())
   is_monthly  Boolean    @default(false)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  deleted_at  DateTime?
 
   @@map("expenses")
 }
 
 model Investments {
   id             Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id        Int       @db.UnsignedInt
+  user_id        String    @db.Char(36)
   user           Users     @relation(fields: [user_id], references: [id])
   name           String    @db.VarChar(100)
   purchase_date  DateTime
   purchase_value Float     @default(0.0) @db.Float
   sale_date      DateTime?
   sale_value     Float?    @db.Float
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  deleted_at     DateTime?
 
   @@map("investments")
 }
 
 model Debts {
   id           Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id      Int       @db.UnsignedInt
+  user_id      String    @db.Char(36)
   user         Users     @relation(fields: [user_id], references: [id])
   creditor     String    @db.VarChar(100)
   amount       Float     @default(0.0) @db.Float
   due_date     DateTime
   is_paid      Boolean   @default(false)
   payment_date DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  deleted_at   DateTime?
 
   @@map("debts")
 }
 
 model CreditCards {
   id            Int            @id @default(autoincrement()) @db.UnsignedInt
-  user_id       Int            @db.UnsignedInt
+  user_id       String         @db.Char(36)
   user          Users          @relation(fields: [user_id], references: [id])
   name          String         @db.VarChar(50)
   total_credit  Float          @default(0.0) @db.Float
@@ -154,6 +191,7 @@ model CreditCards {
   card_expenses CardExpenses[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  deleted_at    DateTime?
 
   @@map("credit_cards")
 }
@@ -169,6 +207,8 @@ model CardExpenses {
   installments           Int         @db.UnsignedInt
   remaining_installments Int         @db.UnsignedInt
   created_at             DateTime    @default(now())
+  updated_at             DateTime    @updatedAt
+  deleted_at             DateTime?
 
   @@map("card_expenses")
 }

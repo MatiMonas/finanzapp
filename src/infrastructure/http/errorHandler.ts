@@ -15,7 +15,7 @@ export default function errorHandler(
   next: NextFunction
 ) {
   if (error instanceof ExceptionValidationError) {
-    return res.status(400).json({ code: 400, errors: error.errors });
+    return res.status(400).json({ status: 'fail', errors: error.errors });
   }
 
   let statusCode = error.statusCode || 500;
@@ -30,5 +30,5 @@ export default function errorHandler(
     console.error(error);
   }
 
-  return res.status(statusCode).json({ code: statusCode, message });
+  return res.status(statusCode).json({ status: 'fail', message });
 }

@@ -1,12 +1,16 @@
 import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/db/prisma';
-import UserUseCase from 'users/usecase';
-import UserRouter from 'users/http/router';
+import UsersRouter from 'domain/users/http/router';
+import UserUseCase, { IUserUseCase } from 'domain/users/usecase';
 import UserRepository, {
   IUserRepository,
-} from 'users/repository/user-repository';
-import { IUserUseCase } from 'users/usecase/IUserUsecase';
+} from 'domain/users/repository/user-repository';
+import BudgetRouter, { IBudgetRouter } from 'domain/budgets/http/router';
+import BudgetUsecase, { IBudgetUsecase } from 'domain/budgets/usecase';
+import BudgetRepository, {
+  IBudgetRepository,
+} from 'domain/budgets/repository/budget-repository';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
@@ -21,9 +25,9 @@ const container =
 container.service('prismaClient', () => prismaClient());
 
 // USER SERVICES
-container.service('userRouter', (c) => new UserRouter(c.userUseCase));
+container.service('userRouter', (c) => new UsersRouter(c.userUsecase));
 container.service(
-  'userUseCase',
+  'userUsecase',
   (c): IUserUseCase => new UserUseCase(c.userRepository)
 );
 container.service(
@@ -31,4 +35,17 @@ container.service(
   (c): IUserRepository => new UserRepository(c.prismaClient)
 );
 
+// BUDGET SERVICES
+container.service(
+  'budgetRouter',
+  (c): IBudgetRouter => new BudgetRouter(c.budgetUsecase)
+);
+container.service(
+  'budgetUsecase',
+  (c): IBudgetUsecase => new BudgetUsecase(c.budgetRepository)
+);
+container.service(
+  'budgetRepository',
+  (c): IBudgetRepository => new BudgetRepository(c.prismaClient)
+);
 export default container;

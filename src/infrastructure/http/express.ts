@@ -42,6 +42,13 @@ export default class Express {
   addRoute = (path: string, module: Router) => {
     this.app.use(path, module);
   };
+
+  addRoutes = (pathPrefix: string, routers: Router[]) => {
+    routers.forEach((router) => {
+      this.app.use(pathPrefix, router);
+    });
+  };
+
   addEndpoint = (method: string, path: string, handler: Handler) => {
     this.app[method as keyof Application](path, handler);
   };
@@ -50,11 +57,18 @@ export default class Express {
     this.app.use(middleware);
   };
 
-  listen() {
-    this.app.listen(this.port, () => {
-      console.log(`Finanzapp listening at http://localhost:${this.port}`);
+  listen(callback?: (err?: Error) => void) {
+    this.app.listen(this.port, (err?: Error) => {
+      if (err) {
+        console.error('Failed to start server:', err);
+        if (callback) callback(err);
+      } else {
+        console.log(`Finanzapp listening at http://localhost:${this.port}`);
+        if (callback) callback();
+      }
     });
   }
+
   getServer() {
     return this.app;
   }
