@@ -6,6 +6,7 @@ interface IBudgetBuilder {
   setUserId(userId: string): this;
   setName(name: string): this;
   setPercentage(percentage: number): this;
+  setBudgetConfigurationId(budgetConfigurationId: number): this;
   setRemainingAllocation(remainingAllocation: number): this;
   setTransferToBudgetId(budgetId: number): this;
   setMonthlyWageId(monthlyWageId: number): this;
@@ -18,6 +19,7 @@ export class BudgetBuilder implements IBudgetBuilder {
   private name!: string;
   private percentage!: number;
   private remaining_allocation!: number;
+  private budget_configuration_id!: number;
   private transfer_to_budget_id?: number;
   private monthly_wage_id?: number;
 
@@ -33,6 +35,11 @@ export class BudgetBuilder implements IBudgetBuilder {
 
   setPercentage(percentage: number): this {
     this.percentage = percentage;
+    return this;
+  }
+
+  setBudgetConfigurationId(budgetConfigurationId: number): this {
+    this.budget_configuration_id = budgetConfigurationId;
     return this;
   }
 
@@ -53,10 +60,10 @@ export class BudgetBuilder implements IBudgetBuilder {
 
   build(): Budget {
     return new Budget(
-      this.id,
       this.user_id,
       this.name,
       this.percentage,
+      this.budget_configuration_id,
       this.remaining_allocation,
       this.transfer_to_budget_id,
       this.monthly_wage_id

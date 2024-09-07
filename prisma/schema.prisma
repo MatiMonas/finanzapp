@@ -9,22 +9,21 @@ datasource db {
 }
 
 model Users {
-  id                             String                 @id @default(uuid()) @db.Char(36)
-  email                          String                 @unique @db.VarChar(30)
-  username                       String                 @unique @db.VarChar(25)
-  password                       String                 @db.VarChar(255)
-  roles                          UserRoles[]            @relation("UserRolesToRoles")
-  MonthlyWages                   MonthlyWages[]
-  Budgets                        Budgets[]
-  Expenses                       Expenses[]
-  Investments                    Investments[]
-  Debts                          Debts[]
-  CreditCards                    CreditCards[]
-  active_budget_configuration_id Int?                   @db.UnsignedInt
-  active_budget_configuration    BudgetsConfigurations? @relation(name: "active_user_budget")
-  created_at                     DateTime               @default(now())
-  updated_at                     DateTime               @updatedAt
-  deleted_at                     DateTime?
+  id                    String                  @id @default(uuid()) @db.Char(36)
+  email                 String                  @unique @db.VarChar(30)
+  username              String                  @unique @db.VarChar(25)
+  password              String                  @db.VarChar(255)
+  roles                 UserRoles[]             @relation("UserRolesToRoles")
+  MonthlyWages          MonthlyWages[]
+  Budgets               Budgets[]
+  Expenses              Expenses[]
+  Investments           Investments[]
+  Debts                 Debts[]
+  CreditCards           CreditCards[]
+  BudgetsConfigurations BudgetsConfigurations[] // Relación one-to-many con las configuraciones de presupuesto
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
+  deleted_at            DateTime?
 
   @@map("users")
 }
@@ -55,11 +54,11 @@ model BudgetsConfigurations {
   name             String
   total_percentage Int
   budgets          Budgets[]
-  user_id          String    @unique
-  user             Users     @relation(name: "active_user_budget", fields: [user_id], references: [id])
+  user_id          String
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
   deleted_at       DateTime?
+  Users            Users[]
 
   @@map("budgets_configuration")
 }

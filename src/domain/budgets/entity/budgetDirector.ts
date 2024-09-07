@@ -1,5 +1,5 @@
 import { Budget } from '.';
-import { PostBudgetParams } from '../types';
+import { CreateBudgetParams, PostBudgetParams } from '../types';
 import { BudgetBuilder } from './budgetBuilder';
 
 export class BudgetDirector {
@@ -9,11 +9,12 @@ export class BudgetDirector {
     this.builder = builder;
   }
 
-  createBudget(budgetData: PostBudgetParams): Budget {
+  createBudget(budgetData: CreateBudgetParams): Budget {
     return this.builder
       .setUserId(budgetData.user_id)
       .setName(budgetData.name)
       .setPercentage(budgetData.percentage)
+      .setBudgetConfigurationId(budgetData.budget_configuration_id)
       .build();
   }
 }

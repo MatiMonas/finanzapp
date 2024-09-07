@@ -6,3 +6,10 @@ export type PostBudgetParams = {
     percentage: number;
   }[];
 };
+
+export type CreateBudgetParams = {
+  user_id: string;
+  name: string;
+  percentage: number;
+  budget_configuration_id: number;
+};
