@@ -9,7 +9,7 @@ export default class BudgetsHandler {
     this.budgetsUseCase = BudgetUsecase;
   }
 
-  create = (req: Request<any, any, any, PostBudgetParams>) => {
-    return this.budgetsUseCase.create(req.body);
+  createBudget = (req: Request<any, any, any, PostBudgetParams>) => {
+    return this.budgetsUseCase.createBudget(req.body);
   };
 }

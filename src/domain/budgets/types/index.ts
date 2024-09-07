@@ -1,6 +1,8 @@
 export type PostBudgetParams = {
   user_id: string;
-  name: string;
-  percentaje: number;
-  transfer_to_budget?: number;
+  budget_configuration_name: string;
+  budgets: {
+    name: string;
+    percentage: number;
+  }[];
 };

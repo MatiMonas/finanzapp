@@ -6,8 +6,7 @@ export const createBudgetMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const CreateBudgetSchema = z.object({
-    user_id: z.string().uuid('Invalid UUID format'),
+  const BudgetItemSchema = z.object({
     name: z
       .string()
       .min(1, 'Name is required')
@@ -17,7 +16,17 @@ export const createBudgetMiddleware = (
       .min(1, 'Percentage must be at least 1')
       .max(100, 'Percentage must be at most 100')
       .int('Percentage must be an integer'),
-    transfer_to_budget: z.number().int('Transfer to budget must be an integer'),
+  });
+
+  const CreateBudgetSchema = z.object({
+    user_id: z.string().uuid('Invalid UUID format'),
+    budget_configuration_name: z
+      .string()
+      .min(1, 'Budget configuration name is required')
+      .max(50, 'Budget configuration name must be at most 50 characters long'),
+    budgets: z
+      .array(BudgetItemSchema)
+      .nonempty('Budgets must be a non-empty array'),
   });
 
   const result = CreateBudgetSchema.safeParse(req.body);

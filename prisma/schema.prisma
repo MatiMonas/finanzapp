@@ -9,19 +9,22 @@ datasource db {
 }
 
 model Users {
-  id           String         @id @default(uuid()) @db.Char(36)
-  email        String         @unique @db.VarChar(30)
-  username     String         @unique @db.VarChar(25)
-  password     String         @db.VarChar(255)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  roles        UserRoles[]    @relation("UserRolesToRoles")
-  MonthlyWages MonthlyWages[]
-  Budgets      Budgets[]
-  Expenses     Expenses[]
-  Investments  Investments[]
-  Debts        Debts[]
-  CreditCards  CreditCards[]
+  id                             String                 @id @default(uuid()) @db.Char(36)
+  email                          String                 @unique @db.VarChar(30)
+  username                       String                 @unique @db.VarChar(25)
+  password                       String                 @db.VarChar(255)
+  roles                          UserRoles[]            @relation("UserRolesToRoles")
+  MonthlyWages                   MonthlyWages[]
+  Budgets                        Budgets[]
+  Expenses                       Expenses[]
+  Investments                    Investments[]
+  Debts                          Debts[]
+  CreditCards                    CreditCards[]
+  active_budget_configuration_id Int?                   @db.UnsignedInt
+  active_budget_configuration    BudgetsConfigurations? @relation(name: "active_user_budget")
+  created_at                     DateTime               @default(now())
+  updated_at                     DateTime               @updatedAt
+  deleted_at                     DateTime?
 
   @@map("users")
 }
@@ -32,6 +35,7 @@ model Roles {
   users      UserRoles[] @relation("UserRolesToRoles")
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
+  deleted_at DateTime?
 
   @@map("roles")
 }
@@ -46,13 +50,30 @@ model UserRoles {
   @@map("user_roles")
 }
 
+model BudgetsConfigurations {
+  id               Int       @id @default(autoincrement()) @db.UnsignedInt
+  name             String
+  total_percentage Int
+  budgets          Budgets[]
+  user_id          String    @unique
+  user             Users     @relation(name: "active_user_budget", fields: [user_id], references: [id])
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
+
+  @@map("budgets_configuration")
+}
+
 model MonthlyWages {
-  id      Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id String    @db.Char(36)
-  user    Users     @relation(fields: [user_id], references: [id])
-  amount  Float     @default(0.0) @db.Float
-  date    DateTime  @default(now())
-  budgets Budgets[] @relation("MonthlyWagesBudgets")
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    String    @db.Char(36)
+  user       Users     @relation(fields: [user_id], references: [id])
+  amount     Float     @default(0.0) @db.Float
+  date       DateTime  @default(now())
+  budgets    Budgets[] @relation("MonthlyWagesBudgets")
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@map("monthly_wages")
 }
@@ -64,6 +85,9 @@ model Budgets {
   name                 String @db.VarChar(30)
   percentage           Float  @default(0.0) @db.Float
   remaining_allocation Float  @default(0.0) @db.Float
+
+  budget_configuration    BudgetsConfigurations? @relation(fields: [budget_configuration_id], references: [id])
+  budget_configuration_id Int?                   @db.UnsignedInt
 
   // ID del presupuesto al que se transfieren los sobrantes
   transfer_to_budget_id Int?     @unique @db.UnsignedInt
@@ -79,27 +103,33 @@ model Budgets {
   alerts     Alerts[]
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
+  deleted_at DateTime?
 
   @@map("budgets")
 }
 
 model Categories {
-  id        Int        @id @default(autoincrement()) @db.UnsignedInt
-  name      String     @db.VarChar(50)
-  budget_id Int        @db.UnsignedInt
-  budget    Budgets    @relation(fields: [budget_id], references: [id])
-  expenses  Expenses[]
+  id         Int        @id @default(autoincrement()) @db.UnsignedInt
+  name       String     @db.VarChar(50)
+  budget_id  Int        @db.UnsignedInt
+  budget     Budgets    @relation(fields: [budget_id], references: [id])
+  expenses   Expenses[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  deleted_at DateTime?
 
   @@map("categories")
 }
 
 model Alerts {
-  id         Int      @id @default(autoincrement()) @db.UnsignedInt
-  budget_id  Int      @db.UnsignedInt
-  budget     Budgets  @relation(fields: [budget_id], references: [id])
-  threshold  Float    @db.Float
-  color      String   @db.VarChar(10)
-  created_at DateTime @default(now())
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  budget_id  Int       @db.UnsignedInt
+  budget     Budgets   @relation(fields: [budget_id], references: [id])
+  threshold  Float     @db.Float
+  color      String    @db.VarChar(10)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@map("alerts")
 }
@@ -114,6 +144,9 @@ model Expenses {
   amount      Float      @default(0.0) @db.Float
   date        DateTime   @default(now())
   is_monthly  Boolean    @default(false)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  deleted_at  DateTime?
 
   @@map("expenses")
 }
@@ -127,6 +160,9 @@ model Investments {
   purchase_value Float     @default(0.0) @db.Float
   sale_date      DateTime?
   sale_value     Float?    @db.Float
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  deleted_at     DateTime?
 
   @@map("investments")
 }
@@ -140,6 +176,9 @@ model Debts {
   due_date     DateTime
   is_paid      Boolean   @default(false)
   payment_date DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  deleted_at   DateTime?
 
   @@map("debts")
 }
@@ -154,6 +193,7 @@ model CreditCards {
   card_expenses CardExpenses[]
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  deleted_at    DateTime?
 
   @@map("credit_cards")
 }
@@ -169,6 +209,8 @@ model CardExpenses {
   installments           Int         @db.UnsignedInt
   remaining_installments Int         @db.UnsignedInt
   created_at             DateTime    @default(now())
+  updated_at             DateTime    @updatedAt
+  deleted_at             DateTime?
 
   @@map("card_expenses")
 }

@@ -1,19 +1,17 @@
 import { EmailAlreadyInUseError } from 'errors';
 import Validator from 'validator';
 import { IBudgetRepository } from '../repository/budget-repository';
+import { PostBudgetParams } from '../types';
 
-type BodyValidatorEmail = {
-  email: string;
-};
-export class ValidatorIsPercentageAvailable extends Validator {
+export class ValidateBudgetPercentage extends Validator {
   protected budgetRepository: IBudgetRepository;
 
-  constructor(userRepository: IBudgetRepository) {
+  constructor(budgetRepository: IBudgetRepository) {
     super();
-    this.budgetRepository = userRepository;
+    this.budgetRepository = budgetRepository;
   }
 
-  async validate(body: BodyValidatorEmail) {
+  async validate(body: PostBudgetParams) {
     const data = {
       ...body,
     };

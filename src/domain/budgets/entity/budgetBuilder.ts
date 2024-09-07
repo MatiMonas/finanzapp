@@ -3,8 +3,7 @@
 import { Budget } from '.';
 
 interface IBudgetBuilder {
-  setId(id: number): this;
-  setUserId(userId: number): this;
+  setUserId(userId: string): this;
   setName(name: string): this;
   setPercentage(percentage: number): this;
   setRemainingAllocation(remainingAllocation: number): this;
@@ -15,19 +14,14 @@ interface IBudgetBuilder {
 
 export class BudgetBuilder implements IBudgetBuilder {
   private id!: number;
-  private user_id!: number;
+  private user_id!: string;
   private name!: string;
   private percentage!: number;
   private remaining_allocation!: number;
   private transfer_to_budget_id?: number;
   private monthly_wage_id?: number;
 
-  setId(id: number): this {
-    this.id = id;
-    return this;
-  }
-
-  setUserId(userId: number): this {
+  setUserId(userId: string): this {
     this.user_id = userId;
     return this;
   }

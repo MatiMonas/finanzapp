@@ -25,11 +25,11 @@ export default class BudgetRouter {
     //TODO: add swagger
 
     /* POST */
-    // Not making a login yet
+
     router.post(
       '/budgets',
       createBudgetMiddleware,
-      createHandler(this.handler.create, STATUS_CODES.CREATED)
+      createHandler(this.handler.createBudget, STATUS_CODES.CREATED)
     );
   }
 

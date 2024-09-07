@@ -18,7 +18,9 @@ export default class UserUseCase implements IUserUseCase {
       new ValidatorEmailIsInUse(this.userRepository),
     ]);
 
-    const validatedUserData = await modelValidator.validate(userData);
+    const validatedUserData: PostUserParams = await modelValidator.validate(
+      userData
+    );
 
     const builder = new UserBuilder();
     const director = new UserDirector(builder);
