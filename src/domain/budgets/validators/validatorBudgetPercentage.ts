@@ -1,7 +1,5 @@
 import Validator from 'validator';
-import { IBudgetRepository } from '../repository/budget-repository';
 import { PostBudgetParams } from '../types';
-import { ExceptionValidationError } from 'errors/exceptionErrors';
 import { BudgetPercentageError } from 'errors';
 
 export class ValidatorBudgetPercentage extends Validator {

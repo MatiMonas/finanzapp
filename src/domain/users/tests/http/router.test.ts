@@ -1,10 +1,9 @@
 import request from 'supertest';
 import express from 'express';
-import UserUsecase from 'users/usecase';
-import UsersRouter from 'users/http/router';
 import { mockUserUseCase } from '../__mocks__';
 import { countRoutes } from 'utils/helpers/countRouters';
 import { STATUS_CODES } from 'utils/constants';
+import UsersRouter from 'domain/users/http/router';
 
 const app = express();
 

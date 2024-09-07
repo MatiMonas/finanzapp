@@ -1,7 +1,7 @@
+import UsersHandler from 'domain/users/http/handler';
+import { PostUserParams } from 'domain/users/types';
+import UserUsecase from 'domain/users/usecase';
 import { Request, Response } from 'express';
-import { PostUserParams } from 'users/types';
-import UserUsecase from 'users/usecase';
-import UsersHandler from 'users/http/handler';
 
 // Crear mocks para UserUseCase
 const mockUserUseCase = {

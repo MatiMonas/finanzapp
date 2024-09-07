@@ -11,7 +11,7 @@ export interface IUserRepository {
   findUserByEmail(
     userEmail: string
   ): Promise<FindByUserEmailRequestData | null>;
-  create(userData: PostUserParams): Promise<boolean>;
+  create(userData: PostUserParams): Promise<string>;
 }
 
 export default class UserRepository implements IUserRepository {
@@ -70,37 +70,39 @@ export default class UserRepository implements IUserRepository {
     }
   }
 
-  async create(userData: PostUserParams): Promise<boolean> {
-    const { email, password, roles, username } = userData;
-
+  async create(userData: PostUserParams): Promise<string> {
     try {
-      await this.prismaClient.$transaction(async (prisma) => {
-        const newUser = await prisma.users.create({
-          data: {
-            username,
-            email,
-            password,
-          },
-        });
+      const { email, password, roles, username } = userData;
 
-        for (const role_id of roles) {
-          await prisma.userRoles.upsert({
-            where: {
-              user_id_role_id: {
-                user_id: newUser.id,
+      const createdUser = await this.prismaClient.$transaction(
+        async (prisma) => {
+          const { id } = await prisma.users.create({
+            data: {
+              username,
+              email,
+              password,
+            },
+          });
+
+          for (const role_id of roles) {
+            await prisma.userRoles.upsert({
+              where: {
+                user_id_role_id: {
+                  user_id: id,
+                  role_id,
+                },
+              },
+              create: {
+                user_id: id,
                 role_id,
               },
-            },
-            create: {
-              user_id: newUser.id,
-              role_id,
-            },
-            update: {},
-          });
+              update: {},
+            });
+          }
+          return id;
         }
-      });
-
-      return true;
+      );
+      return createdUser;
     } catch (error: any) {
       throw new DatabaseError('Unable to create user', { cause: error });
     }

@@ -1,6 +1,6 @@
+import { createUserMiddleware } from 'domain/users/http/middlewares';
 import express from 'express';
 import request from 'supertest';
-import { createUserMiddleware } from 'users/http/middlewares';
 
 const app = express();
 app.use(express.json());

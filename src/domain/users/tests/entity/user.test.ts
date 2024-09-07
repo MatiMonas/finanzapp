@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
+import { User } from 'domain/users/entity';
 import * as jwt from 'jsonwebtoken';
-import { User } from 'users/entity';
 
 // Mocks
 jest.mock('bcrypt');
