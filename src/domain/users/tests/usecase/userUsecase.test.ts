@@ -1,5 +1,5 @@
 import UserUsecase from 'domain/users/usecase';
-import { mockUserRepository } from '../__mocks__';
+import { mockUserRepository } from '__mocks__/User';
 import { PostUserParams } from 'domain/users/types';
 import Validator from 'validator';
 import { UserBuilder } from 'domain/users/entity/userBuilder';
