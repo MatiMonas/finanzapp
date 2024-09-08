@@ -7,10 +7,8 @@ import {
 import { PostUserParams } from '../types';
 
 export interface IUserRepository {
-  findUserById(userId: string): Promise<FindUserBydIdRequestData | null>;
-  findUserByEmail(
-    userEmail: string
-  ): Promise<FindByUserEmailRequestData | null>;
+  findUserById(userId: string): Promise<FindUserBydIdRequestData>;
+  findUserByEmail(userEmail: string): Promise<FindByUserEmailRequestData>;
   create(userData: PostUserParams): Promise<string>;
 }
 
@@ -21,7 +19,7 @@ export default class UserRepository implements IUserRepository {
     this.prismaClient = prismaClient;
   }
 
-  async findUserById(userId: string): Promise<FindUserBydIdRequestData | null> {
+  async findUserById(userId: string): Promise<FindUserBydIdRequestData> {
     try {
       const foundUser = await this.prismaClient.users.findUnique({
         where: {
@@ -56,7 +54,7 @@ export default class UserRepository implements IUserRepository {
 
   async findUserByEmail(
     userEmail: string
-  ): Promise<FindByUserEmailRequestData | null> {
+  ): Promise<FindByUserEmailRequestData> {
     try {
       const foundUser = await this.prismaClient.users.findUnique({
         where: {
