@@ -14,7 +14,7 @@ export class ValidatorBudgetPercentage extends Validator {
     );
 
     if (totalPercentageOfBudgets != 100) {
-      throw new BudgetPercentageError('Budget total percentage must be 100%.');
+      throw new BudgetPercentageError('Budget total percentage must be 100%');
     }
 
     return super.validate(body);
