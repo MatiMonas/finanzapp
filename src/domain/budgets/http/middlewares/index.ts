@@ -22,7 +22,7 @@ export const createBudgetMiddleware = (
     user_id: z.string().uuid('Invalid UUID format'),
     budget_configuration_name: z
       .string()
-      .min(1, 'Budget configuration name is required')
+      .min(1, 'Budget configuration name must be at least 1 character long')
       .max(50, 'Budget configuration name must be at most 50 characters long'),
     budgets: z
       .array(BudgetItemSchema)
