@@ -1,6 +1,7 @@
 import { PrismaClient, Budgets } from '@prisma/client';
 import { DatabaseError } from 'errors';
 import { CreateBudgetParams } from '../types';
+import { FindBudgetConfigurationByName } from '../types/db_model';
 
 export interface IBudgetRepository {
   createBudgetConfiguration(
@@ -9,6 +10,10 @@ export interface IBudgetRepository {
   ): Promise<number>;
   createBudget(budgetData: CreateBudgetParams[]): Promise<boolean>;
   getBudgetsByConfigurationId(configurationId: number): Promise<any>;
+  findBudgetConfigurationByName(
+    budgetConfigurationName: string,
+    user_id: string
+  ): Promise<FindBudgetConfigurationByName>;
 }
 
 export default class BudgetRepository implements IBudgetRepository {
@@ -63,5 +68,31 @@ export default class BudgetRepository implements IBudgetRepository {
   async getBudgetsByConfigurationId(configurationId: number): Promise<any> {
     try {
     } catch (error) {}
+  }
+
+  async findBudgetConfigurationByName(
+    budgetConfigurationName: string,
+    user_id: string
+  ): Promise<FindBudgetConfigurationByName> {
+    try {
+      const budgetConfiguration =
+        await this.prismaClient.budgetsConfigurations.findFirst({
+          where: {
+            user_id,
+            name: budgetConfigurationName,
+          },
+          select: {
+            id: true,
+            user_id: true,
+            name: true,
+          },
+        });
+
+      return budgetConfiguration;
+    } catch (error: any) {
+      throw new DatabaseError('Unable to find budget configuration by name', {
+        cause: error,
+      });
+    }
   }
 }

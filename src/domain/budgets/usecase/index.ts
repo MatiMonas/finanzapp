@@ -4,6 +4,7 @@ import { CreateBudgetParams, PostBudgetParams } from '../types';
 import { BudgetBuilder } from '../entity/budgetBuilder';
 import { BudgetDirector } from '../entity/budgetDirector';
 import { ValidatorBudgetPercentage } from '../validators/validatorBudgetPercentage';
+import { ValidatorBudgetConfigurationNameInUse } from '../validators/validatorBudgetConfigurationNameInUse';
 
 export interface IBudgetUsecase {
   createBudget(budgetData: PostBudgetParams): Promise<Boolean>;
@@ -14,7 +15,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
   async createBudget(budgetData: PostBudgetParams): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
-      // validator to check if budgetConfiguration name already exists for user
+      new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
       new ValidatorBudgetPercentage(),
     ]);
 
@@ -50,6 +51,6 @@ export default class BudgetUsecase implements IBudgetUsecase {
       budgetPayloads
     );
 
-    return true;
+    return createdBudgets;
   }
 }
