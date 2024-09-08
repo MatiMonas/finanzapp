@@ -1,8 +1,11 @@
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
 
-export interface IError {
-  [error: string]: string[];
+interface IValidationError {
+  field: string;
+  message: string;
 }
+
+export type IError = IValidationError[];
 
 interface ErrorFactoryOptions {
   cause?: Error;
@@ -32,35 +35,33 @@ const errorFactory = ({ name, statusCode, code }: ErrorFactoryParams) => {
 };
 
 // ----- Validation Errors -------
-const UserNotFoundError = errorFactory({
+export const UserNotFoundError = errorFactory({
   name: ERROR_NAMES.USER_NOT_FOUND,
   statusCode: STATUS_CODES.NOT_FOUND,
   code: ERROR_CODES.USER_NOT_FOUND,
 });
 
-const EmailAlreadyInUseError = errorFactory({
+export const EmailAlreadyInUseError = errorFactory({
   name: ERROR_NAMES.EMAIL_ALREADY_IN_USE,
   statusCode: STATUS_CODES.CONFLICT,
   code: ERROR_CODES.EMAIL_ALREADY_IN_USE,
 });
 
-const BudgetPercentageError = errorFactory({
+export const BudgetPercentageError = errorFactory({
   name: ERROR_NAMES.BUDGET_PERCENTAGE_ERROR,
   statusCode: STATUS_CODES.BAD_REQUEST,
   code: ERROR_CODES.BUDGET_PERCENTAGE_ERROR,
 });
+
+export const BudgetConfigurationNameAlreadyInUseError = errorFactory({
+  name: ERROR_NAMES.BUDGET_CONFIGURATION_NAME_ALREADY_IN_USE_ERROR,
+  statusCode: STATUS_CODES.UNPROCESSABLE_ENTITY,
+  code: ERROR_CODES.BUDGET_CONFIGURATION_NAME_ALREADY_IN_USE_ERROR,
+});
 // -------------------------------------
 
-const DatabaseError = errorFactory({
+export const DatabaseError = errorFactory({
   name: ERROR_NAMES.DATABASE_ERROR,
   statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
   code: ERROR_CODES.DATABASE_ERROR,
 });
-
-// Export the errors
-export {
-  UserNotFoundError,
-  EmailAlreadyInUseError,
-  DatabaseError,
-  BudgetPercentageError,
-};
