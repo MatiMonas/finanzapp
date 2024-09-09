@@ -14,4 +14,5 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'html'],
+  maxConcurrency: 1,
 };

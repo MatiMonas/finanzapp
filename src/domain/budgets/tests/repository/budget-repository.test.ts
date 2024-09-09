@@ -44,7 +44,7 @@ describe('BudgetRepository', () => {
         userId
       );
 
-      expect(budgetConfigId).toBeGreaterThan(0);
+      expect(budgetConfigId).toBe(1);
     });
 
     test('ERROR - Handles Prisma client error', async () => {
