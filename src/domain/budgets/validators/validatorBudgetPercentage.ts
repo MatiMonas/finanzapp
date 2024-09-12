@@ -1,5 +1,5 @@
 import Validator from 'validator';
-import { PostBudgetParams } from '../types';
+import { PostBudgetConfigurationParams } from '../types/request';
 import { BudgetPercentageError } from 'errors';
 
 export class ValidatorBudgetPercentage extends Validator {
@@ -7,7 +7,7 @@ export class ValidatorBudgetPercentage extends Validator {
     super();
   }
 
-  async validate(body: PostBudgetParams) {
+  async validate(body: PostBudgetConfigurationParams) {
     const totalPercentageOfBudgets = body.budgets.reduce(
       (acc, budget) => acc + budget.percentage,
       0

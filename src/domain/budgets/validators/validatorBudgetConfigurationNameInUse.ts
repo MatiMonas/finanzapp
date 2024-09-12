@@ -1,5 +1,5 @@
 import Validator from 'validator';
-import { PostBudgetParams } from '../types';
+import { PostBudgetConfigurationParams } from '../types/request';
 import { IBudgetRepository } from '../repository/budget-repository';
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
 
@@ -10,7 +10,7 @@ export class ValidatorBudgetConfigurationNameInUse extends Validator {
     this.budgetRespoitory = BudgetRepository;
   }
 
-  async validate(body: PostBudgetParams) {
+  async validate(body: PostBudgetConfigurationParams) {
     const { budget_configuration_name, user_id } = body;
 
     const isNameUsed =

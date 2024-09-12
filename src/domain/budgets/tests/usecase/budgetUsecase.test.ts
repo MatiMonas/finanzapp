@@ -1,9 +1,9 @@
 import BudgetUsecase from 'domain/budgets/usecase';
 import { mockBudgetRepository } from '__mocks__/Budget';
-import { PostBudgetParams } from 'domain/budgets/types';
 import Validator from 'validator';
 import { BudgetBuilder } from 'domain/budgets/entity/budgetBuilder';
 import { BudgetDirector } from 'domain/budgets/entity/budgetDirector';
+import { PostBudgetConfigurationParams } from 'domain/budgets/types/request';
 
 describe('BudgetUsecase', () => {
   let budgetUsecase: BudgetUsecase;
@@ -14,7 +14,7 @@ describe('BudgetUsecase', () => {
 
   describe('createBudget', () => {
     it('OK - should return true if budgets were successfully created', async () => {
-      const mockBudgetData: PostBudgetParams = {
+      const mockBudgetData: PostBudgetConfigurationParams = {
         user_id: 'user-uuid',
         budget_configuration_name: 'Basico',
         budgets: [
@@ -75,7 +75,7 @@ describe('BudgetUsecase', () => {
     });
 
     it('OK - should return false if budgets were not created', async () => {
-      const mockBudgetData: PostBudgetParams = {
+      const mockBudgetData: PostBudgetConfigurationParams = {
         user_id: 'user-uuid',
         budget_configuration_name: 'Basico',
         budgets: [
