@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import BudgetsHandler from './handler';
-import { createBudgetMiddleware } from './middlewares';
+import {
+  createBudgetMiddleware,
+  patchBudgetConfigurationMiddleware,
+} from './middlewares';
 import createHandler from 'infrastructure/http/createHandler';
 import { STATUS_CODES } from 'utils/constants';
 import BudgetUsecase from '../usecase';
+import { validateIdMiddleware } from 'utils/helpers/validateIdMiddleware';
 
 const router = Router();
 
@@ -24,12 +28,20 @@ export default class BudgetRouter {
   registerRouters(): void {
     //TODO: add swagger
 
-    /* POST */
-
     router.post(
       '/budgets',
       createBudgetMiddleware,
       createHandler(this.handler.createBudget, STATUS_CODES.CREATED)
+    );
+
+    router.patch(
+      '/budget-configurations/:id',
+      validateIdMiddleware,
+      patchBudgetConfigurationMiddleware,
+      createHandler(
+        this.handler.partialUpdateBudgetConfiguration,
+        STATUS_CODES.NO_CONTENT
+      )
     );
   }
 

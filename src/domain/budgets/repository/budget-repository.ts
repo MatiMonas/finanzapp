@@ -1,7 +1,10 @@
 import { PrismaClient, Budgets } from '@prisma/client';
 import { DatabaseError } from 'errors';
-import { CreateBudgetParams } from '../types';
-import { FindBudgetConfigurationByName } from '../types/db_model';
+import { CreateBudgetParams } from '../types/request';
+import {
+  BudgetWithoutTimestamps,
+  FindBudgetConfigurationByName,
+} from '../types/db_model';
 
 export interface IBudgetRepository {
   createBudgetConfiguration(
@@ -9,7 +12,9 @@ export interface IBudgetRepository {
     user_id: string
   ): Promise<number>;
   createBudget(budgetData: CreateBudgetParams[]): Promise<boolean>;
-  getBudgetsByConfigurationId(configurationId: number): Promise<any>;
+  getBudgetsByConfigurationId(
+    configurationId: number
+  ): Promise<BudgetWithoutTimestamps[]>;
   findBudgetConfigurationByName(
     budgetConfigurationName: string,
     user_id: string
@@ -65,9 +70,33 @@ export default class BudgetRepository implements IBudgetRepository {
     }
   }
 
-  async getBudgetsByConfigurationId(configurationId: number): Promise<any> {
+  async getBudgetsByConfigurationId(
+    configurationId: number
+  ): Promise<BudgetWithoutTimestamps[]> {
     try {
-    } catch (error) {}
+      return await this.prismaClient.budgets.findMany({
+        where: {
+          budget_configuration_id: configurationId,
+        },
+        select: {
+          id: true,
+          name: true,
+          percentage: true,
+          remaining_allocation: true,
+          budget_configuration_id: true,
+          transfer_to_budget_id: true,
+          monthly_wage_id: true,
+          user_id: true,
+        },
+      });
+    } catch (error: any) {
+      throw new DatabaseError(
+        'Unable to find budgets by budget configuration id',
+        {
+          cause: error,
+        }
+      );
+    }
   }
 
   async findBudgetConfigurationByName(

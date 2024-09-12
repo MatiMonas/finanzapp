@@ -83,13 +83,13 @@ describe('BudgetRepository', () => {
       const budgetData: CreateBudgetParams[] = [
         {
           user_id,
-          name: 'Ahorro',
+          name: 'Savings',
           percentage: 40,
           budget_configuration_id: 1,
         },
         {
           user_id,
-          name: 'Vivienda',
+          name: 'Housing',
           percentage: 60,
           budget_configuration_id: 1,
         },
@@ -124,13 +124,13 @@ describe('BudgetRepository', () => {
         const budgetData: CreateBudgetParams[] = [
           {
             user_id,
-            name: 'Ahorro',
+            name: 'Savings',
             percentage: 40,
             budget_configuration_id: 1,
           },
           {
             user_id,
-            name: 'Vivienda',
+            name: 'Housing',
             percentage: 60,
             budget_configuration_id: 1,
           },
@@ -189,6 +189,68 @@ describe('BudgetRepository', () => {
         expect(error.cause.message).toMatch(/Prisma client error/);
         expect(error.message).toBe(
           'Unable to find budget configuration by name'
+        );
+      }
+    });
+  });
+
+  describe('getBudgetsByConfigurationId', () => {
+    test('OK - Returns budgets for a given configuration ID', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const user_id = await userRepository.create(userData);
+      const budgetConfigurationName = 'MyBudgetConfig';
+
+      const budgetConfigId = await budgetRepository.createBudgetConfiguration(
+        budgetConfigurationName,
+        user_id
+      );
+
+      const budgetData: CreateBudgetParams[] = [
+        {
+          user_id,
+          name: 'Savings',
+          percentage: 40,
+          budget_configuration_id: 1,
+        },
+        {
+          user_id,
+          name: 'Housing',
+          percentage: 60,
+          budget_configuration_id: 1,
+        },
+      ];
+
+      await budgetRepository.createBudget(budgetData);
+
+      const result = await budgetRepository.getBudgetsByConfigurationId(
+        budgetConfigId
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('Savings');
+      expect(result[1].name).toBe('Housing');
+    });
+
+    test('ERROR - Handles Prisma client error', async () => {
+      jest
+        .spyOn(prisma.budgets, 'findMany')
+        .mockRejectedValueOnce(new Error('Prisma client error'));
+
+      try {
+        await budgetRepository.getBudgetsByConfigurationId(1);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.statusCode).toBe(500);
+        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.message).toBe(
+          'Unable to find budgets by budget configuration id'
         );
       }
     });

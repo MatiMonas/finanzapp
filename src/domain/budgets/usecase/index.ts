@@ -1,27 +1,36 @@
 import Validator from 'validator';
 import { IBudgetRepository } from '../repository/budget-repository';
-import { CreateBudgetParams, PostBudgetParams } from '../types';
+import {
+  CreateBudgetParams,
+  PatchBudgetParams,
+  PostBudgetConfigurationParams,
+} from '../types/request';
 import { BudgetBuilder } from '../entity/budgetBuilder';
 import { BudgetDirector } from '../entity/budgetDirector';
 import { ValidatorBudgetPercentage } from '../validators/validatorBudgetPercentage';
 import { ValidatorBudgetConfigurationNameInUse } from '../validators/validatorBudgetConfigurationNameInUse';
+import { ValidatorBudgetPercentageCalculation } from '../validators/validatorBudgetPercentageCalculation';
 
 export interface IBudgetUsecase {
-  createBudget(budgetData: PostBudgetParams): Promise<Boolean>;
+  createBudget(budgetData: PostBudgetConfigurationParams): Promise<Boolean>;
+  partialUpdateBudgetConfiguration(
+    budgetData: PatchBudgetParams
+  ): Promise<Boolean>;
 }
 
 export default class BudgetUsecase implements IBudgetUsecase {
   constructor(private budgetRepository: IBudgetRepository) {}
 
-  async createBudget(budgetData: PostBudgetParams): Promise<boolean> {
+  async createBudget(
+    budgetData: PostBudgetConfigurationParams
+  ): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
       new ValidatorBudgetPercentage(),
     ]);
 
-    const validatedBudgetData: PostBudgetParams = await modelValidator.validate(
-      budgetData
-    );
+    const validatedBudgetData: PostBudgetConfigurationParams =
+      await modelValidator.validate(budgetData);
 
     const { budget_configuration_name, budgets, user_id } = validatedBudgetData;
     const budgetConfigurationId =
@@ -52,5 +61,19 @@ export default class BudgetUsecase implements IBudgetUsecase {
     );
 
     return createdBudgets;
+  }
+
+  async partialUpdateBudgetConfiguration(
+    budgetData: PatchBudgetParams
+  ): Promise<Boolean> {
+    const modelValidator = Validator.createValidatorChain([
+      new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
+      new ValidatorBudgetPercentageCalculation(this.budgetRepository),
+    ]);
+
+    const validatedBudgetData: PostBudgetConfigurationParams =
+      await modelValidator.validate(budgetData);
+
+    return true;
   }
 }

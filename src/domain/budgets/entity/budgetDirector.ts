@@ -1,5 +1,5 @@
 import { Budget } from '.';
-import { CreateBudgetParams, PostBudgetParams } from '../types';
+import { CreateBudgetParams } from '../types/request';
 import { BudgetBuilder } from './budgetBuilder';
 
 export class BudgetDirector {
