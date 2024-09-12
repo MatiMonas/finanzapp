@@ -61,7 +61,7 @@ describe('BudgetRouter', () => {
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budgets: [
-            { id: 1, name: 'Savings', percentage: 30 },
+            { id: 1, name: 'Savings', percentage: 40 },
             { id: 2, name: 'Housing', percentage: 60 },
           ],
         });

@@ -35,6 +35,12 @@ const errorFactory = ({ name, statusCode, code }: ErrorFactoryParams) => {
 };
 
 // ----- Validation Errors -------
+export const BadRequestError = errorFactory({
+  name: ERROR_NAMES.BAD_REQUEST_ERROR,
+  statusCode: STATUS_CODES.BAD_REQUEST,
+  code: ERROR_CODES.BAD_REQUEST_ERROR,
+});
+
 export const UserNotFoundError = errorFactory({
   name: ERROR_NAMES.USER_NOT_FOUND,
   statusCode: STATUS_CODES.NOT_FOUND,

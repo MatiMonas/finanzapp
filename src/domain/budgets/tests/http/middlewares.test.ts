@@ -364,6 +364,24 @@ describe('updateBudgetMiddleware', () => {
     );
   });
 
+  it('ERROR - Properties "name" and "percentage" must be provided if "create" is true', async () => {
+    const response = await request(app)
+      .patch('/budget-configurations/1')
+      .send({
+        user_id: '123e4567-e89b-12d3-a456-426614174000',
+        budgets: [{ percentage: 100, create: true }],
+      });
+
+    const {
+      errors: { fieldErrors },
+    } = response.body;
+
+    expect(response.status).toBe(400);
+    expect(fieldErrors['budgets'][0]).toBe(
+      'Properties "name" and "percentage" must be provided if "create" is true'
+    );
+  });
+
   describe('budget_configuration_name', () => {
     it('ERROR - "Property "budget_configuration_name" must be a string"', async () => {
       const response = await request(app)
@@ -465,7 +483,7 @@ describe('updateBudgetMiddleware', () => {
       );
     });
 
-    it('ERROR - Delete false/missing -"If delete or create arefalse, at least one of name or percentage must be provided"', async () => {
+    it('ERROR - Delete false/missing -"If delete or create are false, at least one of name or percentage must be provided"', async () => {
       const response = await request(app)
         .patch('/budget-configurations/1')
         .send({
@@ -483,7 +501,7 @@ describe('updateBudgetMiddleware', () => {
       );
     });
 
-    it('ERROR - Create false/missing -"If delete or create arefalse, at least one of name or percentage must be provided"', async () => {
+    it('ERROR - Create false/missing -"If delete or create are false, at least one of name or percentage must be provided"', async () => {
       const response = await request(app)
         .patch('/budget-configurations/1')
         .send({

@@ -9,7 +9,10 @@ import { BudgetBuilder } from '../entity/budgetBuilder';
 import { BudgetDirector } from '../entity/budgetDirector';
 import { ValidatorBudgetPercentage } from '../validators/validatorBudgetPercentage';
 import { ValidatorBudgetConfigurationNameInUse } from '../validators/validatorBudgetConfigurationNameInUse';
-import { ValidatorBudgetPercentageCalculation } from '../validators/validatorBudgetPercentageCalculation';
+import {
+  BudgetChangeValidatedData,
+  ValidatorBudgetChange,
+} from '../validators/validatorBudgetChange';
 
 export interface IBudgetUsecase {
   createBudget(budgetData: PostBudgetConfigurationParams): Promise<Boolean>;
@@ -68,10 +71,10 @@ export default class BudgetUsecase implements IBudgetUsecase {
   ): Promise<Boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
-      new ValidatorBudgetPercentageCalculation(this.budgetRepository),
+      new ValidatorBudgetChange(this.budgetRepository),
     ]);
 
-    const validatedBudgetData: PatchBudgetParams =
+    const validatedBudgetData: BudgetChangeValidatedData =
       await modelValidator.validate(budgetData);
 
     return true;

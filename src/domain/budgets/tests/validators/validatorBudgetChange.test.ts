@@ -1,19 +1,22 @@
 import { IBudgetRepository } from 'domain/budgets/repository/budget-repository';
 import { PatchBudgetParams } from 'domain/budgets/types/request';
-import { ValidatorBudgetPercentageCalculation } from 'domain/budgets/validators/validatorBudgetPercentageCalculation';
+import {
+  BudgetChangeValidatedData,
+  ValidatorBudgetChange,
+} from 'domain/budgets/validators/validatorBudgetChange';
 import { BudgetPercentageError, BudgetsNotFoundError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
 
-describe('ValidatorBudgetPercentageCalculation', () => {
+describe('ValidatorBudgetChange', () => {
   let budgetRepositoryMock: jest.Mocked<IBudgetRepository>;
-  let validator: ValidatorBudgetPercentageCalculation;
+  let validator: ValidatorBudgetChange;
 
   beforeEach(() => {
     budgetRepositoryMock = {
       getBudgetsByConfigurationId: jest.fn(),
     } as unknown as jest.Mocked<IBudgetRepository>;
 
-    validator = new ValidatorBudgetPercentageCalculation(budgetRepositoryMock);
+    validator = new ValidatorBudgetChange(budgetRepositoryMock);
   });
 
   it('Should validate and pass when deleting a budget and total remains 100%', async () => {
@@ -46,8 +49,20 @@ describe('ValidatorBudgetPercentageCalculation', () => {
       ],
     };
 
+    const expectedResult: BudgetChangeValidatedData = {
+      budget_configuration_id: 1,
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      update: [
+        { id: 1, percentage: 100 },
+        { id: 2, delete: true },
+      ],
+      delete: [],
+      create: [],
+    };
+
     const result = await validator.validate(body);
-    expect(result).toEqual(body);
+
+    expect(result).toEqual(expectedResult);
   });
 
   it('Should validate and pass when creating a new budget and total stays 100%', async () => {
@@ -84,8 +99,19 @@ describe('ValidatorBudgetPercentageCalculation', () => {
         { create: true, name: 'Life', percentage: 40 },
       ],
     };
+
+    const expectedResult: BudgetChangeValidatedData = {
+      budget_configuration_id: 1,
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      update: [
+        { id: 2, delete: true },
+        { id: 3, delete: true },
+      ],
+      delete: [],
+      create: [{ create: true, name: 'Life', percentage: 40 }],
+    };
     const result = await validator.validate(body);
-    expect(result).toEqual(body);
+    expect(result).toEqual(expectedResult);
   });
 
   it('Should validate and pass when updating a budget and total remains 100%', async () => {
@@ -118,8 +144,19 @@ describe('ValidatorBudgetPercentageCalculation', () => {
       ],
     };
 
+    const expectedResult: BudgetChangeValidatedData = {
+      budget_configuration_id: 1,
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      update: [
+        { id: 2, percentage: 30 },
+        { id: 1, percentage: 70 },
+      ],
+      delete: [],
+      create: [],
+    };
     const result = await validator.validate(body);
-    expect(result).toEqual(body);
+
+    expect(result).toEqual(expectedResult);
   });
 
   it('Should pass validation when updating the name of a budget without changing percentage', async () => {
@@ -148,8 +185,40 @@ describe('ValidatorBudgetPercentageCalculation', () => {
       budgets: [{ id: 1, name: 'New Housing Name' }],
     };
 
+    const expectedResult: BudgetChangeValidatedData = {
+      budget_configuration_id: 1,
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      update: [{ id: 1, name: 'New Housing Name' }],
+      delete: [],
+      create: [],
+    };
+
     const result = await validator.validate(body);
-    expect(result).toEqual(body);
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  it('Should validate and pass when only updating budget_configuration_name', async () => {
+    const user_id = '123e4567-e89b-12d3-a456-426614174000';
+
+    const body: PatchBudgetParams = {
+      user_id,
+      budget_configuration_id: 1,
+      budget_configuration_name: 'Basic 60% 40%',
+    };
+
+    const expectedResult: BudgetChangeValidatedData = {
+      user_id,
+      budget_configuration_id: 1,
+      budget_configuration_name: body.budget_configuration_name,
+      create: [],
+      update: [],
+      delete: [],
+    };
+
+    const result = await validator.validate(body);
+
+    expect(result).toEqual(expectedResult);
   });
 
   it('ERROR - Should throw BudgetsNotFoundError when no budgets are found', async () => {
