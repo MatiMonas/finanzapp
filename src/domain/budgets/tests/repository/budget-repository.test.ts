@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import BudgetRepository, {
   IBudgetRepository,
 } from 'domain/budgets/repository/budget-repository';
-import { CreateBudgetParams } from 'domain/budgets/types';
+import { CreateBudgetParams } from 'domain/budgets/types/request';
 import UserRepository, {
   IUserRepository,
 } from 'domain/users/repository/user-repository';
@@ -234,8 +234,8 @@ describe('BudgetRepository', () => {
       );
 
       expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Savings');
-      expect(result[1].name).toBe('Housing');
+      expect(result[0]?.name).toBe('Savings');
+      expect(result[1]?.name).toBe('Housing');
     });
 
     test('ERROR - Handles Prisma client error', async () => {
