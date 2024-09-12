@@ -71,7 +71,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
       new ValidatorBudgetPercentageCalculation(this.budgetRepository),
     ]);
 
-    const validatedBudgetData: PostBudgetConfigurationParams =
+    const validatedBudgetData: PatchBudgetParams =
       await modelValidator.validate(budgetData);
 
     return true;

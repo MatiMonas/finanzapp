@@ -58,6 +58,12 @@ export const BudgetConfigurationNameAlreadyInUseError = errorFactory({
   statusCode: STATUS_CODES.UNPROCESSABLE_ENTITY,
   code: ERROR_CODES.BUDGET_CONFIGURATION_NAME_ALREADY_IN_USE_ERROR,
 });
+
+export const BudgetsNotFoundError = errorFactory({
+  name: ERROR_NAMES.BUDGETS_NOT_FOUND_ERROR,
+  statusCode: STATUS_CODES.NOT_FOUND,
+  code: ERROR_CODES.BUDGETS_NOT_FOUND_ERROR,
+});
 // -------------------------------------
 
 export const DatabaseError = errorFactory({
