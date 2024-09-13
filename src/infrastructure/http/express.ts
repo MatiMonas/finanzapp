@@ -64,6 +64,9 @@ export default class Express {
         if (callback) callback(err);
       } else {
         console.log(`Finanzapp listening at http://localhost:${this.port}`);
+        console.log(
+          `API-DOCS Running at  http://localhost:${this.port}/api-docs`
+        );
         if (callback) callback();
       }
     });

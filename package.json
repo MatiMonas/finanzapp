@@ -29,6 +29,8 @@
     "@types/mysql": "^2.15.21",
     "@types/node": "^18.11.9",
     "@types/supertest": "^6.0.2",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
     "dotenv-cli": "^7.3.0",
     "env-cmd": "^10.1.0",
     "eslint": "^8.28.0",

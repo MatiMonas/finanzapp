@@ -2,6 +2,7 @@ import container from 'container';
 import Server from 'infrastructure/http/express';
 import createHandler from 'infrastructure/http/createHandler';
 import errorHandler from 'infrastructure/http/errorHandler';
+import setupSwagger from './infrastructure/http/swagger';
 
 const API_PREFIX = '/api/v1';
 
@@ -19,8 +20,8 @@ function setupRoutes(server: Server) {
       return 'OK';
     })
   );
-
   server.addMiddleware(errorHandler);
+  setupSwagger(server.getServer());
 }
 
 function startServer() {
