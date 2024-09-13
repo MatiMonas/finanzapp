@@ -60,7 +60,11 @@ export default class BudgetRouter {
      *                     name:
      *                       type: string
      *                     percentage:
-     *                       type: number
+     *                       type: integer
+     *                       description: Percentage of the budget. Must be between 1 and 100.
+     *                       example: 30
+     *                       minimum: 1
+     *                       maximum: 100
      *     responses:
      *       201:
      *         description: Budget configuration created successfully
@@ -74,7 +78,6 @@ export default class BudgetRouter {
      *       500:
      *         description: Internal server error
      */
-
     router.post(
       '/budgets',
       createBudgetMiddleware,
