@@ -1,4 +1,5 @@
-import Validator from 'validator';
+import Validator from '../../../validator';
+
 import { IBudgetRepository } from '../repository/budget-repository';
 import {
   CreateBudgetParams,

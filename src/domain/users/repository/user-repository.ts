@@ -72,35 +72,32 @@ export default class UserRepository implements IUserRepository {
     try {
       const { email, password, roles, username } = userData;
 
-      const createdUser = await this.prismaClient.$transaction(
-        async (prisma) => {
-          const { id } = await prisma.users.create({
-            data: {
-              username,
-              email,
-              password,
-            },
-          });
+      return await this.prismaClient.$transaction(async (prisma) => {
+        const { id } = await prisma.users.create({
+          data: {
+            username,
+            email,
+            password,
+          },
+        });
 
-          for (const role_id of roles) {
-            await prisma.userRoles.upsert({
-              where: {
-                user_id_role_id: {
-                  user_id: id,
-                  role_id,
-                },
-              },
-              create: {
+        for (const role_id of roles) {
+          await prisma.userRoles.upsert({
+            where: {
+              user_id_role_id: {
                 user_id: id,
                 role_id,
               },
-              update: {},
-            });
-          }
-          return id;
+            },
+            create: {
+              user_id: id,
+              role_id,
+            },
+            update: {},
+          });
         }
-      );
-      return createdUser;
+        return id;
+      });
     } catch (error: any) {
       throw new DatabaseError('Unable to create user', { cause: error });
     }

@@ -1,4 +1,4 @@
-import Validator from 'validator';
+import Validator from './index';
 
 class MockValidator extends Validator {
   validate(body: any): any {

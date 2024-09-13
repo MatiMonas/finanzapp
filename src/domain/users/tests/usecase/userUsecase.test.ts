@@ -1,7 +1,7 @@
 import UserUsecase from 'domain/users/usecase';
 import { mockUserRepository } from '__mocks__/User';
 import { PostUserParams } from 'domain/users/types';
-import Validator from 'validator';
+import Validator from '../../../../validator';
 import { UserBuilder } from 'domain/users/entity/userBuilder';
 import { UserDirector } from 'domain/users/entity/userDirector';
 
@@ -35,40 +35,11 @@ describe('UserUseCase', () => {
 
       userUseCase = new UserUsecase(mockUserRepository as any);
 
-      (mockUserRepository.create as jest.Mock).mockResolvedValue(true);
+      (mockUserRepository.create as jest.Mock).mockResolvedValue('user-id');
 
       const result = await userUseCase.create(mockUserData);
 
-      expect(result).toBe(true);
-    });
-
-    it('OK - should return false if user was not created', async () => {
-      const mockUserData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'password123',
-        roles: [1],
-      };
-
-      const mockValidatedUserData = { ...mockUserData };
-
-      Validator.createValidatorChain = jest.fn().mockReturnValue({
-        validate: jest.fn().mockResolvedValue(mockValidatedUserData),
-      });
-
-      const mockBuilder = new UserBuilder();
-      const mockDirector = new UserDirector(mockBuilder);
-      mockDirector.buildUser = jest
-        .fn()
-        .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
-
-      userUseCase = new UserUsecase(mockUserRepository as any);
-
-      (mockUserRepository.create as jest.Mock).mockResolvedValue(false);
-
-      const result = await userUseCase.create(mockUserData);
-
-      expect(result).toBe(false);
+      expect(result).toBe('user-id');
     });
   });
 

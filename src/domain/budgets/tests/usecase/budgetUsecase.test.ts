@@ -1,12 +1,9 @@
 import BudgetUsecase from 'domain/budgets/usecase';
 import { mockBudgetRepository } from '__mocks__/Budget';
-import Validator from 'validator';
+import Validator from '../../../../validator';
 import { BudgetBuilder } from 'domain/budgets/entity/budgetBuilder';
 import { BudgetDirector } from 'domain/budgets/entity/budgetDirector';
-import {
-  PatchBudgetParams,
-  PostBudgetConfigurationParams,
-} from 'domain/budgets/types/request';
+import { PostBudgetConfigurationParams } from 'domain/budgets/types/request';
 import { BudgetChangeValidatedData } from 'domain/budgets/validators/validatorBudgetChange';
 import { DatabaseError } from 'errors';
 
