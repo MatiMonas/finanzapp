@@ -13,6 +13,7 @@ import {
   BudgetChangeValidatedData,
   ValidatorBudgetChange,
 } from '../validators/validatorBudgetChange';
+import { DatabaseError } from 'errors';
 
 export interface IBudgetUsecase {
   createBudget(budgetData: PostBudgetConfigurationParams): Promise<Boolean>;
@@ -68,7 +69,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
   async partialUpdateBudgetConfiguration(
     budgetData: PatchBudgetParams
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
       new ValidatorBudgetChange(this.budgetRepository),
@@ -77,6 +78,47 @@ export default class BudgetUsecase implements IBudgetUsecase {
     const validatedBudgetData: BudgetChangeValidatedData =
       await modelValidator.validate(budgetData);
 
-    return true;
+    try {
+      // 1. Update configuration name
+      if (validatedBudgetData.budget_configuration_name) {
+        await this.budgetRepository.updateBudgetConfigurationName(
+          validatedBudgetData.budget_configuration_id,
+          validatedBudgetData.budget_configuration_name
+        );
+      }
+
+      // 2. Delete budgets
+      if (validatedBudgetData.delete.length > 0) {
+        const idsToDelete = validatedBudgetData.delete
+          .map((budget) => budget.id)
+          .filter((id): id is number => id !== undefined);
+        await this.budgetRepository.deleteBudgets(idsToDelete);
+      }
+
+      // 3. Create budgets
+      if (validatedBudgetData.create.length > 0) {
+        const budgetsToCreate = validatedBudgetData.create
+          .map((budget) => ({
+            name: budget.name || '',
+            percentage: budget.percentage || 0,
+            budget_configuration_id:
+              validatedBudgetData.budget_configuration_id,
+            user_id: validatedBudgetData.user_id,
+          }))
+          .filter((budget) => budget.name !== '' && budget.percentage !== 0);
+        await this.budgetRepository.createBudget(budgetsToCreate);
+      }
+
+      // 4. Update budgets
+      if (validatedBudgetData.update.length > 0) {
+        await this.budgetRepository.updateBudgets(validatedBudgetData.update);
+      }
+
+      return true;
+    } catch (error: any) {
+      throw new DatabaseError('Unable to update budget configuration', {
+        cause: error,
+      });
+    }
   }
 }

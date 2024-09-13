@@ -1,4 +1,4 @@
-import { PatchBudgetParams } from '../types/request';
+import { BudgetAction, PatchBudgetParams } from '../types/request';
 import { IBudgetRepository } from '../repository/budget-repository';
 import {
   BadRequestError,
@@ -7,14 +7,6 @@ import {
 } from 'errors';
 import Validator from 'validator';
 import { BudgetWithoutTimestamps } from '../types/db_model';
-
-type BudgetAction = {
-  id?: number;
-  name?: string;
-  percentage?: number;
-  create?: boolean;
-  delete?: boolean;
-};
 
 export type BudgetChangeValidatedData = {
   budget_configuration_id: number;

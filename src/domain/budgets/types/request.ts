@@ -11,13 +11,7 @@ export type PatchBudgetParams = {
   budget_configuration_id: number;
   user_id: string;
   budget_configuration_name?: string;
-  budgets?: {
-    id?: number;
-    name?: string;
-    percentage?: number;
-    create?: boolean;
-    delete?: boolean;
-  }[];
+  budgets?: BudgetAction[];
 };
 
 export type CreateBudgetParams = {
@@ -25,4 +19,12 @@ export type CreateBudgetParams = {
   name: string;
   percentage: number;
   budget_configuration_id: number;
+};
+
+export type BudgetAction = {
+  id?: number;
+  name?: string;
+  percentage?: number;
+  create?: boolean;
+  delete?: boolean;
 };

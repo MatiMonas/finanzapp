@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import BudgetRepository, {
   IBudgetRepository,
 } from 'domain/budgets/repository/budget-repository';
-import { CreateBudgetParams } from 'domain/budgets/types/request';
+import { BudgetAction, CreateBudgetParams } from 'domain/budgets/types/request';
 import UserRepository, {
   IUserRepository,
 } from 'domain/users/repository/user-repository';
@@ -252,6 +252,197 @@ describe('BudgetRepository', () => {
         expect(error.message).toBe(
           'Unable to find budgets by budget configuration id'
         );
+      }
+    });
+  });
+
+  describe('updateBudgetConfigurationName', () => {
+    test('should update budget configuration name successfully', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const user_id = await userRepository.create(userData);
+      const budgetConfigurationName = 'MyBudgetConfig';
+      const newBudgetConfigurationName = 'MyNewBudgetConfig';
+
+      const configId = await budgetRepository.createBudgetConfiguration(
+        budgetConfigurationName,
+        user_id
+      );
+
+      const result = await budgetRepository.updateBudgetConfigurationName(
+        configId,
+        newBudgetConfigurationName
+      );
+
+      expect(result).toBe(true);
+
+      const updatedConfig = await prisma.budgetsConfigurations.findUnique({
+        where: { id: configId },
+      });
+
+      expect(updatedConfig?.name).toBe(newBudgetConfigurationName);
+    });
+
+    test('should throw a DatabaseError if Prisma fails', async () => {
+      jest
+        .spyOn(prisma.budgetsConfigurations, 'update')
+        .mockRejectedValueOnce(new Error('Prisma Error'));
+
+      try {
+        await budgetRepository.updateBudgetConfigurationName(1, 'NewName');
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.message).toBe(
+          'Unable to update budget configuration name'
+        );
+      }
+    });
+  });
+
+  describe('deleteBudgets', () => {
+    test('should delete budgets by IDs successfully', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const user_id = await userRepository.create(userData);
+      const budgetConfigurationName = 'MyBudgetConfig';
+
+      const configId = await budgetRepository.createBudgetConfiguration(
+        budgetConfigurationName,
+        user_id
+      );
+
+      const budgetData = [
+        {
+          name: 'Rent',
+          percentage: 30,
+          user_id,
+          budget_configuration_id: configId,
+        },
+        {
+          name: 'Savings',
+          percentage: 20,
+          user_id,
+          budget_configuration_id: configId,
+        },
+      ];
+
+      await budgetRepository.createBudget(budgetData);
+
+      const budgets = await prisma.budgets.findMany();
+      const budgetIds = budgets.map((budget) => budget.id);
+
+      const result = await budgetRepository.deleteBudgets(budgetIds);
+
+      expect(result).toBe(true);
+
+      const deletedBudgets = await prisma.budgets.findMany({
+        where: {
+          id: { in: budgetIds },
+        },
+      });
+
+      expect(deletedBudgets).toHaveLength(0);
+    });
+
+    test('should throw a DatabaseError if Prisma fails', async () => {
+      jest
+        .spyOn(prisma.budgets, 'deleteMany')
+        .mockRejectedValueOnce(new Error('Prisma Error'));
+
+      try {
+        await budgetRepository.deleteBudgets([1, 2]);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.message).toBe('Unable to delete budgets');
+      }
+    });
+  });
+
+  describe('updateBudgets', () => {
+    test('should update existing budgets successfully', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const user_id = await userRepository.create(userData);
+      const budgetConfigurationName = 'MyBudgetConfig';
+
+      const configId = await budgetRepository.createBudgetConfiguration(
+        budgetConfigurationName,
+        user_id
+      );
+
+      const budgetData = [
+        {
+          name: 'Rent',
+          percentage: 30,
+          user_id,
+          budget_configuration_id: configId,
+        },
+        {
+          name: 'Savings',
+          percentage: 20,
+          user_id,
+          budget_configuration_id: configId,
+        },
+      ];
+
+      await budgetRepository.createBudget(budgetData);
+
+      const updatedData: BudgetAction[] = [
+        { id: 1, name: 'NewRent', percentage: 35 },
+        { id: 2, name: 'NewSavings', percentage: 25 },
+      ];
+
+      const result = await budgetRepository.updateBudgets(updatedData);
+
+      expect(result).toBe(true);
+
+      const validIds = updatedData
+        .map((b) => b.id)
+        .filter((id): id is number => id !== undefined);
+
+      const updatedBudgets = await prisma.budgets.findMany({
+        where: {
+          id: { in: validIds },
+        },
+      });
+
+      expect(updatedBudgets).toHaveLength(2);
+      expect(updatedBudgets.find((b) => b.id === 1)?.name).toBe('NewRent');
+      expect(updatedBudgets.find((b) => b.id === 2)?.name).toBe('NewSavings');
+    });
+
+    test('should throw a DatabaseError if Prisma fails', async () => {
+      jest
+        .spyOn(prisma.budgets, 'update')
+        .mockRejectedValueOnce(new Error('Prisma Error'));
+
+      try {
+        const updatedData: BudgetAction[] = [
+          { id: 1, name: 'UpdatedName', percentage: 50 },
+        ];
+
+        await budgetRepository.updateBudgets(updatedData);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.message).toBe('Unable to update budgets');
       }
     });
   });
