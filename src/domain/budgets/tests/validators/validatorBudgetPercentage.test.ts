@@ -1,4 +1,4 @@
-import { PostBudgetConfigurationParams } from 'domain/budgets/types/request';
+import { PostBudgetConfigurationBody } from 'domain/budgets/types/request';
 import { ValidatorBudgetPercentage } from 'domain/budgets/validators/validatorBudgetPercentage';
 import { BudgetPercentageError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
@@ -11,7 +11,7 @@ describe('ValidatorBudgetPercentage', () => {
   });
 
   test('OK - Budget percentages sums equal 100', async () => {
-    const body: PostBudgetConfigurationParams = {
+    const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Test',
       budgets: [
@@ -31,7 +31,7 @@ describe('ValidatorBudgetPercentage', () => {
   });
 
   test('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
-    const body: PostBudgetConfigurationParams = {
+    const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Basico',
       budgets: [

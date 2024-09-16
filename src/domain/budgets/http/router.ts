@@ -36,7 +36,7 @@ export default class BudgetRouter {
   registerRouters(): void {
     /**
      * @swagger
-     * /budgets:
+     * /budget-configurations:
      *   post:
      *     tags:
      *       - Budgets
@@ -79,7 +79,7 @@ export default class BudgetRouter {
      *         description: Internal server error
      */
     router.post(
-      '/budgets',
+      '/budget-configurations',
       createBudgetMiddleware,
       createHandler(this.handler.createBudget, STATUS_CODES.CREATED)
     );
@@ -142,6 +142,14 @@ export default class BudgetRouter {
       patchBudgetConfigurationMiddleware,
       createHandler(
         this.handler.partialUpdateBudgetConfiguration,
+        STATUS_CODES.NO_CONTENT
+      )
+    );
+
+    router.delete(
+      '/budget-configurations/:id',
+      createHandler(
+        this.handler.deleteBudgetConfiguration,
         STATUS_CODES.NO_CONTENT
       )
     );

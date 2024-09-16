@@ -1,9 +1,9 @@
 import Validator from 'validator';
 import { IBudgetRepository } from '../repository/budget-repository';
 import {
-  CreateBudgetParams,
-  PatchBudgetParams,
-  PostBudgetConfigurationParams,
+  CreateBudgetPayload,
+  PatchBudgetBody,
+  PostBudgetConfigurationBody,
 } from '../types/request';
 import { BudgetBuilder } from '../entity/budgetBuilder';
 import { BudgetDirector } from '../entity/budgetDirector';
@@ -16,9 +16,13 @@ import {
 import { DatabaseError } from 'errors';
 
 export interface IBudgetUsecase {
-  createBudget(budgetData: PostBudgetConfigurationParams): Promise<Boolean>;
+  createBudget(budgetData: PostBudgetConfigurationBody): Promise<Boolean>;
   partialUpdateBudgetConfiguration(
-    budgetData: PatchBudgetParams
+    budgetData: PatchBudgetBody
+  ): Promise<Boolean>;
+  deleteBudgetConfiguration(
+    budget_configuration_id: number,
+    user_id: string
   ): Promise<Boolean>;
 }
 
@@ -26,14 +30,14 @@ export default class BudgetUsecase implements IBudgetUsecase {
   constructor(private budgetRepository: IBudgetRepository) {}
 
   async createBudget(
-    budgetData: PostBudgetConfigurationParams
+    budgetData: PostBudgetConfigurationBody
   ): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
       new ValidatorBudgetPercentage(),
     ]);
 
-    const validatedBudgetData: PostBudgetConfigurationParams =
+    const validatedBudgetData: PostBudgetConfigurationBody =
       await modelValidator.validate(budgetData);
 
     const { budget_configuration_name, budgets, user_id } = validatedBudgetData;
@@ -49,7 +53,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
       const { name, percentage } = budget;
       const builder = new BudgetBuilder();
       const director = new BudgetDirector(builder);
-      const budgetDataForDirector: CreateBudgetParams = {
+      const budgetDataForDirector: CreateBudgetPayload = {
         user_id,
         name,
         percentage,
@@ -68,7 +72,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
   }
 
   async partialUpdateBudgetConfiguration(
-    budgetData: PatchBudgetParams
+    budgetData: PatchBudgetBody
   ): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorBudgetConfigurationNameInUse(this.budgetRepository),
@@ -120,5 +124,21 @@ export default class BudgetUsecase implements IBudgetUsecase {
         cause: error,
       });
     }
+  }
+
+  async deleteBudgetConfiguration(
+    budget_configuration_id: number,
+    user_id: string
+  ): Promise<Boolean> {
+    const modelValidator = Validator.createValidatorChain([]);
+
+    const validatedBudgetData = await modelValidator.validate({
+      budget_configuration_id,
+      user_id,
+    });
+
+    return await this.budgetRepository.deleteBudgetConfiguration(
+      validatedBudgetData
+    );
   }
 }

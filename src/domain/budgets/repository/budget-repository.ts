@@ -1,6 +1,10 @@
 import { PrismaClient, Budgets } from '@prisma/client';
 import { DatabaseError } from 'errors';
-import { BudgetAction, CreateBudgetParams } from '../types/request';
+import {
+  BudgetAction,
+  CreateBudgetPayload,
+  DeleteBudgetPayload,
+} from '../types/request';
 import {
   BudgetWithoutTimestamps,
   FindBudgetConfigurationByName,
@@ -11,7 +15,10 @@ export interface IBudgetRepository {
     budgetConfigurationName: string,
     user_id: string
   ): Promise<number>;
-  createBudget(budgetData: CreateBudgetParams[]): Promise<boolean>;
+  deleteBudgetConfiguration(
+    budgetToDelete: DeleteBudgetPayload
+  ): Promise<Boolean>;
+  createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean>;
   updateBudgetConfigurationName(
     budgetConfigurationId: number,
     newName: string
@@ -26,7 +33,6 @@ export interface IBudgetRepository {
     user_id: string
   ): Promise<FindBudgetConfigurationByName>;
 }
-
 export default class BudgetRepository implements IBudgetRepository {
   prismaClient: PrismaClient;
 
@@ -61,7 +67,7 @@ export default class BudgetRepository implements IBudgetRepository {
     }
   }
 
-  async createBudget(budgetData: CreateBudgetParams[]): Promise<boolean> {
+  async createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean> {
     try {
       await this.prismaClient.$transaction(async (prisma) => {
         await prisma.budgets.createMany({
@@ -81,9 +87,11 @@ export default class BudgetRepository implements IBudgetRepository {
     newName: string
   ): Promise<boolean> {
     try {
-      await this.prismaClient.budgetsConfigurations.update({
-        where: { id: budgetConfigurationId },
-        data: { name: newName },
+      await this.prismaClient.$transaction(async (prisma) => {
+        await prisma.budgetsConfigurations.update({
+          where: { id: budgetConfigurationId },
+          data: { name: newName },
+        });
       });
       return true;
     } catch (error: any) {
@@ -95,10 +103,12 @@ export default class BudgetRepository implements IBudgetRepository {
 
   async deleteBudgets(budgetIds: number[]): Promise<boolean> {
     try {
-      await this.prismaClient.budgets.deleteMany({
-        where: {
-          id: { in: budgetIds },
-        },
+      await this.prismaClient.$transaction(async (prisma) => {
+        await prisma.budgets.deleteMany({
+          where: {
+            id: { in: budgetIds },
+          },
+        });
       });
       return true;
     } catch (error: any) {
@@ -177,6 +187,28 @@ export default class BudgetRepository implements IBudgetRepository {
       throw new DatabaseError('Unable to find budget configuration by name', {
         cause: error,
       });
+    }
+  }
+
+  async deleteBudgetConfiguration(
+    budgetToDelete: DeleteBudgetPayload
+  ): Promise<Boolean> {
+    const { user_id, budget_configuration_id } = budgetToDelete;
+    try {
+      return await this.prismaClient.$transaction(async (prisma) => {
+        await prisma.budgetsConfigurations.deleteMany({
+          where: {
+            id: budget_configuration_id,
+            user_id: user_id,
+          },
+        });
+        return true;
+      });
+    } catch (error: any) {
+      throw new DatabaseError(
+        `Unable to delete budget configuration with id ${budget_configuration_id}`,
+        { cause: error }
+      );
     }
   }
 }

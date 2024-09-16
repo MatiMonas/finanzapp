@@ -1,5 +1,5 @@
 import { IBudgetRepository } from 'domain/budgets/repository/budget-repository';
-import { PatchBudgetParams } from 'domain/budgets/types/request';
+import { PatchBudgetPayload } from 'domain/budgets/types/request';
 import {
   BudgetChangeValidatedData,
   ValidatorBudgetChange,
@@ -40,7 +40,7 @@ describe('ValidatorBudgetChange', () => {
       budget2,
     ]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -90,7 +90,7 @@ describe('ValidatorBudgetChange', () => {
       budget3,
     ]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -135,7 +135,7 @@ describe('ValidatorBudgetChange', () => {
       budget2,
     ]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -179,7 +179,7 @@ describe('ValidatorBudgetChange', () => {
       budget,
       budget2,
     ]);
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, name: 'New Housing Name' }],
@@ -201,7 +201,7 @@ describe('ValidatorBudgetChange', () => {
   it('Should validate and pass when only updating budget_configuration_name', async () => {
     const user_id = '123e4567-e89b-12d3-a456-426614174000';
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id,
       budget_configuration_id: 1,
       budget_configuration_name: 'Basic 60% 40%',
@@ -224,7 +224,7 @@ describe('ValidatorBudgetChange', () => {
   it('ERROR - Should throw BudgetsNotFoundError when no budgets are found', async () => {
     budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: 'someUUID',
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 70 }],
@@ -262,7 +262,7 @@ describe('ValidatorBudgetChange', () => {
       budget2,
     ]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 70 }],
@@ -302,7 +302,7 @@ describe('ValidatorBudgetChange', () => {
       budget2,
     ]);
 
-    const body: PatchBudgetParams = {
+    const body: PatchBudgetPayload = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 40 }],

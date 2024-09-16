@@ -1,5 +1,5 @@
 import { Budget } from '.';
-import { CreateBudgetParams } from '../types/request';
+import { CreateBudgetPayload } from '../types/request';
 import { BudgetBuilder } from './budgetBuilder';
 
 export class BudgetDirector {
@@ -9,7 +9,7 @@ export class BudgetDirector {
     this.builder = builder;
   }
 
-  createBudget(budgetData: CreateBudgetParams): Budget {
+  createBudget(budgetData: CreateBudgetPayload): Budget {
     return this.builder
       .setUserId(budgetData.user_id)
       .setName(budgetData.name)

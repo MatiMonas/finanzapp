@@ -1,8 +1,10 @@
 import { mockBudgetUseCase } from '__mocks__/Budget';
 import BudgetsHandler from 'domain/budgets/http/handler';
 import {
+  PatchBudgetBody,
   PatchBudgetParams,
-  PostBudgetConfigurationParams,
+  PatchBudgetPayload,
+  PostBudgetConfigurationBody,
 } from 'domain/budgets/types/request';
 import { Request } from 'express';
 
@@ -10,7 +12,7 @@ const budgetsHandler = new BudgetsHandler(mockBudgetUseCase);
 
 describe('BudgetsHandler', () => {
   it('should call createBudget method of BudgetUseCase with correct data', async () => {
-    const mockBudgetData: PostBudgetConfigurationParams = {
+    const mockBudgetData: PostBudgetConfigurationBody = {
       user_id: '123e4567-e89b-12d3-a456-426614174000',
       budget_configuration_name: 'Basic Configuration',
       budgets: [
@@ -24,7 +26,7 @@ describe('BudgetsHandler', () => {
 
     const req = {
       body: mockBudgetData,
-    } as Request<any, any, any, PostBudgetConfigurationParams>;
+    } as Request<any, any, PostBudgetConfigurationBody>;
 
     await budgetsHandler.createBudget(req);
 
@@ -32,7 +34,7 @@ describe('BudgetsHandler', () => {
   });
 
   it('should call partialUpdateBudgetConfiguration method of BudgetUseCase with correct data', async () => {
-    const mockPatchData: PatchBudgetParams = {
+    const mockPatchData: PatchBudgetPayload = {
       budget_configuration_id: 1,
       user_id: '123e4567-e89b-12d3-a456-426614174000',
       budget_configuration_name: 'Updated Configuration',
@@ -50,9 +52,9 @@ describe('BudgetsHandler', () => {
     const req = {
       body: mockPatchData,
       params: {
-        id: 1,
+        budget_configuration_id: 1,
       },
-    } as Request<any, any, any, PatchBudgetParams>;
+    } as unknown as Request<PatchBudgetParams, any, PatchBudgetBody>;
 
     await budgetsHandler.partialUpdateBudgetConfiguration(req);
 

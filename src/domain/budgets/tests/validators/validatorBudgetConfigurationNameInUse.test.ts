@@ -1,5 +1,5 @@
 import BudgetRepository from 'domain/budgets/repository/budget-repository';
-import { PostBudgetConfigurationParams } from 'domain/budgets/types/request';
+import { PostBudgetConfigurationBody } from 'domain/budgets/types/request';
 import { ValidatorBudgetConfigurationNameInUse } from 'domain/budgets/validators/validatorBudgetConfigurationNameInUse';
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
@@ -23,7 +23,7 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
   test('OK - Budget configuration name is not used', async () => {
     budgetRepository.findBudgetConfigurationByName.mockResolvedValueOnce(null);
 
-    const body: PostBudgetConfigurationParams = {
+    const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Test',
       budgets: [
@@ -49,7 +49,7 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
       budgetConfigurationResponse
     );
 
-    const body: PostBudgetConfigurationParams = {
+    const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Basico',
       budgets: [

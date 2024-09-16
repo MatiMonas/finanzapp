@@ -3,7 +3,10 @@ import { execSync } from 'child_process';
 import BudgetRepository, {
   IBudgetRepository,
 } from 'domain/budgets/repository/budget-repository';
-import { BudgetAction, CreateBudgetParams } from 'domain/budgets/types/request';
+import {
+  BudgetAction,
+  CreateBudgetPayload,
+} from 'domain/budgets/types/request';
 import UserRepository, {
   IUserRepository,
 } from 'domain/users/repository/user-repository';
@@ -80,7 +83,7 @@ describe('BudgetRepository', () => {
         budgetConfigurationName,
         user_id
       );
-      const budgetData: CreateBudgetParams[] = [
+      const budgetData: CreateBudgetPayload[] = [
         {
           user_id,
           name: 'Savings',
@@ -121,7 +124,7 @@ describe('BudgetRepository', () => {
         .mockRejectedValueOnce(new Error('Prisma client error'));
 
       try {
-        const budgetData: CreateBudgetParams[] = [
+        const budgetData: CreateBudgetPayload[] = [
           {
             user_id,
             name: 'Savings',
@@ -212,7 +215,7 @@ describe('BudgetRepository', () => {
         user_id
       );
 
-      const budgetData: CreateBudgetParams[] = [
+      const budgetData: CreateBudgetPayload[] = [
         {
           user_id,
           name: 'Savings',

@@ -1,10 +1,6 @@
-import { BudgetAction, PatchBudgetParams } from '../types/request';
+import { BudgetAction, PatchBudgetPayload } from '../types/request';
 import { IBudgetRepository } from '../repository/budget-repository';
-import {
-  BadRequestError,
-  BudgetPercentageError,
-  BudgetsNotFoundError,
-} from 'errors';
+import { BudgetPercentageError, BudgetsNotFoundError } from 'errors';
 import Validator from 'validator';
 import { BudgetWithoutTimestamps } from '../types/db_model';
 
@@ -25,7 +21,7 @@ export class ValidatorBudgetChange extends Validator {
     this.budgetRepository = BudgetRepository;
   }
 
-  async validate(body: PatchBudgetParams) {
+  async validate(body: PatchBudgetPayload) {
     const {
       budgets,
       budget_configuration_id,

@@ -1,8 +1,11 @@
 import { Request } from 'express';
 import { IBudgetUsecase } from '../usecase';
 import {
+  DeleteBudgetConfigurationBody,
+  DeleteBudgetConfigurationParams,
+  PatchBudgetBody,
   PatchBudgetParams,
-  PostBudgetConfigurationParams,
+  PostBudgetConfigurationBody,
 } from '../types/request';
 
 export default class BudgetsHandler {
@@ -12,14 +15,12 @@ export default class BudgetsHandler {
     this.budgetsUseCase = BudgetUsecase;
   }
 
-  createBudget = (
-    req: Request<any, any, any, PostBudgetConfigurationParams>
-  ) => {
+  createBudget = (req: Request<any, any, PostBudgetConfigurationBody>) => {
     return this.budgetsUseCase.createBudget(req.body);
   };
 
   partialUpdateBudgetConfiguration = (
-    req: Request<any, any, any, PatchBudgetParams>
+    req: Request<PatchBudgetParams, any, PatchBudgetBody>
   ) => {
     const { id: budget_configuration_id } = req.params;
 
@@ -29,5 +30,21 @@ export default class BudgetsHandler {
     };
 
     return this.budgetsUseCase.partialUpdateBudgetConfiguration(payload);
+  };
+
+  deleteBudgetConfiguration = (
+    req: Request<
+      DeleteBudgetConfigurationParams,
+      any,
+      DeleteBudgetConfigurationBody
+    >
+  ) => {
+    const { id: budget_configuration_id } = req.params;
+    const { user_id } = req.body;
+
+    return this.budgetsUseCase.deleteBudgetConfiguration(
+      budget_configuration_id,
+      user_id
+    );
   };
 }

@@ -12,18 +12,18 @@ app.use(express.json());
 app.use(budgetRouter.getRouter());
 
 describe('BudgetRouter', () => {
-  it('should have 2 routes', () => {
+  it('should have 3 routes', () => {
     const router = budgetRouter.getRouter();
     const routeCount = countRoutes(router);
-    expect(routeCount).toBe(2);
+    expect(routeCount).toBe(3);
   });
 
-  describe('POST /budgets', () => {
-    it('should have a POST /budgets route', async () => {
+  describe('POST /budget-configurations', () => {
+    it('should have a POST /budget-configurations route', async () => {
       (mockBudgetUseCase.createBudget as jest.Mock).mockResolvedValue(true);
 
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -39,7 +39,7 @@ describe('BudgetRouter', () => {
 
     it('should return 400 if validation fails', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           budget_configuration_name: 'Basic Configuration',
           budgets: [{ name: 'Savings', percentage: 101 }],
@@ -50,7 +50,7 @@ describe('BudgetRouter', () => {
     });
   });
 
-  describe('PATCH /budget-configurations/:id', () => {
+  describe('PATCH /budget-configurations/:budget_configuration_id', () => {
     it('should have a PATCH /budget-configurations route', async () => {
       (
         mockBudgetUseCase.partialUpdateBudgetConfiguration as jest.Mock
