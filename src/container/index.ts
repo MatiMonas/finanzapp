@@ -1,16 +1,16 @@
 import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
-import prismaClient from 'infrastructure/db/prisma';
-import UsersRouter from 'domain/users/http/router';
+import prismaClient from 'infrastructure/persistance/prisma';
+import UsersRouter from 'modules/users/http/router';
 import UserRepository, {
   IUserRepository,
-} from 'domain/users/repository/user-repository';
-import BudgetRouter, { IBudgetRouter } from 'domain/budgets/http/router';
-import BudgetUsecase, { IBudgetUsecase } from 'domain/budgets/usecase';
+} from 'modules/users/repository/user-repository';
+import BudgetRouter, { IBudgetRouter } from 'modules/budgets/http/router';
+import BudgetUsecase, { IBudgetUsecase } from 'modules/budgets/usecase';
 import BudgetRepository, {
   IBudgetRepository,
-} from 'domain/budgets/repository/budget-repository';
-import UserUsecase, { IUserUsecase } from 'domain/users/usecase';
+} from 'modules/budgets/repository/budget-repository';
+import UserUsecase, { IUserUsecase } from 'modules/users/usecase';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];

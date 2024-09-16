@@ -1,8 +1,8 @@
 import container from 'container';
-import Server from 'infrastructure/http/express';
-import createHandler from 'infrastructure/http/createHandler';
-import errorHandler from 'infrastructure/http/errorHandler';
-import setupSwagger from './infrastructure/http/swagger';
+import Server from 'infrastructure/web/express';
+import createHandler from 'infrastructure/web/createHandler';
+import errorHandler from 'infrastructure/web/errorHandler';
+import setupSwagger from './infrastructure/web/swagger';
 
 const API_PREFIX = '/api/v1';
 

@@ -1,5 +1,5 @@
-import BudgetRepository from 'domain/budgets/repository/budget-repository';
-import BudgetUsecase from 'domain/budgets/usecase';
+import BudgetRepository from 'modules/budgets/repository/budget-repository';
+import BudgetUsecase from 'modules/budgets/usecase';
 
 export const mockBudgetUseCase = {
   createBudget: jest.fn(),
