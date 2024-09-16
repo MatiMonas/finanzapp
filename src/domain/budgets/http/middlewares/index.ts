@@ -103,7 +103,15 @@ export const patchBudgetConfigurationMiddleware = (
 
   const UpdateSchema = z
     .object({
-      user_id: z.string().uuid('Invalid UUID format'),
+      user_id: z
+        .string({
+          message: getValidationMessage(
+            'user_id',
+            'a UUID string',
+            'is required'
+          ),
+        })
+        .uuid('Invalid UUID format'),
       budget_configuration_name: z
         .string({
           message: getValidationMessage(

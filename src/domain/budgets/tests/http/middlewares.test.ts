@@ -256,6 +256,22 @@ describe('createBudgetMiddleware', () => {
 });
 
 describe('updateBudgetMiddleware', () => {
+  it('OK - Passes with correct user_id', async () => {
+    const response = await request(app)
+      .patch('/budget-configurations/1')
+      .send({
+        user_id: '123e4567-e89b-12d3-a456-426614174000',
+        budgets: [
+          { id: 1, percentage: 30 },
+          { id: 2, name: 'Housing', percentage: 70 },
+          { id: 3, delete: true },
+        ],
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Success');
+  });
+
   it('OK - Passes with both budgets and budget_configuration_name', async () => {
     const response = await request(app)
       .patch('/budget-configurations/1')
@@ -355,6 +371,39 @@ describe('updateBudgetMiddleware', () => {
     expect(response.body).toHaveProperty('message', 'Success');
   });
 
+  it('ERROR - Should fail if user_id is not sent', async () => {
+    const response = await request(app)
+      .patch('/budget-configurations/1')
+      .send({
+        budgets: [
+          { id: 1, percentage: 30 },
+          { id: 2, name: 'Housing', percentage: 70 },
+          { id: 3, delete: true },
+        ],
+      });
+
+    const {
+      errors: { fieldErrors },
+    } = response.body;
+
+    expect(response.status).toBe(400);
+    expect(fieldErrors.user_id[0]).toBe(
+      getValidationMessage('user_id', 'a UUID string', 'is required')
+    );
+  });
+
+  it('ERROR - Should fail if user_id is not a UUID', async () => {
+    const response = await request(app)
+      .delete('/budget-configurations/1')
+      .send({ user_id: '123' });
+
+    const {
+      errors: { fieldErrors },
+    } = response.body;
+
+    expect(response.status).toBe(400);
+    expect(fieldErrors.user_id[0]).toBe('Invalid UUID format');
+  });
   it('ERROR - should fail if neither budgets nor budget_configuration_name is provided', async () => {
     const response = await request(app).patch('/budget-configurations/1').send({
       user_id: '123e4567-e89b-12d3-a456-426614174000',
