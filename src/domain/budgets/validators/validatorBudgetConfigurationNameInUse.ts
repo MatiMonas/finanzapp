@@ -1,5 +1,6 @@
-import Validator from 'validator';
 import { PostBudgetConfigurationBody } from '../types/request';
+import Validator from '../../../validator';
+
 import { IBudgetRepository } from '../repository/budget-repository';
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
 

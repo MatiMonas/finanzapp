@@ -2,7 +2,6 @@ import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/db/prisma';
 import UsersRouter from 'domain/users/http/router';
-import UserUseCase, { IUserUseCase } from 'domain/users/usecase';
 import UserRepository, {
   IUserRepository,
 } from 'domain/users/repository/user-repository';
@@ -11,6 +10,7 @@ import BudgetUsecase, { IBudgetUsecase } from 'domain/budgets/usecase';
 import BudgetRepository, {
   IBudgetRepository,
 } from 'domain/budgets/repository/budget-repository';
+import UserUsecase, { IUserUsecase } from 'domain/users/usecase';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
@@ -28,7 +28,7 @@ container.service('prismaClient', () => prismaClient());
 container.service('userRouter', (c) => new UsersRouter(c.userUsecase));
 container.service(
   'userUsecase',
-  (c): IUserUseCase => new UserUseCase(c.userRepository)
+  (c): IUserUsecase => new UserUsecase(c.userRepository)
 );
 container.service(
   'userRepository',

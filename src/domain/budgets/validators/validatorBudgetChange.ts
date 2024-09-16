@@ -1,7 +1,8 @@
 import { BudgetAction, PatchBudgetPayload } from '../types/request';
 import { IBudgetRepository } from '../repository/budget-repository';
 import { BudgetPercentageError, BudgetsNotFoundError } from 'errors';
-import Validator from 'validator';
+import Validator from '../../../validator';
+
 import { BudgetWithoutTimestamps } from '../types/db_model';
 
 export type BudgetChangeValidatedData = {

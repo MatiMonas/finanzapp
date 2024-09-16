@@ -1,5 +1,6 @@
-import Validator from 'validator';
 import { PostBudgetConfigurationBody } from '../types/request';
+import Validator from '../../../validator';
+
 import { BudgetPercentageError } from 'errors';
 
 export class ValidatorBudgetPercentage extends Validator {

@@ -1,6 +1,6 @@
 import BudgetUsecase from 'domain/budgets/usecase';
 import { mockBudgetRepository } from '__mocks__/Budget';
-import Validator from 'validator';
+import Validator from '../../../../validator';
 import { BudgetBuilder } from 'domain/budgets/entity/budgetBuilder';
 import { BudgetDirector } from 'domain/budgets/entity/budgetDirector';
 import { PostBudgetConfigurationBody } from 'domain/budgets/types/request';
