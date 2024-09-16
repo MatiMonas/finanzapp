@@ -1,0 +1,102 @@
+openapi: 3.0.0
+info:
+  title: FinanzApp API
+  description: API Documentation for FinanzApp
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+tags:
+  - name: Users
+    description: Operations related to users
+  - name: Budgets
+    description: Operations related to budget configurations
+
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully
+
+  /budgets:
+    post:
+      tags:
+        - Budgets
+      summary: Create a new budget configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetConfiguration'
+      responses:
+        '201':
+          description: Budget configuration created successfully
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: number
+      required:
+        - username
+        - email
+        - roles
+
+    BudgetConfiguration:
+      type: object
+      properties:
+        user_id:
+          type: string
+        budget_configuration_name:
+          type: string
+        budgets:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              percentage:
+                type: integer
+                minimum: 1
+                maximum: 100
+      required:
+        - user_id
+        - budget_configuration_name
+        - budgets
