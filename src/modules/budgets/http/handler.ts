@@ -3,6 +3,7 @@ import { IBudgetUsecase } from '../usecase';
 import {
   DeleteBudgetConfigurationBody,
   DeleteBudgetConfigurationParams,
+  DeleteBudgetConfigurationPayload,
   PatchBudgetBody,
   PatchBudgetParams,
   PostBudgetConfigurationBody,
@@ -42,9 +43,11 @@ export default class BudgetsHandler {
     const { id: budget_configuration_id } = req.params;
     const { user_id } = req.body;
 
-    return this.budgetsUseCase.deleteBudgetConfiguration(
+    const budgetToDelete: DeleteBudgetConfigurationPayload = {
       budget_configuration_id,
-      user_id
-    );
+      user_id,
+    };
+
+    return this.budgetsUseCase.deleteBudgetConfiguration(budgetToDelete);
   };
 }

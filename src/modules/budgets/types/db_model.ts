@@ -14,3 +14,12 @@ export type BudgetWithoutTimestamps = {
   monthly_wage_id: number | null;
   user_id: string;
 } | null;
+
+export type BudgetConfigurationWhere = Partial<{
+  id: number;
+  name: string;
+  user_id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at?: Date;
+}>;

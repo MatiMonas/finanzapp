@@ -70,6 +70,12 @@ export const BudgetsNotFoundError = errorFactory({
   statusCode: STATUS_CODES.NOT_FOUND,
   code: ERROR_CODES.BUDGETS_NOT_FOUND_ERROR,
 });
+
+export const BudgetConfigurationNotFoundError = errorFactory({
+  name: ERROR_NAMES.BUDGET_CONFIGURATION_NOT_FOUND_ERROR,
+  statusCode: STATUS_CODES.NOT_FOUND,
+  code: ERROR_CODES.BUDGET_CONFIGURATION_NOT_FOUND_ERROR,
+});
 // -------------------------------------
 
 export const DatabaseError = errorFactory({

@@ -7,15 +7,13 @@
     "start": "NODE_PATH=./build node build/app.js",
     "dev": "nodemon -L --inspect=0.0.0.0:9229 --signal SIGINT --nolazy src/app.ts",
     "build": "npx rimraf ./build && npx prisma generate && npx prisma generate --schema=prisma/platform.prisma && tsc -p tsconfig.build.json",
-    "test": "env-cmd -f .env.test jest --runInBand --silent --verbose",
+    "test": "env-cmd -f .env.test jest --runInBand --silent ",
     "coverage": "env-cmd -f .env.test npx jest --runInBand --coverage",
     "setup": "./setup.sh",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --create-only",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:deploy-test": "dotenv -e .env.test -- prisma migrate deploy",
-    "test:unit": "jest ./tests/unit",
-    "test:integration": "dotenv -e .env.test -- jest ./tests/integration"
+    "prisma:deploy-test": "dotenv -e .env.test -- prisma migrate deploy"
   },
   "keywords": [],
   "author": "",

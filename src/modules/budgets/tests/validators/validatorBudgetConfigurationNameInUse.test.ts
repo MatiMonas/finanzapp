@@ -3,25 +3,19 @@ import { PostBudgetConfigurationBody } from 'modules/budgets/types/request';
 import { ValidatorBudgetConfigurationNameInUse } from 'modules/budgets/validators/validatorBudgetConfigurationNameInUse';
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
-
-const mockBudgetRepository = () => {
-  return {
-    findBudgetConfigurationByName: jest.fn(),
-  };
-};
+import { mockBudgetRepository } from '__mocks__/Budget';
 
 describe('ValidatorBudgetConfigurationNameInUse', () => {
-  let budgetRepository: jest.Mocked<BudgetRepository>;
   let validator: ValidatorBudgetConfigurationNameInUse;
 
   beforeEach(() => {
-    budgetRepository =
-      mockBudgetRepository() as unknown as jest.Mocked<BudgetRepository>;
-    validator = new ValidatorBudgetConfigurationNameInUse(budgetRepository);
+    validator = new ValidatorBudgetConfigurationNameInUse(mockBudgetRepository);
   });
 
   test('OK - Budget configuration name is not used', async () => {
-    budgetRepository.findBudgetConfigurationByName.mockResolvedValueOnce(null);
+    (
+      mockBudgetRepository.findUserBudgetConfigurationByName as jest.Mock
+    ).mockResolvedValueOnce(null);
 
     const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
@@ -45,9 +39,9 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
       name: 'Basico',
     };
 
-    budgetRepository.findBudgetConfigurationByName.mockResolvedValueOnce(
-      budgetConfigurationResponse
-    );
+    (
+      mockBudgetRepository.findUserBudgetConfigurationByName as jest.Mock
+    ).mockResolvedValueOnce(budgetConfigurationResponse);
 
     const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',

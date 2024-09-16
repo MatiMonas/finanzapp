@@ -3,6 +3,7 @@ import Validator from '../../../validator';
 import { IBudgetRepository } from '../repository/budget-repository';
 import {
   CreateBudgetPayload,
+  DeleteBudgetConfigurationPayload,
   PatchBudgetBody,
   PostBudgetConfigurationBody,
 } from '../types/request';
@@ -15,6 +16,7 @@ import {
   ValidatorBudgetChange,
 } from '../validators/validatorBudgetChange';
 import { DatabaseError } from 'errors';
+import { ValidatorIsBudgetConfigurationFromUser } from '../validators/validatorIsBudgetConfigurationFromUser';
 
 export interface IBudgetUsecase {
   createBudget(budgetData: PostBudgetConfigurationBody): Promise<Boolean>;
@@ -22,8 +24,7 @@ export interface IBudgetUsecase {
     budgetData: PatchBudgetBody
   ): Promise<Boolean>;
   deleteBudgetConfiguration(
-    budget_configuration_id: number,
-    user_id: string
+    budgetToDelete: DeleteBudgetConfigurationPayload
   ): Promise<Boolean>;
 }
 
@@ -128,10 +129,13 @@ export default class BudgetUsecase implements IBudgetUsecase {
   }
 
   async deleteBudgetConfiguration(
-    budget_configuration_id: number,
-    user_id: string
+    budgetToDelete: DeleteBudgetConfigurationPayload
   ): Promise<Boolean> {
-    const modelValidator = Validator.createValidatorChain([]);
+    const modelValidator = Validator.createValidatorChain([
+      new ValidatorIsBudgetConfigurationFromUser(this.budgetRepository),
+    ]);
+
+    const { budget_configuration_id, user_id } = budgetToDelete;
 
     const validatedBudgetData = await modelValidator.validate({
       budget_configuration_id,

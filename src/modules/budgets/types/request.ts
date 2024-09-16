@@ -44,6 +44,6 @@ export type DeleteBudgetConfigurationBody = {
   user_id: string;
 };
 
-export type DeleteBudgetPayload = DeleteBudgetConfigurationBody & {
+export type DeleteBudgetConfigurationPayload = DeleteBudgetConfigurationBody & {
   budget_configuration_id: DeleteBudgetConfigurationParams['id'];
 };

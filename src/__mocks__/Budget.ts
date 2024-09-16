@@ -8,11 +8,12 @@ export const mockBudgetUseCase = {
 } as unknown as BudgetUsecase;
 
 export const mockBudgetRepository = {
+  findBudgetConfigurationWhere: jest.fn(),
   createBudgetConfiguration: jest.fn(),
   createBudget: jest.fn(),
   updateBudgetConfigurationName: jest.fn(),
   updateBudgets: jest.fn(),
   deleteBudgets: jest.fn(),
   getBudgetsByConfigurationId: jest.fn(),
-  findBudgetConfigurationByName: jest.fn(),
+  findUserBudgetConfigurationByName: jest.fn(),
 } as unknown as BudgetRepository;

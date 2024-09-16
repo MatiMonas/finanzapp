@@ -37,6 +37,64 @@ describe('BudgetRepository', () => {
     await prisma.$disconnect();
   });
 
+  describe('findBudgetConfigurationWhere', () => {
+    test('OK - Returns budget configurations without deleted_at', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const userId = await userRepository.create(userData);
+      const budgetConfigurationName = 'ActiveBudgetConfig';
+
+      const budgetConfigurationId =
+        await budgetRepository.createBudgetConfiguration(
+          budgetConfigurationName,
+          userId
+        );
+
+      await prisma.budgets.create({
+        data: {
+          name: 'test',
+          budget_configuration_id: budgetConfigurationId,
+          user_id: userId,
+          percentage: 100,
+        },
+      });
+
+      const configs = await budgetRepository.findBudgetConfigurationWhere({
+        user_id: userId,
+      });
+
+      expect(configs).toHaveLength(1);
+      expect(configs[0].name).toBe(budgetConfigurationName);
+      expect(configs[0].deleted_at).toBeNull();
+      expect(configs[0].budgets[0].name).toBe('test');
+    });
+
+    test('ERROR - Handles Prisma client error', async () => {
+      jest
+        .spyOn(prisma.budgetsConfigurations, 'findMany')
+        .mockRejectedValueOnce(new Error('Prisma client error'));
+
+      try {
+        await budgetRepository.findBudgetConfigurationWhere({
+          user_id: 'some-user-uuid',
+        });
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.statusCode).toBe(500);
+        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.message).toBe(
+          'Unable to find budget configurations with the specified criteria'
+        );
+      }
+    });
+  });
+
   describe('createBudgetConfiguration', () => {
     test('OK - Creates budget configuration', async () => {
       const userId = 'some-user-uuid';
@@ -62,6 +120,80 @@ describe('BudgetRepository', () => {
         expect(error.statusCode).toBe(500);
         expect(error.cause.message).toMatch(/Prisma client error/);
         expect(error.message).toBe('Unable to create budget configuration');
+      }
+    });
+  });
+
+  describe('deleteBudgetConfiguration', () => {
+    test('OK - Deletes budget configuration and related budgets successfully', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userData: PostUserParams = {
+        username: 'test',
+        email: 'test@example.com',
+        password: 'securepassword',
+        roles: [1],
+      };
+
+      const user_id = await userRepository.create(userData);
+      const budgetConfigurationName = 'MyBudgetConfig';
+
+      const configId = await budgetRepository.createBudgetConfiguration(
+        budgetConfigurationName,
+        user_id
+      );
+
+      await prisma.budgets.createMany({
+        data: [
+          {
+            name: 'Test',
+            percentage: 80,
+            user_id,
+            budget_configuration_id: configId,
+          },
+          {
+            name: 'Test 2',
+            percentage: 20,
+            user_id,
+            budget_configuration_id: configId,
+          },
+        ],
+      });
+
+      await budgetRepository.deleteBudgetConfiguration({
+        user_id,
+        budget_configuration_id: configId,
+      });
+
+      const deletedConfig = await prisma.budgetsConfigurations.findUnique({
+        where: { id: configId },
+      });
+
+      expect(deletedConfig).toBeNull();
+
+      const deletedBudgets = await prisma.budgets.findMany({
+        where: { budget_configuration_id: configId },
+      });
+
+      expect(deletedBudgets).toHaveLength(0);
+    });
+
+    test('ERROR - Handles Prisma client error', async () => {
+      jest
+        .spyOn(prisma.budgetsConfigurations, 'deleteMany')
+        .mockRejectedValueOnce(new Error('Prisma client error'));
+
+      try {
+        await budgetRepository.deleteBudgetConfiguration({
+          user_id: 'some-user-uuid',
+          budget_configuration_id: 1,
+        });
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.statusCode).toBe(500);
+        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.message).toBe(
+          'Unable to delete budget configuration with id 1'
+        );
       }
     });
   });
@@ -158,7 +290,7 @@ describe('BudgetRepository', () => {
         userId
       );
 
-      const config = await budgetRepository.findBudgetConfigurationByName(
+      const config = await budgetRepository.findUserBudgetConfigurationByName(
         budgetConfigurationName,
         userId
       );
@@ -169,7 +301,7 @@ describe('BudgetRepository', () => {
     });
 
     test('OK - Returns null when budget configuration does not exist', async () => {
-      const config = await budgetRepository.findBudgetConfigurationByName(
+      const config = await budgetRepository.findUserBudgetConfigurationByName(
         'NonExistingConfig',
         'some-user-uuid'
       );
@@ -182,7 +314,7 @@ describe('BudgetRepository', () => {
         .mockRejectedValueOnce(new Error('Prisma client error'));
 
       try {
-        await budgetRepository.findBudgetConfigurationByName(
+        await budgetRepository.findUserBudgetConfigurationByName(
           'SomeConfig',
           'uuid'
         );

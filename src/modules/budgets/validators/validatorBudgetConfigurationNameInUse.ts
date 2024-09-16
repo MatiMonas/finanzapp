@@ -15,7 +15,7 @@ export class ValidatorBudgetConfigurationNameInUse extends Validator {
     const { budget_configuration_name, user_id } = body;
 
     const isNameUsed =
-      await this.budgetRespoitory.findBudgetConfigurationByName(
+      await this.budgetRespoitory.findUserBudgetConfigurationByName(
         budget_configuration_name,
         user_id
       );

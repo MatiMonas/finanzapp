@@ -196,4 +196,8 @@ describe('BudgetUsecase', () => {
       ).rejects.toThrow(DatabaseError);
     });
   });
+
+  describe('deleteBudgetConfiguration', () => {
+    it('OK - should return true if budget configuration is successfully deleted', () => {});
+  });
 });
