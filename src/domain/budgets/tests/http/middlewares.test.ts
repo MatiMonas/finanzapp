@@ -1,5 +1,6 @@
 import {
   createBudgetMiddleware,
+  deleteBudgetConfigurationMiddleware,
   patchBudgetConfigurationMiddleware,
 } from 'domain/budgets/http/middlewares';
 import express from 'express';
@@ -8,7 +9,7 @@ import { getValidationMessage } from 'utils/helpers/functions';
 
 const app = express();
 app.use(express.json());
-app.post('/budgets', createBudgetMiddleware, (req, res) => {
+app.post('/budget-configurations', createBudgetMiddleware, (req, res) => {
   res.status(200).json({ message: 'Success' });
 });
 app.patch(
@@ -18,11 +19,18 @@ app.patch(
     res.status(200).json({ message: 'Success' });
   }
 );
+app.delete(
+  '/budget-configurations/:id',
+  deleteBudgetConfigurationMiddleware,
+  (req, res) => {
+    res.status(200).json({ message: 'Success' });
+  }
+);
 
 describe('createBudgetMiddleware', () => {
   it('OK - should proceed to the next middleware if validation passes', async () => {
     const response = await request(app)
-      .post('/budgets')
+      .post('/budget-configurations')
       .send({
         user_id: '123e4567-e89b-12d3-a456-426614174000',
         budget_configuration_name: 'Basic Configuration',
@@ -40,7 +48,7 @@ describe('createBudgetMiddleware', () => {
   describe('user_id', () => {
     it('ERROR - "Invalid UUID format", when user_id is invalid', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: 'invalid-uuid',
           budget_configuration_name: 'Basic Configuration',
@@ -63,7 +71,7 @@ describe('createBudgetMiddleware', () => {
   describe('budget_configuration_name', () => {
     it('ERROR - "Required", when no budget_configuration_name is sent', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budgets: [
@@ -83,7 +91,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget configuration name must be at least 1 characters long', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: '',
@@ -106,7 +114,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget configuration name must be at most 50 characters long', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'a'.repeat(51),
@@ -130,7 +138,7 @@ describe('createBudgetMiddleware', () => {
 
   describe('budgets', () => {
     it('ERROR - "Required", when no budgets field is sent', async () => {
-      const response = await request(app).post('/budgets').send({
+      const response = await request(app).post('/budget-configurations').send({
         user_id: '123e4567-e89b-12d3-a456-426614174000',
         budget_configuration_name: 'Basic Configuration',
       });
@@ -144,7 +152,7 @@ describe('createBudgetMiddleware', () => {
     });
 
     it('ERROR - Budgets must be a non-empty array', async () => {
-      const response = await request(app).post('/budgets').send({
+      const response = await request(app).post('/budget-configurations').send({
         user_id: '123e4567-e89b-12d3-a456-426614174000',
         budget_configuration_name: 'Basic Configuration',
         budgets: [],
@@ -160,7 +168,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget item name is required', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -177,7 +185,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget item name must be at most 30 characters long', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -196,7 +204,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget item percentage must be at least 1', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -213,7 +221,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget item percentage must be at most 100', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -230,7 +238,7 @@ describe('createBudgetMiddleware', () => {
 
     it('ERROR - Budget item percentage must be an integer', async () => {
       const response = await request(app)
-        .post('/budgets')
+        .post('/budget-configurations')
         .send({
           user_id: '123e4567-e89b-12d3-a456-426614174000',
           budget_configuration_name: 'Basic Configuration',
@@ -723,5 +731,45 @@ describe('updateBudgetMiddleware', () => {
         );
       });
     });
+  });
+});
+
+describe('deleteBudgetConfigurationMiddleware', () => {
+  it('OK - Passes with correct user_id', async () => {
+    const response = await request(app)
+      .delete('/budget-configurations/1')
+      .send({
+        user_id: '123e4567-e89b-12d3-a456-426614174000',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Success');
+  });
+
+  it('ERROR - Should fail if user_id is not sent', async () => {
+    const response = await request(app)
+      .delete('/budget-configurations/1')
+      .send({});
+
+    const {
+      errors: { fieldErrors },
+    } = response.body;
+
+    expect(response.status).toBe(400);
+    expect(fieldErrors.user_id[0]).toBe(
+      getValidationMessage('user_id', 'a UUID string', 'is required')
+    );
+  });
+  it('ERROR - Should fail if user_id is not a UUID', async () => {
+    const response = await request(app)
+      .delete('/budget-configurations/1')
+      .send({ user_id: '123' });
+
+    const {
+      errors: { fieldErrors },
+    } = response.body;
+
+    expect(response.status).toBe(400);
+    expect(fieldErrors.user_id[0]).toBe('Invalid UUID format');
   });
 });

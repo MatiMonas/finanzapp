@@ -135,3 +135,32 @@ export const patchBudgetConfigurationMiddleware = (
   req.body = result.data;
   next();
 };
+
+export const deleteBudgetConfigurationMiddleware = (
+  req: Request<any, any, any, any>,
+  res: Response,
+  next: NextFunction
+) => {
+  const DeleteSchema = z.object({
+    user_id: z
+      .string({
+        message: getValidationMessage(
+          'user_id',
+          'a UUID string',
+          'is required'
+        ),
+      })
+      .uuid('Invalid UUID format'),
+  });
+
+  const result = DeleteSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res
+      .status(400)
+      .json({ status: 'fail', errors: result.error.flatten() });
+  }
+
+  req.body = result.data;
+  next();
+};

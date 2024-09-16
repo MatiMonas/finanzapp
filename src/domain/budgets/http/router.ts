@@ -2,6 +2,7 @@ import { Router } from 'express';
 import BudgetsHandler from './handler';
 import {
   createBudgetMiddleware,
+  deleteBudgetConfigurationMiddleware,
   patchBudgetConfigurationMiddleware,
 } from './middlewares';
 import createHandler from 'infrastructure/http/createHandler';
@@ -148,6 +149,8 @@ export default class BudgetRouter {
 
     router.delete(
       '/budget-configurations/:id',
+      validateIdMiddleware,
+      deleteBudgetConfigurationMiddleware,
       createHandler(
         this.handler.deleteBudgetConfiguration,
         STATUS_CODES.NO_CONTENT

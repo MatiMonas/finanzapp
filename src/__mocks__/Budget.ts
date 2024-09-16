@@ -4,6 +4,7 @@ import BudgetUsecase from 'domain/budgets/usecase';
 export const mockBudgetUseCase = {
   createBudget: jest.fn(),
   partialUpdateBudgetConfiguration: jest.fn(),
+  deleteBudgetConfiguration: jest.fn(),
 } as unknown as BudgetUsecase;
 
 export const mockBudgetRepository = {

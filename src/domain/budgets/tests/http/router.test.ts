@@ -50,7 +50,7 @@ describe('BudgetRouter', () => {
     });
   });
 
-  describe('PATCH /budget-configurations/:budget_configuration_id', () => {
+  describe('PATCH /budget-configurations/:id', () => {
     it('should have a PATCH /budget-configurations route', async () => {
       (
         mockBudgetUseCase.partialUpdateBudgetConfiguration as jest.Mock
@@ -75,6 +75,33 @@ describe('BudgetRouter', () => {
         .send({
           user_id: 'invalid-uuid',
           budgets: [{ name: 'Savings', percentage: 101 }],
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('status', 'fail');
+    });
+  });
+
+  describe('DELETE /budget-configurations/:id', () => {
+    it('should have a DELETE /budget-configurations/:id route', async () => {
+      (
+        mockBudgetUseCase.deleteBudgetConfiguration as jest.Mock
+      ).mockResolvedValue(true);
+
+      const response = await request(app)
+        .delete('/budget-configurations/1')
+        .send({
+          user_id: '123e4567-e89b-12d3-a456-426614174000',
+        });
+
+      expect(response.status).toBe(STATUS_CODES.NO_CONTENT);
+    });
+
+    it('should return 400 if validation fails for DELETE', async () => {
+      const response = await request(app)
+        .delete('/budget-configurations/1')
+        .send({
+          user_id: 'invalid-uuid',
         });
 
       expect(response.status).toBe(400);
