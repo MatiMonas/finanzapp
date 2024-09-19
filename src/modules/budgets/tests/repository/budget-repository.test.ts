@@ -280,55 +280,6 @@ describe('BudgetRepository', () => {
     });
   });
 
-  describe('findBudgetConfigurationByName', () => {
-    test('OK - Returns budget configuration when it exists', async () => {
-      const userId = 'some-user-uuid';
-      const budgetConfigurationName = 'ExistingConfig';
-
-      await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        userId
-      );
-
-      const config = await budgetRepository.findUserBudgetConfigurationByName(
-        budgetConfigurationName,
-        userId
-      );
-
-      expect(config).not.toBeNull();
-      expect(config?.name).toBe(budgetConfigurationName);
-      expect(config?.user_id).toBe(userId);
-    });
-
-    test('OK - Returns null when budget configuration does not exist', async () => {
-      const config = await budgetRepository.findUserBudgetConfigurationByName(
-        'NonExistingConfig',
-        'some-user-uuid'
-      );
-      expect(config).toBeNull();
-    });
-
-    test('ERROR - Handles Prisma client error', async () => {
-      jest
-        .spyOn(prisma.budgetsConfigurations, 'findFirst')
-        .mockRejectedValueOnce(new Error('Prisma client error'));
-
-      try {
-        await budgetRepository.findUserBudgetConfigurationByName(
-          'SomeConfig',
-          'uuid'
-        );
-      } catch (error: any) {
-        expect(error).toBeInstanceOf(DatabaseError);
-        expect(error.statusCode).toBe(500);
-        expect(error.cause.message).toMatch(/Prisma client error/);
-        expect(error.message).toBe(
-          'Unable to find budget configuration by name'
-        );
-      }
-    });
-  });
-
   describe('getBudgetsByConfigurationId', () => {
     test('OK - Returns budgets for a given configuration ID', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });

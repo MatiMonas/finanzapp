@@ -6,6 +6,7 @@ import { BudgetDirector } from 'modules/budgets/entity/budgetDirector';
 import { PostBudgetConfigurationBody } from 'modules/budgets/types/request';
 import { BudgetChangeValidatedData } from 'modules/budgets/validators/validatorBudgetChange';
 import { DatabaseError } from 'errors';
+import { ValidatorIsBudgetConfigurationFromUser } from 'modules/budgets/validators/validatorIsBudgetConfigurationFromUser';
 
 describe('BudgetUsecase', () => {
   let budgetUsecase: BudgetUsecase;
@@ -198,6 +199,35 @@ describe('BudgetUsecase', () => {
   });
 
   describe('deleteBudgetConfiguration', () => {
-    it('OK - should return true if budget configuration is successfully deleted', () => {});
+    it('OK - should return true if the budget configuration is successfully deleted', async () => {
+      const budgetToDelete = {
+        budget_configuration_id: 1,
+        user_id: 'user-uuid',
+      };
+
+      const validatedBudgetData = { ...budgetToDelete };
+
+      Validator.createValidatorChain = jest.fn().mockReturnValue({
+        validate: jest.fn().mockResolvedValue(validatedBudgetData),
+      });
+
+      (
+        mockBudgetRepository.deleteBudgetConfiguration as jest.Mock
+      ).mockResolvedValue(true);
+
+      const result = await budgetUsecase.deleteBudgetConfiguration(
+        budgetToDelete
+      );
+
+      expect(result).toBe(true);
+      expect(Validator.createValidatorChain).toHaveBeenCalledWith([
+        expect.any(ValidatorIsBudgetConfigurationFromUser),
+      ]);
+      expect(
+        mockBudgetRepository.deleteBudgetConfiguration
+      ).toHaveBeenCalledWith(validatedBudgetData);
+    });
+
+    it('ERROR - should throw an error if validations fails', async () => {});
   });
 });

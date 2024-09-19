@@ -14,8 +14,8 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
 
   test('OK - Budget configuration name is not used', async () => {
     (
-      mockBudgetRepository.findUserBudgetConfigurationByName as jest.Mock
-    ).mockResolvedValueOnce(null);
+      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
+    ).mockResolvedValueOnce([]);
 
     const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
@@ -33,14 +33,16 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
   });
 
   test('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
-    const budgetConfigurationResponse = {
-      id: 9,
-      user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
-      name: 'Basico',
-    };
+    const budgetConfigurationResponse = [
+      {
+        id: 9,
+        user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
+        name: 'Basico',
+      },
+    ];
 
     (
-      mockBudgetRepository.findUserBudgetConfigurationByName as jest.Mock
+      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
     ).mockResolvedValueOnce(budgetConfigurationResponse);
 
     const body: PostBudgetConfigurationBody = {

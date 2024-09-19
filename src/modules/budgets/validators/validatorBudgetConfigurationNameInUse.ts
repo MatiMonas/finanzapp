@@ -14,13 +14,13 @@ export class ValidatorBudgetConfigurationNameInUse extends Validator {
   async validate(body: PostBudgetConfigurationBody) {
     const { budget_configuration_name, user_id } = body;
 
-    const isNameUsed =
-      await this.budgetRespoitory.findUserBudgetConfigurationByName(
-        budget_configuration_name,
-        user_id
-      );
+    const [foundConfiguration] =
+      await this.budgetRespoitory.findBudgetConfigurationWhere({
+        name: budget_configuration_name,
+        user_id,
+      });
 
-    if (isNameUsed) {
+    if (foundConfiguration?.name) {
       throw new BudgetConfigurationNameAlreadyInUseError(
         'Budget configuration name already in use'
       );

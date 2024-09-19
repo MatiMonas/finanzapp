@@ -10,10 +10,10 @@ export const mockBudgetUseCase = {
 export const mockBudgetRepository = {
   findBudgetConfigurationWhere: jest.fn(),
   createBudgetConfiguration: jest.fn(),
+  deleteBudgetConfiguration: jest.fn(),
   createBudget: jest.fn(),
   updateBudgetConfigurationName: jest.fn(),
   updateBudgets: jest.fn(),
   deleteBudgets: jest.fn(),
   getBudgetsByConfigurationId: jest.fn(),
-  findUserBudgetConfigurationByName: jest.fn(),
 } as unknown as BudgetRepository;

@@ -20,11 +20,6 @@ export interface IBudgetRepository {
     configurationId: number
   ): Promise<BudgetWithoutTimestamps[]>;
 
-  findUserBudgetConfigurationByName(
-    budgetConfigurationName: string,
-    user_id: string
-  ): Promise<FindBudgetConfigurationByName>;
-
   createBudgetConfiguration(
     budgetConfigurationName: string,
     user_id: string
@@ -99,32 +94,6 @@ export default class BudgetRepository implements IBudgetRepository {
           cause: error,
         }
       );
-    }
-  }
-
-  async findUserBudgetConfigurationByName(
-    budgetConfigurationName: string,
-    user_id: string
-  ): Promise<FindBudgetConfigurationByName> {
-    try {
-      const budgetConfiguration =
-        await this.prismaClient.budgetsConfigurations.findFirst({
-          where: {
-            user_id,
-            name: budgetConfigurationName,
-          },
-          select: {
-            id: true,
-            user_id: true,
-            name: true,
-          },
-        });
-
-      return budgetConfiguration;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to find budget configuration by name', {
-        cause: error,
-      });
     }
   }
 
