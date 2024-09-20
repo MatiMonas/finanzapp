@@ -164,7 +164,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
     );
   }
 
-  async getBudgetDetails(budgetId: number): Promise<any> {
+  async getBudgetDetails(budgetId: number): Promise<Budgets | null> {
     return await this.budgetRepository.getBudgetDetails(budgetId);
   }
 }
