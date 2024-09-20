@@ -9,6 +9,7 @@ import express, {
 import cors from 'cors';
 import env from 'utils/env';
 import { ExceptionError } from 'errors/exceptionErrors';
+import morgan from 'morgan';
 const { PORT } = env;
 
 type NormalMiddleware = (
@@ -37,6 +38,7 @@ export default class Express {
   middlewares() {
     this.app.use(cors());
     this.app.use(express.json());
+    this.app.use(morgan('dev'));
   }
 
   addRoute = (path: string, module: Router) => {

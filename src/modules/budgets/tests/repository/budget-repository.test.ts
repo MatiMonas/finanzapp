@@ -125,7 +125,7 @@ describe('BudgetRepository', () => {
   });
 
   describe('deleteBudgetConfiguration', () => {
-    test('OK - Deletes budget configuration and related budgets successfully', async () => {
+    test('OK - Soft deletes budget configurations and related budgets successfully', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
       const userData: PostUserParams = {
         username: 'test',
@@ -164,17 +164,17 @@ describe('BudgetRepository', () => {
         budget_configuration_id: configId,
       });
 
-      const deletedConfig = await prisma.budgetsConfigurations.findUnique({
-        where: { id: configId },
-      });
+      const deletedConfig = await budgetRepository.findBudgetConfigurationWhere(
+        { id: configId }
+      );
 
-      expect(deletedConfig).toBeNull();
+      expect(deletedConfig).toEqual([]);
 
       const deletedBudgets = await prisma.budgets.findMany({
         where: { budget_configuration_id: configId },
       });
 
-      expect(deletedBudgets).toHaveLength(0);
+      expect(deletedBudgets).toHaveLength(2);
     });
 
     test('ERROR - Handles Prisma client error', async () => {

@@ -38,7 +38,7 @@ export default class BudgetsHandler {
     const { id: budget_configuration_id } = req.params;
 
     const payload = {
-      budget_configuration_id,
+      budget_configuration_id: Number(budget_configuration_id),
       ...req.body,
     };
 
@@ -56,7 +56,7 @@ export default class BudgetsHandler {
     const { user_id } = req.body;
 
     const budgetToDelete: DeleteBudgetConfigurationPayload = {
-      budget_configuration_id,
+      budget_configuration_id: Number(budget_configuration_id),
       user_id,
     };
 

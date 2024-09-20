@@ -10,6 +10,7 @@ import {
   BudgetConfigurationWithBudgets,
   BudgetWithoutTimestamps,
 } from '../types/db_model';
+import moment from 'moment';
 
 export interface IBudgetRepository {
   findBudgetConfigurationWhere(
@@ -150,16 +151,22 @@ export default class BudgetRepository implements IBudgetRepository {
     const { user_id, budget_configuration_id } = budgetToDelete;
     try {
       return await this.prismaClient.$transaction(async (prisma) => {
-        await prisma.budgets.deleteMany({
+        await prisma.budgets.updateMany({
           where: {
             budget_configuration_id,
           },
+          data: {
+            deleted_at: new Date(),
+          },
         });
 
-        await prisma.budgetsConfigurations.deleteMany({
+        await prisma.budgetsConfigurations.updateMany({
           where: {
             id: budget_configuration_id,
             user_id: user_id,
+          },
+          data: {
+            deleted_at: new Date(),
           },
         });
 
