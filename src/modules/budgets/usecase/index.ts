@@ -19,6 +19,7 @@ import {
 import { DatabaseError } from 'errors';
 import { ValidatorIsBudgetConfigurationFromUser } from '../validators/validatorIsBudgetConfigurationFromUser';
 import { BudgetConfigurationWithBudgets } from '../types/db_model';
+import { Budgets } from '@prisma/client';
 
 export interface IBudgetUsecase {
   getBudgetConfigurations(
@@ -31,6 +32,8 @@ export interface IBudgetUsecase {
   deleteBudgetConfiguration(
     budgetToDelete: DeleteBudgetConfigurationPayload
   ): Promise<Boolean>;
+
+  getBudgetDetails(budgetId: number): Promise<Budgets | null>;
 }
 
 export default class BudgetUsecase implements IBudgetUsecase {
@@ -159,5 +162,9 @@ export default class BudgetUsecase implements IBudgetUsecase {
     return await this.budgetRepository.deleteBudgetConfiguration(
       validatedBudgetData
     );
+  }
+
+  async getBudgetDetails(budgetId: number): Promise<any> {
+    return await this.budgetRepository.getBudgetDetails(budgetId);
   }
 }

@@ -34,6 +34,8 @@ export interface IBudgetRepository {
     budgetToDelete: DeleteBudgetConfigurationPayload
   ): Promise<Boolean>;
 
+  getBudgetDetails(budgetId: number): Promise<Budgets | null>;
+
   createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean>;
 
   updateBudgets(budgetData: BudgetAction[]): Promise<boolean>;
@@ -82,7 +84,6 @@ export default class BudgetRepository implements IBudgetRepository {
           percentage: true,
           remaining_allocation: true,
           budget_configuration_id: true,
-          transfer_to_budget_id: true,
           monthly_wage_id: true,
           user_id: true,
         },
@@ -172,6 +173,22 @@ export default class BudgetRepository implements IBudgetRepository {
     }
   }
 
+  async getBudgetDetails(budgetId: number): Promise<Budgets | null> {
+    try {
+      return await this.prismaClient.budgets.findUnique({
+        where: { id: budgetId },
+        include: {
+          alerts: true,
+          budget_configuration: true,
+          monthly_wage: true,
+        },
+      });
+    } catch (error: any) {
+      throw new DatabaseError('Unable to get budget details', {
+        cause: error,
+      });
+    }
+  }
   async createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean> {
     try {
       await this.prismaClient.$transaction(async (prisma) => {

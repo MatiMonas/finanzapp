@@ -2,7 +2,7 @@ import { mockBudgetUseCase } from '__mocks__/Budget';
 import BudgetsHandler from 'modules/budgets/http/handler';
 import {
   PatchBudgetBody,
-  PatchBudgetParams,
+  BudgetIdParam,
   PatchBudgetPayload,
   PostBudgetConfigurationBody,
 } from 'modules/budgets/types/request';
@@ -54,7 +54,7 @@ describe('BudgetsHandler', () => {
       params: {
         budget_configuration_id: 1,
       },
-    } as unknown as Request<PatchBudgetParams, any, PatchBudgetBody>;
+    } as unknown as Request<BudgetIdParam, any, PatchBudgetBody>;
 
     await budgetsHandler.partialUpdateBudgetConfiguration(req);
 

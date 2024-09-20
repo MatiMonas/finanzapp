@@ -6,7 +6,7 @@ import {
   DeleteBudgetConfigurationParams,
   DeleteBudgetConfigurationPayload,
   PatchBudgetBody,
-  PatchBudgetParams,
+  BudgetIdParam,
   PostBudgetConfigurationBody,
 } from '../types/request';
 
@@ -16,6 +16,11 @@ export default class BudgetsHandler {
   constructor(BudgetUsecase: IBudgetUsecase) {
     this.budgetsUseCase = BudgetUsecase;
   }
+
+  getBudget = (req: Request<BudgetIdParam, any, any, any>) => {
+    const { id: budget_id } = req.params;
+    return this.budgetsUseCase.getBudgetDetails(budget_id);
+  };
 
   getBudgetConfigurations = (
     req: Request<any, any, any, BudgetConfigurationParams>
@@ -28,7 +33,7 @@ export default class BudgetsHandler {
   };
 
   partialUpdateBudgetConfiguration = (
-    req: Request<PatchBudgetParams, any, PatchBudgetBody>
+    req: Request<BudgetIdParam, any, PatchBudgetBody>
   ) => {
     const { id: budget_configuration_id } = req.params;
 

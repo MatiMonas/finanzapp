@@ -12,13 +12,16 @@ app.use(express.json());
 app.use(budgetRouter.getRouter());
 
 describe('BudgetRouter', () => {
-  it('should have 4 routes', () => {
+  it('should have 5 routes', () => {
     const router = budgetRouter.getRouter();
     const routeCount = countRoutes(router);
-    expect(routeCount).toBe(4);
+    expect(routeCount).toBe(5);
   });
 
-  describe(' GET /budget-configuraitons', () => {
+  describe(' GET /budgets/:id', () => {
+    it('should have a GET /budgets/:id route', async () => {});
+  });
+  describe('GET /budget-configuraitons', () => {
     it('should have a GET /budget-configurations route', async () => {
       const mockResponse = [
         {

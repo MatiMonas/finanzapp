@@ -30,6 +30,12 @@ export default class BudgetRouter {
 
   registerRouters(): void {
     router.get(
+      '/budgets/:id',
+      validateIdMiddleware,
+      createHandler(this.handler.getBudget, STATUS_CODES.OK)
+    );
+
+    router.get(
       '/budget-configurations',
       getBudgetConfigurationsMiddleware,
       createHandler(this.handler.getBudgetConfigurations, STATUS_CODES.OK)

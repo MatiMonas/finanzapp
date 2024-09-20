@@ -21,12 +21,12 @@ export type PatchBudgetBody = {
   budgets?: BudgetAction[];
 };
 
-export type PatchBudgetParams = {
+export type BudgetIdParam = {
   id: number;
 };
 
 export type PatchBudgetPayload = PatchBudgetBody & {
-  budget_configuration_id: PatchBudgetParams['id'];
+  budget_configuration_id: BudgetIdParam['id'];
 };
 
 export type CreateBudgetPayload = {
