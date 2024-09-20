@@ -53,7 +53,7 @@ describe('ValidatorBudgetPercentage', () => {
       expect(error.statusCode).toBe(STATUS_CODES.BAD_REQUEST);
       expect(error.code).toBe(ERROR_CODES.BUDGET_PERCENTAGE_ERROR);
       expect(error.name).toBe(ERROR_NAMES.BUDGET_PERCENTAGE_ERROR);
-      expect(error.message).toBe('Budget total percentage must be 100%');
+      expect(error.message).toBe('Budgets total sum percentage must be 100%');
     }
   });
 });
