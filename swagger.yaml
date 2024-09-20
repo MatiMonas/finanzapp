@@ -108,7 +108,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
-  /budgets-configurations:
+  /budget-configurations:
     get:
       tags:
         - Budgets Configurations
