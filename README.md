@@ -110,14 +110,14 @@ The API is documented using Swagger. You can access it at http://localhost:3000/
 
 - [x] Budgets and Budget Configurations.
 - [ ] Monthly Wages and auto calculation of Budgets per month.
-- [] Creation of Categories that will be used when adding expenses.
-- [] Expenses, discounting allocation from budgets when adding new expenses.
-- [] Transfer remaining allocation to another Budget to use in the incoming month if desired.
-- [] Credit Cards and trailing installments per card.
-- [] Pending debts and due dates to fullfill those debts.
-- [] Investments with Sell/Buy price per date.
-- [] Authentication and Authorization.
-- [] Add groups to split/track expenses together with friend/partner/roomie
+- [ ] Creation of Categories that will be used when adding expenses.
+- [ ] Expenses, discounting allocation from budgets when adding new expenses.
+- [ ] Transfer remaining allocation to another Budget to use in the incoming month if desired.
+- [ ] Credit Cards and trailing installments per card.
+- [ ] Pending debts and due dates to fullfill those debts.
+- [ ] Investments with Sell/Buy price per date.
+- [ ] Authentication and Authorization.
+- [ ] Add groups to split/track expenses together with friend/partner/roomie
 
 ## Contributing
 
