@@ -10,7 +10,7 @@ servers:
 tags:
   - name: Users
     description: Operations related to users
-  - name: Budgets
+  - name: Budgets Configurations
     description: Operations related to budget configurations
 
 paths:
@@ -73,10 +73,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
-  /budgets:
+  /budgets-configurations:
+    get:
+      tags:
+        - Budgets Configurations
+      summary: Retrieve budget configurations
+      description: Returns an array of budget configurations, filtered by optional query parameters.
+      parameters:
+        - $ref: '#/components/parameters/GetBudgetConfigurationsFilters'
+      responses:
+        '200':
+          description: A list of budget configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BudgetConfigurationWithBudgets'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Internal server error'
     post:
       tags:
-        - Budgets
+        - Budgets Configurations
       summary: Create a new budget configuration
       requestBody:
         required: true
@@ -103,7 +129,7 @@ paths:
   /budget-configurations/{id}:
     patch:
       tags:
-        - Budgets
+        - Budgets Configurations
       summary: Partially update a budget configuration
       parameters:
         - name: id
@@ -147,7 +173,7 @@ paths:
 
     delete:
       tags:
-        - Budgets
+        - Budgets Configurations
       summary: Delete a budget configuration by ID
       parameters:
         - name: id
@@ -183,8 +209,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+
 components:
+  parameters:
+    GetBudgetConfigurationsFilters:
+      name: filters
+      in: query
+      required: false
+      description: Optional filters for retrieving budget configurations.
+      schema:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: The ID of the budget configuration.
+          name:
+            type: string
+            description: The name of the budget configuration.
+          user_id:
+            type: string
+            format: uuid
+            description: The UUID of the user associated with the budget configuration.
+          created_at:
+            type: string
+            format: date
+            description: The creation date of the budget configuration in `YYYY-MM-DD` format.
+          updated_at:
+            type: string
+            format: date
+            description: The last update date of the budget configuration in `YYYY-MM-DD` format.
+          deleted_at:
+            type: string
+            format: date
+            description: The deletion date of the budget configuration in `YYYY-MM-DD` format.
+
   schemas:
+    BudgetConfigurationWithBudgets:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Basic Configuration'
+        user_id:
+          type: string
+          format: uuid
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        created_at:
+          type: string
+          format: date
+          example: '2024-01-01'
+        updated_at:
+          type: string
+          format: date
+          example: '2024-01-02'
+        deleted_at:
+          type: string
+          format: date
+          nullable: true
+          example: null
+        budgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budgets'
+    Budgets:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Savings'
+        percentage:
+          type: integer
+          example: 30
     PostUser:
       type: object
       properties:

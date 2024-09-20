@@ -12,10 +12,39 @@ app.use(express.json());
 app.use(budgetRouter.getRouter());
 
 describe('BudgetRouter', () => {
-  it('should have 3 routes', () => {
+  it('should have 4 routes', () => {
     const router = budgetRouter.getRouter();
     const routeCount = countRoutes(router);
-    expect(routeCount).toBe(3);
+    expect(routeCount).toBe(4);
+  });
+
+  describe(' GET /budget-configuraitons', () => {
+    it('should have a GET /budget-configurations route', async () => {
+      const mockResponse = [
+        {
+          id: 1,
+          name: 'Basic Configuration',
+          user_id: '123e4567-e89b-12d3-a456-426614174000',
+          created_at: '2024-01-01',
+          updated_at: '2024-01-02',
+          deleted_at: null,
+          budgets: [
+            {
+              name: 'Savings',
+              percentage: 30,
+            },
+          ],
+        },
+      ];
+
+      (
+        mockBudgetUseCase.getBudgetConfigurations as jest.Mock
+      ).mockResolvedValue(mockResponse);
+
+      const response = await request(app).get('/budget-configurations');
+      expect(response.status).toBe(STATUS_CODES.OK);
+      expect(response.body.data).toEqual(mockResponse);
+    });
   });
 
   describe('POST /budget-configurations', () => {
@@ -34,6 +63,7 @@ describe('BudgetRouter', () => {
           ],
         });
 
+      expect(response.body.data).toBe(true);
       expect(response.status).toBe(STATUS_CODES.CREATED);
     });
 
@@ -65,7 +95,7 @@ describe('BudgetRouter', () => {
             { id: 2, name: 'Housing', percentage: 60 },
           ],
         });
-
+      expect(response.body.data).toBe(undefined);
       expect(response.status).toBe(STATUS_CODES.NO_CONTENT);
     });
 
@@ -94,6 +124,7 @@ describe('BudgetRouter', () => {
           user_id: '123e4567-e89b-12d3-a456-426614174000',
         });
 
+      expect(response.body.data).toBe(undefined);
       expect(response.status).toBe(STATUS_CODES.NO_CONTENT);
     });
 

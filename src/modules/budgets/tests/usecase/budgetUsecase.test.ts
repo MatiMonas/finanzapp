@@ -7,12 +7,41 @@ import { PostBudgetConfigurationBody } from 'modules/budgets/types/request';
 import { BudgetChangeValidatedData } from 'modules/budgets/validators/validatorBudgetChange';
 import { DatabaseError } from 'errors';
 import { ValidatorIsBudgetConfigurationFromUser } from 'modules/budgets/validators/validatorIsBudgetConfigurationFromUser';
+import { BudgetConfigurationWithBudgets } from 'modules/budgets/types/db_model';
 
 describe('BudgetUsecase', () => {
   let budgetUsecase: BudgetUsecase;
 
   beforeEach(() => {
     budgetUsecase = new BudgetUsecase(mockBudgetRepository as any);
+  });
+
+  describe('getBudgetConfigurations', () => {
+    it('OK - Should return budget configurations', async () => {
+      const mockResult = [
+        {
+          id: 1,
+          name: 'Basic Configuration',
+          user_id: '123e4567-e89b-12d3-a456-426614174000',
+          created_at: '2024-01-01',
+          updated_at: '2024-01-02',
+          deleted_at: null,
+          budgets: [
+            {
+              name: 'Savings',
+              percentage: 30,
+            },
+          ],
+        },
+      ];
+      (
+        mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
+      ).mockResolvedValue(mockResult);
+
+      const result = await budgetUsecase.getBudgetConfigurations({});
+
+      expect(result).toBe(mockResult);
+    });
   });
 
   describe('createBudget', () => {

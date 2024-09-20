@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { IBudgetUsecase } from '../usecase';
 import {
+  BudgetConfigurationParams,
   DeleteBudgetConfigurationBody,
   DeleteBudgetConfigurationParams,
   DeleteBudgetConfigurationPayload,
@@ -15,6 +16,12 @@ export default class BudgetsHandler {
   constructor(BudgetUsecase: IBudgetUsecase) {
     this.budgetsUseCase = BudgetUsecase;
   }
+
+  getBudgetConfigurations = (
+    req: Request<any, any, any, BudgetConfigurationParams>
+  ) => {
+    return this.budgetsUseCase.getBudgetConfigurations(req.body);
+  };
 
   createBudget = (req: Request<any, any, PostBudgetConfigurationBody>) => {
     return this.budgetsUseCase.createBudget(req.body);

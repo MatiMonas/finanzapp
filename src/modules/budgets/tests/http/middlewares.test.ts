@@ -1,17 +1,32 @@
 import {
-  createBudgetMiddleware,
+  createBudgetConfigurationMiddleware,
   deleteBudgetConfigurationMiddleware,
+  getBudgetConfigurationsMiddleware,
   patchBudgetConfigurationMiddleware,
 } from 'modules/budgets/http/middlewares';
 import express from 'express';
 import request from 'supertest';
 import { getValidationMessage } from 'utils/helpers/functions';
+import moment from 'moment';
 
 const app = express();
 app.use(express.json());
-app.post('/budget-configurations', createBudgetMiddleware, (req, res) => {
-  res.status(200).json({ message: 'Success' });
-});
+
+app.get(
+  '/budget-configurations',
+  getBudgetConfigurationsMiddleware,
+  (req, res) => {
+    res.status(200).json({ message: 'Success' });
+  }
+);
+
+app.post(
+  '/budget-configurations',
+  createBudgetConfigurationMiddleware,
+  (req, res) => {
+    res.status(200).json({ message: 'Success' });
+  }
+);
 app.patch(
   '/budget-configurations/:id',
   patchBudgetConfigurationMiddleware,
@@ -26,6 +41,113 @@ app.delete(
     res.status(200).json({ message: 'Success' });
   }
 );
+
+describe('getBudgetConfigurationsMiddleware', () => {
+  it('OK - should proceed to the next middleware if validation passes', async () => {
+    const now = moment().format('YYYY-MM-DD');
+    const response = await request(app).get('/budget-configurations').query({
+      id: '1',
+      name: 'Budget A',
+      user_id: '123e4567-e89b-12d3-a456-426614174000',
+      created_at: now,
+      updated_at: now,
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Success');
+  });
+
+  describe('id', () => {
+    it('ERROR - "ID must be a number" when id is not a valid number', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ id: 'abc' });
+
+      const {
+        errors: { fieldErrors },
+      } = response.body;
+
+      expect(response.status).toBe(400);
+      expect(fieldErrors.id[0]).toBe('ID must be a number');
+    });
+
+    it('ERROR - "Invalid value" when id is missing', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ id: '' });
+
+      const {
+        errors: { fieldErrors },
+      } = response.body;
+
+      expect(response.status).toBe(400);
+      expect(fieldErrors.id[0]).toBe('ID must be a number');
+    });
+  });
+
+  describe('name', () => {
+    it('OK - Should accept a valid name', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ name: 'Valid Name' });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('OK - Should handle missing name', async () => {
+      const response = await request(app).get('/budget-configurations');
+
+      expect(response.status).toBe(200);
+    });
+  });
+
+  describe('user_id', () => {
+    it('OK - Should accept a valid UUID', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ user_id: '123e4567-e89b-12d3-a456-426614174000' });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('ERROR - "Invalid UUID format" when user_id is invalid', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ user_id: 'invalid-uuid' });
+
+      const {
+        errors: { fieldErrors },
+      } = response.body;
+
+      expect(response.status).toBe(400);
+      expect(fieldErrors.user_id[0]).toBe('Invalid UUID format');
+    });
+  });
+
+  describe('created_at, updated_at and deleted_at', () => {
+    it('OK - should accept valid date strings', async () => {
+      const now = moment().format('YYYY-MM-DD');
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ created_at: now, updated_at: now, deleted_at: now });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('ERROR - "Invalid Date format" when date is not a valid date string', async () => {
+      const response = await request(app)
+        .get('/budget-configurations')
+        .query({ created_at: 'invalid-date' });
+
+      const {
+        errors: { fieldErrors },
+      } = response.body;
+
+      expect(response.status).toBe(400);
+      expect(fieldErrors.created_at[0]).toBe('Invalid Date format');
+    });
+  });
+});
 
 describe('createBudgetMiddleware', () => {
   it('OK - should proceed to the next middleware if validation passes', async () => {

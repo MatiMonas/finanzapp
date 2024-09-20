@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * Generates a validation error message for a given property based on its type and optional condition.
  *
@@ -23,3 +25,13 @@ export const getValidationMessage = (
   `Property "${property}" must be ${type}${
     condition ? ' and ' + condition : ''
   }`;
+
+/**
+ * Checks if a string is a valid date in the `YYYY-MM-DD` format.
+ *
+ * @param {string} val - The string to be checked.
+ * @returns {boolean} `true` if the string is a valid date in the `YYYY-MM-DD` format, otherwise `false`.
+ */
+export const isValidDateFormat = (val: string): boolean => {
+  return moment(val, 'YYYY-MM-DD', true).isValid();
+};

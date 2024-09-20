@@ -2,6 +2,7 @@ import Validator from '../../../validator';
 
 import { IBudgetRepository } from '../repository/budget-repository';
 import {
+  BudgetConfigurationParams,
   CreateBudgetPayload,
   DeleteBudgetConfigurationPayload,
   PatchBudgetBody,
@@ -17,8 +18,12 @@ import {
 } from '../validators/validatorBudgetChange';
 import { DatabaseError } from 'errors';
 import { ValidatorIsBudgetConfigurationFromUser } from '../validators/validatorIsBudgetConfigurationFromUser';
+import { BudgetConfigurationWithBudgets } from '../types/db_model';
 
 export interface IBudgetUsecase {
+  getBudgetConfigurations(
+    filterData: BudgetConfigurationParams
+  ): Promise<BudgetConfigurationWithBudgets[]>;
   createBudget(budgetData: PostBudgetConfigurationBody): Promise<Boolean>;
   partialUpdateBudgetConfiguration(
     budgetData: PatchBudgetBody
@@ -30,6 +35,15 @@ export interface IBudgetUsecase {
 
 export default class BudgetUsecase implements IBudgetUsecase {
   constructor(private budgetRepository: IBudgetRepository) {}
+
+  async getBudgetConfigurations(
+    filterData: BudgetConfigurationParams
+  ): Promise<BudgetConfigurationWithBudgets[]> {
+    const budgetConfigurations =
+      await this.budgetRepository.findBudgetConfigurationWhere(filterData);
+
+    return budgetConfigurations;
+  }
 
   async createBudget(
     budgetData: PostBudgetConfigurationBody

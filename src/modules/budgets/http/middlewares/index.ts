@@ -1,8 +1,50 @@
 import { NextFunction, Request, Response } from 'express';
-import { getValidationMessage } from 'utils/helpers/functions';
+import {
+  getValidationMessage,
+  isValidDateFormat,
+} from 'utils/helpers/functions';
 import { z } from 'zod';
 
-export const createBudgetMiddleware = (
+export const getBudgetConfigurationsMiddleware = (
+  req: Request<any, any, any, any>,
+  res: Response,
+  next: NextFunction
+) => {
+  const BudgetConfigurationQuerySchema = z.object({
+    id: z
+      .string()
+      .regex(/^\d+$/, 'ID must be a number')
+      .transform((val) => parseInt(val, 10))
+      .optional(),
+    name: z.string().optional(),
+    user_id: z.string().uuid('Invalid UUID format').optional(),
+    created_at: z
+      .string()
+      .refine((val) => isValidDateFormat(val), 'Invalid Date format')
+      .optional(),
+    updated_at: z
+      .string()
+      .refine((val) => isValidDateFormat(val), 'Invalid Date format')
+      .optional(),
+    deleted_at: z
+      .string()
+      .refine((val) => isValidDateFormat(val), 'Invalid Date format')
+      .optional(),
+  });
+
+  const result = BudgetConfigurationQuerySchema.safeParse(req.query);
+
+  if (!result.success) {
+    return res
+      .status(400)
+      .json({ status: 'fail', errors: result.error.flatten() });
+  }
+
+  req.query = result.data;
+  next();
+};
+
+export const createBudgetConfigurationMiddleware = (
   req: Request<any, any, any, any>,
   res: Response,
   next: NextFunction

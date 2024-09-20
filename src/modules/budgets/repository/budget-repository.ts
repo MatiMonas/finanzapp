@@ -2,19 +2,19 @@ import { PrismaClient, Budgets, BudgetsConfigurations } from '@prisma/client';
 import { DatabaseError } from 'errors';
 import {
   BudgetAction,
+  BudgetConfigurationParams,
   CreateBudgetPayload,
   DeleteBudgetConfigurationPayload,
 } from '../types/request';
 import {
-  BudgetConfigurationWhere,
+  BudgetConfigurationWithBudgets,
   BudgetWithoutTimestamps,
-  FindBudgetConfigurationByName,
 } from '../types/db_model';
 
 export interface IBudgetRepository {
   findBudgetConfigurationWhere(
-    where: BudgetConfigurationWhere
-  ): Promise<(BudgetsConfigurations & { budgets: Budgets[] })[]>;
+    where: BudgetConfigurationParams
+  ): Promise<BudgetConfigurationWithBudgets[]>;
 
   getBudgetsByConfigurationId(
     configurationId: number
@@ -48,8 +48,8 @@ export default class BudgetRepository implements IBudgetRepository {
   }
 
   async findBudgetConfigurationWhere(
-    where: BudgetConfigurationWhere
-  ): Promise<(BudgetsConfigurations & { budgets: Budgets[] })[]> {
+    where: BudgetConfigurationParams
+  ): Promise<BudgetConfigurationWithBudgets[]> {
     try {
       return await this.prismaClient.budgetsConfigurations.findMany({
         where: {

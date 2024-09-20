@@ -47,3 +47,12 @@ export type DeleteBudgetConfigurationBody = {
 export type DeleteBudgetConfigurationPayload = DeleteBudgetConfigurationBody & {
   budget_configuration_id: DeleteBudgetConfigurationParams['id'];
 };
+
+export type BudgetConfigurationParams = Partial<{
+  id: number;
+  name: string;
+  user_id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at?: Date;
+}>;

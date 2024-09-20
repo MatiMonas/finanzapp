@@ -1,8 +1,4 @@
-export type FindBudgetConfigurationByName = {
-  id: number;
-  user_id: string;
-  name: string;
-} | null;
+import { Budgets, BudgetsConfigurations } from '@prisma/client';
 
 export type BudgetWithoutTimestamps = {
   id: number;
@@ -15,11 +11,6 @@ export type BudgetWithoutTimestamps = {
   user_id: string;
 } | null;
 
-export type BudgetConfigurationWhere = Partial<{
-  id: number;
-  name: string;
-  user_id: string;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at?: Date;
-}>;
+export type BudgetConfigurationWithBudgets = BudgetsConfigurations & {
+  budgets: Budgets[];
+};
