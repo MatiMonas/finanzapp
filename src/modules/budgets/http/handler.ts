@@ -19,7 +19,7 @@ export default class BudgetsHandler {
 
   getBudget = (req: Request<BudgetIdParam, any, any, any>) => {
     const { id: budget_id } = req.params;
-    return this.budgetsUseCase.getBudgetDetails(budget_id);
+    return this.budgetsUseCase.getBudgetDetails(Number(budget_id));
   };
 
   getBudgetConfigurations = (
