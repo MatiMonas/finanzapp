@@ -23,9 +23,9 @@ export default class BudgetsHandler {
   };
 
   getBudgetConfigurations = (
-    req: Request<any, any, any, BudgetConfigurationParams>
+    req: Request<any, any, BudgetConfigurationParams, any>
   ) => {
-    return this.budgetsUseCase.getBudgetConfigurations(req.body);
+    return this.budgetsUseCase.getBudgetConfigurations(req.query);
   };
 
   createBudget = (req: Request<any, any, PostBudgetConfigurationBody>) => {

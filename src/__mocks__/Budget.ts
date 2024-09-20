@@ -2,6 +2,7 @@ import BudgetRepository from 'modules/budgets/repository/budget-repository';
 import BudgetUsecase from 'modules/budgets/usecase';
 
 export const mockBudgetUseCase = {
+  getBudgetDetails: jest.fn(),
   getBudgetConfigurations: jest.fn(),
   createBudget: jest.fn(),
   partialUpdateBudgetConfiguration: jest.fn(),
@@ -17,4 +18,5 @@ export const mockBudgetRepository = {
   updateBudgets: jest.fn(),
   deleteBudgets: jest.fn(),
   getBudgetsByConfigurationId: jest.fn(),
+  getBudgetDetails: jest.fn(),
 } as unknown as BudgetRepository;
