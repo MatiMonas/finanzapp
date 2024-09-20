@@ -22,6 +22,34 @@ const prisma = new PrismaClient();
 let budgetRepository: IBudgetRepository;
 let userRepository: IUserRepository;
 
+const createTestUser = async (
+  username: string,
+  email: string
+): Promise<string> => {
+  const userData: PostUserParams = {
+    username,
+    email,
+    password: 'securepassword',
+    roles: [1],
+  };
+  return userRepository.create(userData);
+};
+
+const createTestBudgetConfiguration = async (
+  userId: string,
+  name: string
+): Promise<number> => {
+  return budgetRepository.createBudgetConfiguration(name, userId);
+};
+
+const createTestBudgets = async (
+  userId: string,
+  configId: number,
+  budgets: CreateBudgetPayload[]
+) => {
+  return budgetRepository.createBudget(budgets);
+};
+
 describe('BudgetRepository', () => {
   beforeAll(async () => {
     execSync('npx prisma db push --accept-data-loss');
@@ -40,21 +68,12 @@ describe('BudgetRepository', () => {
   describe('findBudgetConfigurationWhere', () => {
     test('OK - Returns budget configurations without deleted_at', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const userId = await userRepository.create(userData);
+      const userId = await createTestUser('test', 'test@example.com');
       const budgetConfigurationName = 'ActiveBudgetConfig';
-
-      const budgetConfigurationId =
-        await budgetRepository.createBudgetConfiguration(
-          budgetConfigurationName,
-          userId
-        );
+      const budgetConfigurationId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
+      );
 
       await prisma.budgets.create({
         data: {
@@ -73,6 +92,14 @@ describe('BudgetRepository', () => {
       expect(configs[0].name).toBe(budgetConfigurationName);
       expect(configs[0].deleted_at).toBeNull();
       expect(configs[0].budgets[0].name).toBe('test');
+    });
+
+    test('NOT FOUND - Returns an empty array if no configurations found', async () => {
+      const userId = 'non-existent-user-id';
+      const configs = await budgetRepository.findBudgetConfigurationWhere({
+        user_id: userId,
+      });
+      expect(configs).toEqual([]);
     });
 
     test('ERROR - Handles Prisma client error', async () => {
@@ -127,40 +154,30 @@ describe('BudgetRepository', () => {
   describe('deleteBudgetConfiguration', () => {
     test('OK - Soft deletes budget configurations and related budgets successfully', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
+      const userId = await createTestUser('test', 'test@example.com');
       const budgetConfigurationName = 'MyBudgetConfig';
-
-      const configId = await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const configId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
       );
 
-      await prisma.budgets.createMany({
-        data: [
-          {
-            name: 'Test',
-            percentage: 80,
-            user_id,
-            budget_configuration_id: configId,
-          },
-          {
-            name: 'Test 2',
-            percentage: 20,
-            user_id,
-            budget_configuration_id: configId,
-          },
-        ],
-      });
+      await createTestBudgets(userId, configId, [
+        {
+          name: 'Test',
+          percentage: 80,
+          user_id: userId,
+          budget_configuration_id: configId,
+        },
+        {
+          name: 'Test 2',
+          percentage: 20,
+          user_id: userId,
+          budget_configuration_id: configId,
+        },
+      ]);
 
       await budgetRepository.deleteBudgetConfiguration({
-        user_id,
+        user_id: userId,
         budget_configuration_id: configId,
       });
 
@@ -201,37 +218,36 @@ describe('BudgetRepository', () => {
   describe('createBudget', () => {
     test('OK - Creates multiple budgets', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
-      const budgetConfigurationName = 'MyBudgetConfig';
-
-      await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const userId = await createTestUser('test', 'test@example.com');
+      const budgetConfigurationId = await createTestBudgetConfiguration(
+        userId,
+        'MyBudgetConfig'
       );
-      const budgetData: CreateBudgetPayload[] = [
+
+      const budgetsPayload: CreateBudgetPayload[] = [
         {
-          user_id,
           name: 'Savings',
-          percentage: 40,
-          budget_configuration_id: 1,
+          percentage: 50,
+          user_id: userId,
+          budget_configuration_id: budgetConfigurationId,
         },
         {
-          user_id,
-          name: 'Housing',
-          percentage: 60,
-          budget_configuration_id: 1,
+          name: 'Expenses',
+          percentage: 50,
+          user_id: userId,
+          budget_configuration_id: budgetConfigurationId,
         },
       ];
 
-      const result = await budgetRepository.createBudget(budgetData);
-      expect(result).toBe(true);
+      await createTestBudgets(userId, budgetConfigurationId, budgetsPayload);
+
+      const budgets = await prisma.budgets.findMany({
+        where: { budget_configuration_id: budgetConfigurationId },
+      });
+
+      expect(budgets).toHaveLength(2);
+      expect(budgets[0].name).toBe('Savings');
+      expect(budgets[1].name).toBe('Expenses');
     });
 
     test('ERROR - Handles Prisma client error', async () => {
@@ -283,19 +299,10 @@ describe('BudgetRepository', () => {
   describe('getBudgetsByConfigurationId', () => {
     test('OK - Returns budgets for a given configuration ID', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
-      const budgetConfigurationName = 'MyBudgetConfig';
-
-      const budgetConfigId = await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const user_id = await createTestUser('test', 'test@example.com');
+      const budgetConfigurationId = await createTestBudgetConfiguration(
+        user_id,
+        'MyBudgetConfig'
       );
 
       const budgetData: CreateBudgetPayload[] = [
@@ -316,7 +323,7 @@ describe('BudgetRepository', () => {
       await budgetRepository.createBudget(budgetData);
 
       const result = await budgetRepository.getBudgetsByConfigurationId(
-        budgetConfigId
+        budgetConfigurationId
       );
 
       expect(result).toHaveLength(2);
@@ -345,22 +352,29 @@ describe('BudgetRepository', () => {
   describe('updateBudgetConfigurationName', () => {
     test('should update budget configuration name successfully', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
+      const userId = await createTestUser('test', 'test@example.com');
       const budgetConfigurationName = 'MyBudgetConfig';
-      const newBudgetConfigurationName = 'MyNewBudgetConfig';
-
-      const configId = await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const configId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
       );
 
+      await createTestBudgets(userId, configId, [
+        {
+          name: 'Test',
+          percentage: 80,
+          user_id: userId,
+          budget_configuration_id: configId,
+        },
+        {
+          name: 'Test 2',
+          percentage: 20,
+          user_id: userId,
+          budget_configuration_id: configId,
+        },
+      ]);
+
+      const newBudgetConfigurationName = 'NewName';
       const result = await budgetRepository.updateBudgetConfigurationName(
         configId,
         newBudgetConfigurationName
@@ -394,37 +408,27 @@ describe('BudgetRepository', () => {
   describe('deleteBudgets', () => {
     test('should delete budgets by IDs successfully', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
+      const userId = await createTestUser('test', 'test@example.com');
       const budgetConfigurationName = 'MyBudgetConfig';
-
-      const configId = await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const configId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
       );
 
-      const budgetData = [
+      await createTestBudgets(userId, configId, [
         {
-          name: 'Rent',
-          percentage: 30,
-          user_id,
+          name: 'Test',
+          percentage: 80,
+          user_id: userId,
           budget_configuration_id: configId,
         },
         {
-          name: 'Savings',
+          name: 'Test 2',
           percentage: 20,
-          user_id,
+          user_id: userId,
           budget_configuration_id: configId,
         },
-      ];
-
-      await budgetRepository.createBudget(budgetData);
+      ]);
 
       const budgets = await prisma.budgets.findMany();
       const budgetIds = budgets.map((budget) => budget.id);
@@ -459,37 +463,27 @@ describe('BudgetRepository', () => {
   describe('updateBudgets', () => {
     test('should update existing budgets successfully', async () => {
       await prisma.roles.create({ data: { name: 'ADMIN' } });
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
-      const user_id = await userRepository.create(userData);
+      const userId = await createTestUser('test', 'test@example.com');
       const budgetConfigurationName = 'MyBudgetConfig';
-
-      const configId = await budgetRepository.createBudgetConfiguration(
-        budgetConfigurationName,
-        user_id
+      const configId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
       );
 
-      const budgetData = [
+      await createTestBudgets(userId, configId, [
         {
-          name: 'Rent',
-          percentage: 30,
-          user_id,
+          name: 'Test',
+          percentage: 80,
+          user_id: userId,
           budget_configuration_id: configId,
         },
         {
-          name: 'Savings',
+          name: 'Test 2',
           percentage: 20,
-          user_id,
+          user_id: userId,
           budget_configuration_id: configId,
         },
-      ];
-
-      await budgetRepository.createBudget(budgetData);
+      ]);
 
       const updatedData: BudgetAction[] = [
         { id: 1, name: 'NewRent', percentage: 35 },
@@ -529,6 +523,44 @@ describe('BudgetRepository', () => {
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.message).toBe('Unable to update budgets');
+      }
+    });
+  });
+
+  describe('getBudgetDetails', () => {
+    test('should get budget details successfully', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userId = await createTestUser('test', 'test@example.com');
+      const budgetConfigurationName = 'MyBudgetConfig';
+      const configId = await createTestBudgetConfiguration(
+        userId,
+        budgetConfigurationName
+      );
+
+      await createTestBudgets(userId, configId, [
+        {
+          name: 'Test',
+          percentage: 80,
+          user_id: userId,
+          budget_configuration_id: configId,
+        },
+      ]);
+
+      const budgetDetails = await budgetRepository.getBudgetDetails(1);
+      expect(budgetDetails).not.toBeNull();
+      expect(budgetDetails?.id).toBe(1);
+    });
+
+    test('should throw a DatabaseError if Prisma fails', async () => {
+      jest
+        .spyOn(prisma.budgets, 'findFirst')
+        .mockRejectedValueOnce(new Error('Prisma Error'));
+
+      try {
+        await budgetRepository.getBudgetDetails(1);
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(DatabaseError);
+        expect(error.message).toBe('Unable to get budget details');
       }
     });
   });
