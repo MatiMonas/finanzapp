@@ -87,13 +87,6 @@ model Budgets {
   budget_configuration    BudgetsConfigurations? @relation(fields: [budget_configuration_id], references: [id])
   budget_configuration_id Int?                   @db.UnsignedInt
 
-  // ID del presupuesto al que se transfieren los sobrantes
-  transfer_to_budget_id Int?     @unique @db.UnsignedInt
-  transfer_to_budget    Budgets? @relation("TransferBudgets", fields: [transfer_to_budget_id], references: [id])
-
-  // Relación inversa
-  transfer_from_budget Budgets? @relation("TransferBudgets")
-
   monthly_wage_id Int?          @db.UnsignedInt
   monthly_wage    MonthlyWages? @relation("MonthlyWagesBudgets", fields: [monthly_wage_id], references: [id])
 
