@@ -28,6 +28,7 @@ export default class BudgetRouter {
     this.registerRouters();
   }
 
+  // TODO: add authoruzation middleware to check if user can access budget
   registerRouters(): void {
     router.get(
       '/budgets/:id',
