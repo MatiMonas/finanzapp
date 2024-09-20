@@ -63,9 +63,9 @@ export default class Express {
         console.error('Failed to start server:', err);
         if (callback) callback(err);
       } else {
-        console.log(`Finanzapp listening at web://localhost:${this.port}`);
+        console.log(`Finanzapp listening at http://localhost:${this.port}`);
         console.log(
-          `API-DOCS Running at  web://localhost:${this.port}/api-docs`
+          `API-DOCS Running at  http://localhost:${this.port}/api-docs`
         );
         if (callback) callback();
       }

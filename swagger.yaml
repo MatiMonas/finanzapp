@@ -28,6 +28,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Users not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
     post:
       tags:
@@ -38,10 +56,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/PostUser'
       responses:
         '201':
           description: User created successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
   /budgets:
     post:
@@ -53,14 +83,109 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BudgetConfiguration'
+              $ref: '#/components/schemas/PostBudgetConfiguration'
       responses:
         '201':
           description: Budget configuration created successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
+  /budget-configurations/{id}:
+    patch:
+      tags:
+        - Budgets
+      summary: Partially update a budget configuration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the budget configuration to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetConfiguration'
+      responses:
+        204:
+          description: Budget configuration updated successfully
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        400:
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        404:
+          description: Budget configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    delete:
+      tags:
+        - Budgets
+      summary: Delete a budget configuration by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the budget configuration to delete
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteBudgetConfigurationBody'
+      responses:
+        204:
+          description: Budget configuration deleted successfully
+        400:
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        404:
+          description: Budget configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 components:
   schemas:
-    User:
+    PostUser:
       type: object
       properties:
         id:
@@ -77,8 +202,7 @@ components:
         - username
         - email
         - roles
-
-    BudgetConfiguration:
+    PostBudgetConfiguration:
       type: object
       properties:
         user_id:
@@ -100,3 +224,44 @@ components:
         - user_id
         - budget_configuration_name
         - budgets
+    UpdateBudgetConfiguration:
+      type: object
+      properties:
+        budget_configuration_id:
+          type: integer
+        user_id:
+          type: string
+        budget_configuration_name:
+          type: string
+        budgets:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              percentage:
+                type: number
+    DeleteBudgetConfigurationBody:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user who owns the budget configuration
+    ApiError:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Status of the error response (e.g., "FAIL")
+          example: 'FAIL'
+        message:
+          type: string
+          description: Description of the error
+          example: 'An unexpected error occurred'
+        error_code:
+          type: string
+          description: Specific error code for the error
+          example: 'DatabaseError'

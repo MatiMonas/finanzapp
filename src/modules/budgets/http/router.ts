@@ -35,107 +35,11 @@ export default class BudgetRouter {
   }
 
   registerRouters(): void {
-    /**
-     * @swagger
-     * /budget-configurations:
-     *   post:
-     *     tags:
-     *       - Budgets
-     *     summary: Create a new budget configuration
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               user_id:
-     *                 type: string
-     *               budget_configuration_name:
-     *                 type: string
-     *               budgets:
-     *                 type: array
-     *                 items:
-     *                   type: object
-     *                   properties:
-     *                     name:
-     *                       type: string
-     *                     percentage:
-     *                       type: integer
-     *                       description: Percentage of the budget. Must be between 1 and 100.
-     *                       example: 30
-     *                       minimum: 1
-     *                       maximum: 100
-     *     responses:
-     *       201:
-     *         description: Budget configuration created successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: boolean
-     *               example: true
-     *       400:
-     *         description: Bad request, invalid input
-     *       500:
-     *         description: Internal server error
-     */
     router.post(
       '/budget-configurations',
       createBudgetMiddleware,
       createHandler(this.handler.createBudget, STATUS_CODES.CREATED)
     );
-
-    /**
-     * @swagger
-     * /budget-configurations/{id}:
-     *   patch:
-     *     tags:
-     *       - Budgets
-     *     summary: Partially update a budget configuration
-     *     parameters:
-     *       - name: id
-     *         in: path
-     *         required: true
-     *         description: The ID of the budget configuration to update
-     *         schema:
-     *           type: integer
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               budget_configuration_id:
-     *                 type: integer
-     *               user_id:
-     *                 type: string
-     *               budget_configuration_name:
-     *                 type: string
-     *               budgets:
-     *                 type: array
-     *                 items:
-     *                   type: object
-     *                   properties:
-     *                     name:
-     *                       type: string
-     *                     percentage:
-     *                       type: number
-     *     responses:
-     *       204:
-     *         description: Budget configuration updated successfully
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: boolean
-     *               example: true
-     *       400:
-     *         description: Bad request, invalid input
-     *       404:
-     *         description: Budget configuration not found
-     *       500:
-     *         description: Internal server error
-     */
 
     router.patch(
       '/budget-configurations/:id',
