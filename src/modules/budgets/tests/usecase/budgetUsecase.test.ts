@@ -259,4 +259,52 @@ describe('BudgetUsecase', () => {
 
     it('ERROR - should throw an error if validations fails', async () => {});
   });
+
+  describe('getBudgetDetails', () => {
+    it('OK - should return budget details', async () => {
+      const budgetDetails = {
+        id: 6,
+        user_id: 'c270dfc2-ac37-46b1-83ad-c3450d15425e',
+        name: 'Test2',
+        percentage: 40,
+        remaining_allocation: 0,
+        budget_configuration_id: 3,
+        monthly_wage_id: null,
+        created_at: '2024-09-20T02:47:06.154Z',
+        updated_at: '2024-09-20T02:48:11.015Z',
+        deleted_at: null,
+        alerts: [],
+        budget_configuration: {
+          id: 3,
+          name: 'Test 1',
+          user_id: 'c270dfc2-ac37-46b1-83ad-c3450d15425e',
+          created_at: '2024-09-20T02:46:36.551Z',
+          updated_at: '2024-09-20T02:48:11.015Z',
+          deleted_at: null,
+        },
+        monthly_wage: null,
+      };
+
+      (mockBudgetRepository.getBudgetDetails as jest.Mock).mockResolvedValue(
+        budgetDetails
+      );
+
+      const result = await budgetUsecase.getBudgetDetails(6);
+
+      expect(result).toEqual(budgetDetails);
+
+      expect(mockBudgetRepository.getBudgetDetails).toHaveBeenCalledWith(6);
+    });
+
+    it('OK - Should return null if budget not found', async () => {
+      (mockBudgetRepository.getBudgetDetails as jest.Mock).mockResolvedValue(
+        null
+      );
+
+      const result = await budgetUsecase.getBudgetDetails(6);
+
+      expect(result).toBe(null);
+      expect(mockBudgetRepository.getBudgetDetails).toHaveBeenCalledWith(6);
+    });
+  });
 });
