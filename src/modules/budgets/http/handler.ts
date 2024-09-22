@@ -25,6 +25,7 @@ export default class BudgetsHandler {
   getBudgetConfigurations = (
     req: Request<any, any, BudgetConfigurationParams, any>
   ) => {
+    // TODO: add user-id or session from headers instead of query
     return this.budgetsUseCase.getBudgetConfigurations(req.query);
   };
 

@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+import { SafeParseError } from 'zod';
 import moment from 'moment';
 
 /**
@@ -34,4 +36,36 @@ export const getValidationMessage = (
  */
 export const isValidDateFormat = (val: string): boolean => {
   return moment(val, 'YYYY-MM-DD', true).isValid();
+};
+
+/**
+ * Handles validation errors by sending a JSON response with the validation errors and the input data.
+ *
+ * This function takes a `SafeParseError` object, a request object, and a response object.
+ * It extracts the flattened validation errors from the `SafeParseError` object and
+ * sends a JSON response with the validation errors and the input data.
+ *
+ * @param {SafeParseError<'error'>} result - The `SafeParseError` object containing the validation errors.
+ * @param {Request<any, any, any, any>} req - The request object.
+ * @param {Response} res - The response object.
+ *
+ * @returns {Response} - The JSON response with the validation errors and the input data.
+ */
+export const handleValidationErrors = (
+  result: SafeParseError<'error'>,
+  req: Request<any, any, any, any>,
+  res: Response
+) => {
+  const flattenedErrors = result.error.flatten();
+  const fieldErrors = flattenedErrors.fieldErrors;
+  const formErrors = flattenedErrors.formErrors;
+
+  return res.status(400).json({
+    status: 'fail',
+    errors: {
+      field_errors: fieldErrors || undefined,
+      form_errors: formErrors.length > 0 ? formErrors : undefined,
+    },
+    input_data: { ...req.body, ...req.query },
+  });
 };

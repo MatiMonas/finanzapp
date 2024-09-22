@@ -34,12 +34,12 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
 
-      expect(fieldErrors.username[0]).toBe('Required');
+      expect(field_errors.username[0]).toBe('Required');
     });
 
     it('ERROR - Username is required, Username must be at least 2 characters long', async () => {
@@ -53,13 +53,13 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
 
-      expect(fieldErrors.username[0]).toBe('Username is required');
-      expect(fieldErrors.username[1]).toBe(
+      expect(field_errors.username[0]).toBe('Username is required');
+      expect(field_errors.username[1]).toBe(
         'Username must be at least 2 characters long'
       );
     });
@@ -74,12 +74,12 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
 
-      expect(fieldErrors.username[0]).toBe(
+      expect(field_errors.username[0]).toBe(
         'Username must be at most 25 characters long'
       );
     });
@@ -96,11 +96,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.email[0]).toBe('Required');
+      expect(field_errors.email[0]).toBe('Required');
     });
 
     it('ERROR - Email is not a valid email address', async () => {
@@ -114,11 +114,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.email[0]).toBe('Invalid email address');
+      expect(field_errors.email[0]).toBe('Invalid email address');
     });
 
     it('ERROR - Email must be at most 30 characters long', async () => {
@@ -132,11 +132,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.email[0]).toBe(
+      expect(field_errors.email[0]).toBe(
         'Email must be at most 30 characters long'
       );
     });
@@ -153,11 +153,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.password[0]).toBe('Required');
+      expect(field_errors.password[0]).toBe('Required');
     });
 
     it('ERROR - Password must be at least 8 characters long', async () => {
@@ -171,11 +171,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.password[0]).toBe(
+      expect(field_errors.password[0]).toBe(
         'Password must be at least 8 characters long'
       );
     });
@@ -191,11 +191,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.password[0]).toBe(
+      expect(field_errors.password[0]).toBe(
         'Password must contain at least one uppercase letter'
       );
     });
@@ -211,11 +211,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.password[0]).toBe(
+      expect(field_errors.password[0]).toBe(
         'Password must contain at least one number'
       );
     });
@@ -231,11 +231,11 @@ describe('createUserMiddleware', () => {
         });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.password[0]).toBe(
+      expect(field_errors.password[0]).toBe(
         'Password must contain at least one special character'
       );
     });
@@ -250,11 +250,11 @@ describe('createUserMiddleware', () => {
       });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.roles[0]).toBe('Required');
+      expect(field_errors.roles[0]).toBe('Required');
     });
 
     it('ERROR - Roles must be an array of numbers', async () => {
@@ -266,11 +266,11 @@ describe('createUserMiddleware', () => {
       });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.roles[0]).toBe('Expected array, received string');
+      expect(field_errors.roles[0]).toBe('Expected array, received string');
     });
 
     it('ERROR - Roles array cannot be empty', async () => {
@@ -282,11 +282,11 @@ describe('createUserMiddleware', () => {
       });
 
       const {
-        errors: { fieldErrors },
+        errors: { field_errors },
       } = response.body;
 
       expect(response.status).toBe(400);
-      expect(fieldErrors.roles[0]).toBe(
+      expect(field_errors.roles[0]).toBe(
         'Roles must be a non-empty array of numbers'
       );
     });
