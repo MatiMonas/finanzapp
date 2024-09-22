@@ -14,7 +14,7 @@ model Users {
   username                       String                  @unique @db.VarChar(25)
   password                       String                  @db.VarChar(255)
   roles                          UserRoles[]             @relation("UserRolesToRoles")
-  active_budget_configuration_id Int?
+  active_budget_configuration_id Int?                    @db.UnsignedInt
   active_budget_configuration    BudgetsConfigurations?  @relation(name: "user_active_budget_configuration", fields: [active_budget_configuration_id], references: [id])
   MonthlyWages                   MonthlyWages[]
   Budgets                        Budgets[]

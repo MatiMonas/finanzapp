@@ -123,9 +123,10 @@ describe('BudgetRepository', () => {
   });
 
   describe('createBudgetConfiguration', () => {
-    test('OK - Creates budget configuration', async () => {
-      const userId = 'some-user-uuid';
-      const budgetConfigurationName = 'MyBudgetConfig';
+    test('OK - Creates budget configuration and sets it as active_configuration for user', async () => {
+      await prisma.roles.create({ data: { name: 'ADMIN' } });
+      const userId = await createTestUser('test', 'test@example.com');
+      const budgetConfigurationName = 'ActiveBudgetConfig';
 
       const budgetConfigId = await budgetRepository.createBudgetConfiguration(
         budgetConfigurationName,
@@ -133,6 +134,9 @@ describe('BudgetRepository', () => {
       );
 
       expect(budgetConfigId).toBe(1);
+
+      const user = await prisma.users.findUnique({ where: { id: userId } });
+      expect(user?.active_budget_configuration_id).toBe(budgetConfigId);
     });
 
     test('ERROR - Handles Prisma client error', async () => {
@@ -141,7 +145,10 @@ describe('BudgetRepository', () => {
         .mockRejectedValueOnce(new Error('Prisma client error'));
 
       try {
-        await budgetRepository.createBudgetConfiguration('TestConfig', 'uuid');
+        await prisma.roles.create({ data: { name: 'ADMIN' } });
+        const userId = await createTestUser('test', 'test@example.com');
+
+        await budgetRepository.createBudgetConfiguration('TestConfig', userId);
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);

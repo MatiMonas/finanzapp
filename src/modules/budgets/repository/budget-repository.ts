@@ -106,7 +106,7 @@ export default class BudgetRepository implements IBudgetRepository {
     try {
       const createdBudgetConfiguration = await this.prismaClient.$transaction(
         async (prisma) => {
-          return await prisma.budgetsConfigurations.create({
+          const newConfig = await prisma.budgetsConfigurations.create({
             data: {
               name: budgetConfigurationName,
               user_id,
@@ -115,6 +115,15 @@ export default class BudgetRepository implements IBudgetRepository {
               id: true,
             },
           });
+
+          await prisma.users.update({
+            where: { id: user_id },
+            data: {
+              active_budget_configuration_id: newConfig.id,
+            },
+          });
+
+          return newConfig;
         }
       );
 
