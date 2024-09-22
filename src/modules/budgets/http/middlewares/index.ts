@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import {
   getValidationMessage,
+  handleValidationErrors,
   isValidDateFormat,
 } from 'utils/helpers/functions';
-import { z } from 'zod';
+import { SafeParseError, z } from 'zod';
 
 export const getBudgetConfigurationsMiddleware = (
   req: Request<any, any, any, any>,
@@ -35,9 +36,7 @@ export const getBudgetConfigurationsMiddleware = (
   const result = BudgetConfigurationQuerySchema.safeParse(req.query);
 
   if (!result.success) {
-    return res
-      .status(400)
-      .json({ status: 'fail', errors: result.error.flatten() });
+    return handleValidationErrors(result as SafeParseError<'error'>, req, res);
   }
 
   req.query = result.data;
@@ -75,9 +74,7 @@ export const createBudgetConfigurationMiddleware = (
   const result = CreateBudgetSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res
-      .status(400)
-      .json({ status: 'fail', errors: result.error.flatten() });
+    return handleValidationErrors(result as SafeParseError<'error'>, req, res);
   }
 
   req.body = result.data;
@@ -177,9 +174,7 @@ export const patchBudgetConfigurationMiddleware = (
   const result = UpdateSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res
-      .status(400)
-      .json({ status: 'fail', errors: result.error.flatten() });
+    return handleValidationErrors(result as SafeParseError<'error'>, req, res);
   }
 
   req.body = result.data;
@@ -206,9 +201,7 @@ export const deleteBudgetConfigurationMiddleware = (
   const result = DeleteSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res
-      .status(400)
-      .json({ status: 'fail', errors: result.error.flatten() });
+    return handleValidationErrors(result as SafeParseError<'error'>, req, res);
   }
 
   req.body = result.data;
