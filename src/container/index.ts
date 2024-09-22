@@ -20,7 +20,8 @@ import MonthlyWagesUsecase, {
 import MonthlyWagesRepository, {
   IMonthlyWagesRepository,
 } from 'modules/monthly_wages/repository/monthly_wages-repository';
-
+import axios from 'axios';
+import { IMonthlyWagesHttpRepository } from 'modules/monthly_wages/repository/monthly_wages-http-repository';
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
 } & {
@@ -32,6 +33,7 @@ const container =
     Container<ContainerServices>;
 
 container.service('prismaClient', () => prismaClient());
+container.service('axios', () => axios);
 
 // USER SERVICES
 container.service('userRouter', (c) => new UsersRouter(c.userUsecase));
@@ -66,11 +68,20 @@ container.service(
 
 container.service(
   'monthlyWagesUsecase',
-  (c): IMonthlyWagesUsecase => new MonthlyWagesUsecase(c.monthlyWagesRepository)
+  (c): IMonthlyWagesUsecase =>
+    new MonthlyWagesUsecase(
+      c.monthlyWagesRepository,
+      c.monthlyWagesHttpRepository
+    )
 );
 
 container.service(
   'monthlyWagesRepository',
   (c): IMonthlyWagesRepository => new MonthlyWagesRepository(c.prismaClient)
 );
+container.service(
+  'monthlyWagesHttpRepository',
+  (c): IMonthlyWagesHttpRepository => c.axios
+);
+
 export default container;
