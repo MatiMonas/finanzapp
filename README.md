@@ -10,7 +10,7 @@ FinanazAPI is built with TypeScript, Express, and Prisma, following Clean Archit
 - [Docker](#docker)
 - [Use Cases](#use-cases)
   - [Budget Configurations, Budgets, and Monthly Wages](#budget-configurations-budgets-and-monthly-wages)
-  - [Creation of Budget Configurations](#creation-of-budget-configurations)
+    - [Creation of Budget Configurations](#creation-of-budget-configurations)
 - [API Documentation](#api-documentation)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -42,6 +42,36 @@ npx prisma generate || npx prisma migrate dev
 ## Usecases
 
 ### Budget Configurations, Budgets, and Monthly Wages
+
+#### Create an User
+
+First you need to create an user, to do so you need to create at least one role at the `Roles` table.
+
+Then execute the next curl
+
+```bash
+curl -X 'POST' \
+  'http://localhost:3000/api/v1/users' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "testUser",
+  "password": "securePassword.1$",
+  "email": "tes1t@test.com",
+  "roles": [
+    1
+  ]
+}'
+```
+
+The endpoint will return the `user.id` that you will need to use in the following endpoints.
+
+```json
+{
+  "status": "success",
+  "data": "2487b372-7c48-43f2-8ab7-bd0ae8ac79ae"
+}
+```
 
 #### Creation of Budget Configurations
 
@@ -78,7 +108,16 @@ The API is documented using Swagger. You can access it at http://localhost:3000/
 
 ## Roadmap
 
-TODO: Add a roadmap for future features and improvements.
+- [x] Budgets and Budget Configurations.
+- [ ] Monthly Wages and auto calculation of Budgets per month.
+- [ ] Creation of Categories that will be used when adding expenses.
+- [ ] Expenses, discounting allocation from budgets when adding new expenses.
+- [ ] Transfer remaining allocation to another Budget to use in the incoming month if desired.
+- [ ] Credit Cards and trailing installments per card.
+- [ ] Pending debts and due dates to fullfill those debts.
+- [ ] Investments with Sell/Buy price per date.
+- [ ] Authentication and Authorization.
+- [ ] Add groups to split/track expenses together with friend/partner/roomie
 
 ## Contributing
 
@@ -95,7 +134,7 @@ We welcome contributions to FinanazAPI! Your help is essential to improving the 
 
 ### Reporting Issues
 
-If you find a bug or have a feature request, please [open an issue](link-to-issues) in the repository.
+If you find a bug or have a feature request, please [open an issue](https://github.com/MatiMonas/finanzapp/issues) in the repository.
 
 ### Feature Requests
 

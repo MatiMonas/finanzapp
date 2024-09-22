@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { z } from 'zod';
+import { handleValidationErrors } from 'utils/helpers/functions';
+import { SafeParseError, z } from 'zod';
 
 export const createUserMiddleware = (
   req: Request<any, any, any, any>,
@@ -33,9 +34,7 @@ export const createUserMiddleware = (
   const result = CreateUserSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res
-      .status(400)
-      .json({ status: 'fail', errors: result.error.flatten() });
+    return handleValidationErrors(result as SafeParseError<'error'>, req, res);
   }
   req.body = result.data;
   next();
