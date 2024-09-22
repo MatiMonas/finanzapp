@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import BudgetsHandler from './handler';
+import BudgetsHandler, { IBudgetsHandler } from './handler';
 import {
   createBudgetConfigurationMiddleware,
   deleteBudgetConfigurationMiddleware,
@@ -8,7 +8,7 @@ import {
 } from './middlewares';
 import createHandler from 'infrastructure/web/createHandler';
 import { STATUS_CODES } from 'utils/constants';
-import BudgetUsecase from '../usecase';
+import { IBudgetUsecase } from '../usecase';
 import { validateIdMiddleware } from 'utils/helpers/validateIdMiddleware';
 
 const router = Router();
@@ -19,10 +19,10 @@ export interface IBudgetRouter {
 }
 
 export default class BudgetRouter {
-  protected budgetsUsecase: BudgetUsecase;
-  protected handler: BudgetsHandler;
+  protected budgetsUsecase: IBudgetUsecase;
+  protected handler: IBudgetsHandler;
 
-  constructor(BudgetsUsecase: BudgetUsecase) {
+  constructor(BudgetsUsecase: IBudgetUsecase) {
     this.budgetsUsecase = BudgetsUsecase;
     this.handler = new BudgetsHandler(BudgetsUsecase);
     this.registerRouters();

@@ -45,7 +45,14 @@ npx prisma generate || npx prisma migrate dev
 
 #### Create an User
 
-First you need to create an user, to do so you need to create at least one role at the `Roles` table.
+First you need to create an user, to do so you need to create at least the following roles at the `Roles` table.
+
+```sql
+INSERT INTO finanzapp.roles (name, updated_at)
+VALUES ('ADMIN', NOW()),
+       ('USER', NOW())
+       ('TEST',NOW());
+```
 
 Then execute the next curl
 

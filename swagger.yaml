@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: FinanzApp API
   description: API Documentation for FinanzApp
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: http://localhost:3000/api/v1
     description: Local server
@@ -10,10 +10,11 @@ servers:
 tags:
   - name: Users
     description: Operations related to users
-  - name: Budgets Configurations
+  - name: BudgetConfigurations
     description: Operations related to budget configurations
   - name: Budgets
     description: Operations related to budgets
+  - name: MonthlyWages
 
 paths:
   /users:
@@ -111,7 +112,7 @@ paths:
   /budget-configurations:
     get:
       tags:
-        - Budgets Configurations
+        - BudgetConfigurations
       summary: Retrieve budget configurations
       description: Returns an array of budget configurations, filtered by optional query parameters.
       parameters:
@@ -137,7 +138,7 @@ paths:
                     example: 'Internal server error'
     post:
       tags:
-        - Budgets Configurations
+        - BudgetConfigurations
       summary: Create a new budget configuration
       requestBody:
         required: true
@@ -164,7 +165,7 @@ paths:
   /budget-configurations/{id}:
     patch:
       tags:
-        - Budgets Configurations
+        - BudgetConfigurations
       summary: Partially update a budget configuration
       parameters:
         - name: id
@@ -208,7 +209,7 @@ paths:
 
     delete:
       tags:
-        - Budgets Configurations
+        - BudgetConfigurations
       summary: Delete a budget configuration by ID
       parameters:
         - name: id
@@ -430,8 +431,8 @@ components:
       properties:
         status:
           type: string
-          description: Status of the error response (e.g., "FAIL")
-          example: 'FAIL'
+          description: Status of the error response (e.g., "fail")
+          example: 'fail'
         message:
           type: string
           description: Description of the error
@@ -440,3 +441,21 @@ components:
           type: string
           description: Specific error code for the error
           example: 'DatabaseError'
+    MonthlyWageBadRequestError:
+      type: object
+        properties:
+          status:
+            type: string
+            description: Status of the error response (e.g., "fail")
+            example: 'fail'
+          errors:
+            type: object
+            description: List of errors
+            properties:
+              field_errors:
+                type: object
+                description: List of field errors
+          input_data:
+            type: object
+            description: Input data
+        

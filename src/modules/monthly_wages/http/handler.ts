@@ -1,11 +1,18 @@
+import { Request } from 'express';
 import { IMonthlyWagesUsecase } from '../usecase';
 
-export interface IMonthlyWagesHandler {}
+export interface IMonthlyWagesHandler {
+  create(req: Request<any, any, any, any>): Promise<Boolean>;
+}
 
 export default class MonthlyWagesHandler implements IMonthlyWagesHandler {
-  protected budgetsUseCase: IMonthlyWagesUsecase;
+  protected monthlyWagesUsecase: IMonthlyWagesUsecase;
 
-  constructor(BudgetUsecase: IMonthlyWagesUsecase) {
-    this.budgetsUseCase = BudgetUsecase;
+  constructor(MonthlyWagesUsecase: IMonthlyWagesUsecase) {
+    this.monthlyWagesUsecase = MonthlyWagesUsecase;
+  }
+
+  async create(): Promise<Boolean> {
+    return this.monthlyWagesUsecase.createMonthlyWage();
   }
 }
