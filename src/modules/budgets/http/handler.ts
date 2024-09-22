@@ -11,7 +11,7 @@ import {
 } from '../types/request';
 
 export default class BudgetsHandler {
-  protected budgetsUseCase: IBudgetUsecase;
+  private budgetsUseCase: IBudgetUsecase;
 
   constructor(BudgetUsecase: IBudgetUsecase) {
     this.budgetsUseCase = BudgetUsecase;
