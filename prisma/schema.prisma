@@ -63,15 +63,16 @@ model BudgetsConfigurations {
 }
 
 model MonthlyWages {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id    String    @db.Char(36)
-  user       Users     @relation(fields: [user_id], references: [id])
-  amount     Float     @default(0.0) @db.Float
-  date       DateTime  @default(now())
-  budgets    Budgets[] @relation("MonthlyWagesBudgets")
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  deleted_at DateTime?
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id       String    @db.Char(36)
+  user          Users     @relation(fields: [user_id], references: [id])
+  amount        Float     @default(0.0) @db.Float
+  month         DateTime  @default(now())
+  exchange_rate Float // will be used to watch monthly variations on salary
+  budgets       Budgets[] @relation("MonthlyWagesBudgets")
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
 
   @@map("monthly_wages")
 }
