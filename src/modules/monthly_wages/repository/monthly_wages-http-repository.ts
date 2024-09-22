@@ -2,6 +2,8 @@ import { Axios } from 'axios';
 
 export interface IMonthlyWagesHttpRepository {}
 
-export class MonthlyWagesHttpRepository implements IMonthlyWagesHttpRepository {
+export default class MonthlyWagesHttpRepository
+  implements IMonthlyWagesHttpRepository
+{
   constructor(private axios: Axios) {}
 }

@@ -4,7 +4,7 @@ import BudgetRouter from 'modules/budgets/http/router';
 import BudgetRepository from 'modules/budgets/repository/budget-repository';
 import BudgetUsecase from 'modules/budgets/usecase';
 import MonthlyWagesRouter from 'modules/monthly_wages/http/router';
-import { MonthlyWagesHttpRepository } from 'modules/monthly_wages/repository/monthly_wages-http-repository';
+import MonthlyWagesHttpRepository from 'modules/monthly_wages/repository/monthly_wages-http-repository';
 import MonthlyWagesRepository from 'modules/monthly_wages/repository/monthly_wages-repository';
 import MonthlyWagesUsecase from 'modules/monthly_wages/usecase';
 import UsersRouter from 'modules/users/http/router';
