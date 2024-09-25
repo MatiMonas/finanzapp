@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 export interface IMonthlyWagesRepository {
   findMonthlyWageByMonth(month: Date): Promise<any>;
-  create(): Promise<any>;
+  createMonthlyWage(): Promise<any>;
 }
 
 export default class MonthlyWagesRepository implements IMonthlyWagesRepository {
@@ -15,7 +15,7 @@ export default class MonthlyWagesRepository implements IMonthlyWagesRepository {
   async findMonthlyWageByMonth(month: Date): Promise<any> {
     return true;
   }
-  async create(): Promise<any> {
+  async createMonthlyWage(): Promise<any> {
     return true;
   }
 }

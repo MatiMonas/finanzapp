@@ -1,27 +1,33 @@
+import axios from 'axios';
 import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/persistance/prisma';
+
 import UsersRouter from 'modules/users/http/router';
+import UserUsecase, { IUserUsecase } from 'modules/users/usecase';
 import UserRepository, {
   IUserRepository,
 } from 'modules/users/repository/user-repository';
+
 import BudgetRouter, { IBudgetRouter } from 'modules/budgets/http/router';
 import BudgetUsecase, { IBudgetUsecase } from 'modules/budgets/usecase';
 import BudgetRepository, {
   IBudgetRepository,
 } from 'modules/budgets/repository/budget-repository';
-import UserUsecase, { IUserUsecase } from 'modules/users/usecase';
+
 import MonthlyWagesRouter, {
   IMonthlyWagesRouter,
-} from 'modules/monthly_wages/http/router';
+} from 'modules/monthly-wages/http/router';
 import MonthlyWagesUsecase, {
   IMonthlyWagesUsecase,
-} from 'modules/monthly_wages/usecase';
+} from 'modules/monthly-wages/usecase';
 import MonthlyWagesRepository, {
   IMonthlyWagesRepository,
-} from 'modules/monthly_wages/repository/monthly_wages-repository';
-import axios from 'axios';
-import { IMonthlyWagesHttpRepository } from 'modules/monthly_wages/repository/monthly_wages-http-repository';
+} from 'modules/monthly-wages/repository/monthly-wages_repository';
+import MonthlyWagesHttpRepository, {
+  IMonthlyWagesHttpRepository,
+} from 'modules/monthly-wages/repository/monthly-wages_http-repository';
+
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
 } & {
@@ -65,7 +71,6 @@ container.service(
   'monthlyWagesRouter',
   (c): IMonthlyWagesRouter => new MonthlyWagesRouter(c.monthlyWagesUsecase)
 );
-
 container.service(
   'monthlyWagesUsecase',
   (c): IMonthlyWagesUsecase =>
@@ -74,14 +79,13 @@ container.service(
       c.monthlyWagesHttpRepository
     )
 );
-
 container.service(
   'monthlyWagesRepository',
   (c): IMonthlyWagesRepository => new MonthlyWagesRepository(c.prismaClient)
 );
 container.service(
   'monthlyWagesHttpRepository',
-  (c): IMonthlyWagesHttpRepository => c.axios
+  (c): IMonthlyWagesHttpRepository => new MonthlyWagesHttpRepository(c.axios)
 );
 
 export default container;

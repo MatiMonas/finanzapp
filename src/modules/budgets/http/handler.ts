@@ -34,11 +34,7 @@ export interface IBudgetsHandler {
   ) => Promise<Boolean>;
 }
 export default class BudgetsHandler {
-  private budgetsUseCase: IBudgetUsecase;
-
-  constructor(BudgetUsecase: IBudgetUsecase) {
-    this.budgetsUseCase = BudgetUsecase;
-  }
+  constructor(private budgetsUseCase: IBudgetUsecase) {}
 
   getBudget = (
     req: Request<BudgetIdParam, any, any, any>

@@ -1,5 +1,5 @@
 import Validator from 'validator';
-import { IMonthlyWagesRepository } from '../repository/monthly_wages-repository';
+import { IMonthlyWagesRepository } from '../repository/monthly-wages_repository';
 
 export class ValidatorMonthlyWageExists extends Validator {
   constructor(private monthlyWagesRepository: IMonthlyWagesRepository) {

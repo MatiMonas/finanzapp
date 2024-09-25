@@ -18,7 +18,7 @@ export interface IBudgetRouter {
   getRouter(): Router;
 }
 
-export default class BudgetRouter {
+export default class BudgetRouter implements IBudgetRouter {
   protected budgetsUsecase: IBudgetUsecase;
   protected handler: IBudgetsHandler;
 

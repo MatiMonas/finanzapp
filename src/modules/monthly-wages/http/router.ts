@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import MonthlyWagesUsecase, { IMonthlyWagesUsecase } from '../usecase';
 import MonthlyWagesHandler, { IMonthlyWagesHandler } from './handler';
 import createHandler from 'infrastructure/web/createHandler';
 import { STATUS_CODES } from 'utils/constants';
+import { IMonthlyWagesUsecase } from '../usecase';
 
 const router = Router();
 
@@ -11,20 +11,20 @@ export interface IMonthlyWagesRouter {
   getRouter(): Router;
 }
 
-export default class MonthlyWagesRouter {
-  protected budgetsUsecase: IMonthlyWagesUsecase;
+export default class MonthlyWagesRouter implements IMonthlyWagesRouter {
+  protected monthlyWagesUsecase: IMonthlyWagesUsecase;
   protected handler: IMonthlyWagesHandler;
 
-  constructor(BudgetsUsecase: IMonthlyWagesUsecase) {
-    this.budgetsUsecase = BudgetsUsecase;
-    this.handler = new MonthlyWagesHandler(BudgetsUsecase);
+  constructor(MonthlyWagesUsecase: IMonthlyWagesUsecase) {
+    this.monthlyWagesUsecase = MonthlyWagesUsecase;
+    this.handler = new MonthlyWagesHandler(MonthlyWagesUsecase);
     this.registerRouters();
   }
 
   registerRouters(): void {
     router.post(
       '/monthly-wages',
-      createHandler(this.handler.create, STATUS_CODES.CREATED)
+      createHandler(this.handler.createMonthlyWage, STATUS_CODES.CREATED)
     );
   }
 

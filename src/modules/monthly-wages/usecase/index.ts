@@ -1,10 +1,10 @@
 import Validator from 'validator';
-import { IMonthlyWagesHttpRepository } from '../repository/monthly_wages-http-repository';
-import { IMonthlyWagesRepository } from '../repository/monthly_wages-repository';
+import { IMonthlyWagesHttpRepository } from '../repository/monthly-wages_http-repository';
+import { IMonthlyWagesRepository } from '../repository/monthly-wages_repository';
 import { ValidatorMonthlyWageExists } from '../validators/validatorMonthlyWageExists';
 
 export interface IMonthlyWagesUsecase {
-  createMonthlyWage(): Promise<Boolean>;
+  createMonthlyWage(payload: any): Promise<Boolean>;
 }
 
 export default class MonthlyWagesUsecase implements IMonthlyWagesUsecase {
@@ -13,7 +13,7 @@ export default class MonthlyWagesUsecase implements IMonthlyWagesUsecase {
     private monthlyWagesHttpRepository: IMonthlyWagesHttpRepository
   ) {}
 
-  async createMonthlyWage(): Promise<Boolean> {
+  async createMonthlyWage(payload: any): Promise<Boolean> {
     const modelValidator = Validator.createValidatorChain([
       // validate if a monthly wage already exists
       new ValidatorMonthlyWageExists(this.monthlyWagesRepository),
