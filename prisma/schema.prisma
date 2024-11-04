@@ -16,7 +16,7 @@ model Users {
   roles                          UserRoles[]             @relation("UserRolesToRoles")
   active_budget_configuration_id Int?                    @db.UnsignedInt
   active_budget_configuration    BudgetsConfigurations?  @relation(name: "user_active_budget_configuration", fields: [active_budget_configuration_id], references: [id])
-  MonthlyWages                   MonthlyWages[]
+  Wages                          Wages[]
   Budgets                        Budgets[]
   Expenses                       Expenses[]
   Investments                    Investments[]
@@ -66,19 +66,20 @@ model BudgetsConfigurations {
   @@map("budgets_configuration")
 }
 
-model MonthlyWages {
+model Wages {
   id            Int       @id @default(autoincrement()) @db.UnsignedInt
   user_id       String    @db.Char(36)
   user          Users     @relation(fields: [user_id], references: [id])
   amount        Float     @default(0.0) @db.Float
-  month         DateTime  @default(now())
-  exchange_rate Float // will be used to watch monthly variations on salary
-  budgets       Budgets[] @relation("MonthlyWagesBudgets")
+  date          DateTime
+  exchange_rate Float // will be used to watch  variations on salary
+  budgets       Budgets[] @relation("wages_budgets")
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
   deleted_at    DateTime?
+  Budgets       Budgets[]
 
-  @@map("monthly_wages")
+  @@map("wages")
 }
 
 model Budgets {
@@ -92,14 +93,16 @@ model Budgets {
   budget_configuration    BudgetsConfigurations? @relation(fields: [budget_configuration_id], references: [id])
   budget_configuration_id Int?                   @db.UnsignedInt
 
-  monthly_wage_id Int?          @db.UnsignedInt
-  monthly_wage    MonthlyWages? @relation("MonthlyWagesBudgets", fields: [monthly_wage_id], references: [id])
+  wage_id Int?   @db.UnsignedInt
+  wage    Wages? @relation("wages_budgets", fields: [wage_id], references: [id])
 
   categories Categories[]
   alerts     Alerts[]
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
   deleted_at DateTime?
+  Wages      Wages?       @relation(fields: [wagesId], references: [id])
+  wagesId    Int?         @db.UnsignedInt
 
   @@map("budgets")
 }

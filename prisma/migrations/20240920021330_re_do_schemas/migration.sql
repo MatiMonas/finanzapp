@@ -45,7 +45,7 @@ CREATE TABLE `budgets_configuration` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `monthly_wages` (
+CREATE TABLE `wages` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` CHAR(36) NOT NULL,
     `amount` FLOAT NOT NULL DEFAULT 0.0,
@@ -65,7 +65,7 @@ CREATE TABLE `budgets` (
     `percentage` FLOAT NOT NULL DEFAULT 0.0,
     `remaining_allocation` FLOAT NOT NULL DEFAULT 0.0,
     `budget_configuration_id` INTEGER UNSIGNED NULL,
-    `monthly_wage_id` INTEGER UNSIGNED NULL,
+    `wage_id` INTEGER UNSIGNED NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
     `deleted_at` DATETIME(3) NULL,
@@ -193,7 +193,7 @@ ALTER TABLE `user_roles` ADD CONSTRAINT `user_roles_user_id_fkey` FOREIGN KEY (`
 ALTER TABLE `user_roles` ADD CONSTRAINT `user_roles_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `monthly_wages` ADD CONSTRAINT `monthly_wages_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `wages` ADD CONSTRAINT `wages_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `budgets` ADD CONSTRAINT `budgets_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -202,7 +202,7 @@ ALTER TABLE `budgets` ADD CONSTRAINT `budgets_user_id_fkey` FOREIGN KEY (`user_i
 ALTER TABLE `budgets` ADD CONSTRAINT `budgets_budget_configuration_id_fkey` FOREIGN KEY (`budget_configuration_id`) REFERENCES `budgets_configuration`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `budgets` ADD CONSTRAINT `budgets_monthly_wage_id_fkey` FOREIGN KEY (`monthly_wage_id`) REFERENCES `monthly_wages`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `budgets` ADD CONSTRAINT `budgets_wage_id_fkey` FOREIGN KEY (`wage_id`) REFERENCES `wages`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `categories` ADD CONSTRAINT `categories_budget_id_fkey` FOREIGN KEY (`budget_id`) REFERENCES `budgets`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

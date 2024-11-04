@@ -1,5 +1,5 @@
-import UserRepository from 'modules/users/repository/user-repository';
-import UserUsecase from 'modules/users/usecase';
+import UserRepository from 'components/users/repository/user-repository';
+import UserUsecase from 'components/users/usecase';
 
 export const mockUserUseCase = {
   test: jest.fn().mockResolvedValue('ok'),

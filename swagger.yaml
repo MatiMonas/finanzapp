@@ -14,8 +14,8 @@ tags:
     description: Operations related to budget configurations
   - name: Budgets
     description: Operations related to budgets
-  - name: MonthlyWages
-    description: Operations related to monthly wages
+  - name: Wages
+    description: Operations related to  wages
 
 paths:
   /users:
@@ -351,7 +351,7 @@ components:
         transfer_to_budget_id:
           type: integer
           format: int32
-        monthly_wage_id:
+        wage_id:
           type: integer
           format: int32
         created_at:
@@ -443,7 +443,7 @@ components:
           type: string
           description: Specific error code for the error
           example: 'DatabaseError'
-    MonthlyWageBadRequestError:
+    WageBadRequestError:
       type: object
         properties:
           status:

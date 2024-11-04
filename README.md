@@ -9,7 +9,7 @@ FinanazAPI is built with TypeScript, Express, and Prisma, following Clean Archit
 - [Getting Started](#getting-started)
 - [Docker](#docker)
 - [Use Cases](#use-cases)
-  - [Budget Configurations, Budgets, and Monthly Wages](#budget-configurations-budgets-and-monthly-wages)
+  - [Budget Configurations, Budgets, and Wages](#budget-configurations-budgets-and-wages)
     - [Creation of Budget Configurations](#creation-of-budget-configurations)
 - [API Documentation](#api-documentation)
 - [Roadmap](#roadmap)
@@ -41,7 +41,7 @@ npx prisma generate || npx prisma migrate dev
 
 ## Usecases
 
-### Budget Configurations, Budgets, and Monthly Wages
+### Budget Configurations, Budgets, and Wages
 
 #### Create an User
 
@@ -82,7 +82,7 @@ The endpoint will return the `user.id` that you will need to use in the followin
 
 #### Creation of Budget Configurations
 
-To start calculating the Monthly Budget and utilize your Monthly Wages, you must first create a Budget Configuration. This configuration will be assigned to the Monthly Wage and should have a name (e.g., "Basic") along with a user_id.
+To start calculating the Budget and utilize your Wages, you must first create a Budget Configuration. This configuration will be assigned to the Wage and should have a name (e.g., "Basic") along with a user_id.
 
 The Budget Configuration will have several associated Budgets. Each Budget must include a name and a percentage. The total sum of all Budgets' percentages must equal 100%.
 
@@ -116,7 +116,7 @@ The API is documented using Swagger. You can access it at http://localhost:3000/
 ## Roadmap
 
 - [x] Budgets and Budget Configurations.
-- [ ] Monthly Wages and auto calculation of Budgets per month.
+- [ ] Wages and auto calculation of Budgets per month.
 - [ ] Creation of Categories that will be used when adding expenses.
 - [ ] Expenses, discounting allocation from budgets when adding new expenses.
 - [ ] Transfer remaining allocation to another Budget to use in the incoming month if desired.
