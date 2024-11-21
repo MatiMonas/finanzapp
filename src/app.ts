@@ -10,6 +10,7 @@ function setupRoutes(server: Server) {
   server.addRoutes(API_PREFIX, [
     container.userRouter.getRouter(),
     container.budgetRouter.getRouter(),
+    container.wagesRouter.getRouter(),
   ]);
 
   server.addEndpoint(

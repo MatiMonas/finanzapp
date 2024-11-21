@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_PATH=./build node build/app.js",
     "dev": "nodemon -L --inspect=0.0.0.0:9229 --signal SIGINT --nolazy src/app.ts",
-    "build": "npx rimraf ./build && npx prisma generate && npx prisma generate --schema=prisma/platform.prisma && tsc -p tsconfig.build.json",
+    "build": "npx rimraf ./build && npx prisma generate  && tsc -p tsconfig.build.json",
     "test": "env-cmd -f .env.test jest --runInBand --silent ",
     "coverage": "env-cmd -f .env.test npx jest --runInBand --coverage",
     "setup": "./setup.sh",
@@ -39,7 +39,7 @@
     "jest": "^29.7.0",
     "jest-mock-extended": "^3.0.7",
     "nodemon": "^3.1.0",
-    "prisma": "^5.19.1",
+    "prisma": "^5.21.1",
     "rimraf": "^3.0.2",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -48,7 +48,8 @@
     "typescript": "5.1.3"
   },
   "dependencies": {
-    "@prisma/client": "^5.19.1",
+    "@prisma/client": "^5.21.1",
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

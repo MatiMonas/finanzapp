@@ -36,5 +36,3 @@ export default class Container<T> {
     return this;
   }
 }
-
-module.exports = Container;

@@ -1,16 +1,28 @@
+import axios from 'axios';
 import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/persistance/prisma';
-import UsersRouter from 'modules/users/http/router';
+
+import UsersRouter from 'components/users/http/router';
+import UserUsecase, { IUserUsecase } from 'components/users/usecase';
 import UserRepository, {
   IUserRepository,
-} from 'modules/users/repository/user-repository';
-import BudgetRouter, { IBudgetRouter } from 'modules/budgets/http/router';
-import BudgetUsecase, { IBudgetUsecase } from 'modules/budgets/usecase';
+} from 'components/users/repository/user-repository';
+
+import BudgetRouter, { IBudgetRouter } from 'components/budgets/http/router';
+import BudgetUsecase, { IBudgetUsecase } from 'components/budgets/usecase';
+
+import WagesRouter, { IWagesRouter } from 'components/wages/http/router';
+import WagesUsecase, { IWagesUsecase } from 'components/wages/usecase';
+import WagesRepository, {
+  IWagesRepository,
+} from 'components/wages/repository/wages_repository';
+import WagesHttpRepository, {
+  IWagesHttpRepository,
+} from 'components/wages/repository/wages_http-repository';
 import BudgetRepository, {
   IBudgetRepository,
-} from 'modules/budgets/repository/budget-repository';
-import UserUsecase, { IUserUsecase } from 'modules/users/usecase';
+} from 'components/budgets/repository/budget-repository';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
@@ -23,6 +35,7 @@ const container =
     Container<ContainerServices>;
 
 container.service('prismaClient', () => prismaClient());
+container.service('axios', () => axios);
 
 // USER SERVICES
 container.service('userRouter', (c) => new UsersRouter(c.userUsecase));
@@ -48,4 +61,24 @@ container.service(
   'budgetRepository',
   (c): IBudgetRepository => new BudgetRepository(c.prismaClient)
 );
+
+//  WAGES SERVICES
+container.service(
+  'wagesRouter',
+  (c): IWagesRouter => new WagesRouter(c.wagesUsecase)
+);
+container.service(
+  'wagesUsecase',
+  (c): IWagesUsecase =>
+    new WagesUsecase(c.wagesRepository, c.wagesHttpRepository)
+);
+container.service(
+  'wagesRepository',
+  (c): IWagesRepository => new WagesRepository(c.prismaClient)
+);
+container.service(
+  'wagesHttpRepository',
+  (c): IWagesHttpRepository => new WagesHttpRepository(c.axios)
+);
+
 export default container;
