@@ -41,7 +41,6 @@ export class ValidatorMonthlyWageExists extends Validator {
       monthly_wage_summary_id: monthlyWage.id,
     };
 
-    console.log(body);
     return super.validate(body);
   }
 }
