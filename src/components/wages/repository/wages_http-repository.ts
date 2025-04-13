@@ -1,22 +1,37 @@
-// repository/wages_http-repository.ts
 import { Axios } from 'axios';
-
+import { retry } from 'utils/helpers/functions';
 export interface IWagesHttpRepository {
   getBlueExchangeRate(): Promise<number>;
 }
 
 export default class WagesHttpRepository implements IWagesHttpRepository {
-  constructor(private axios: Axios) {}
+  private readonly fallbackExchangeRate = 1300;
+
+  constructor(
+    private axios: Axios,
+    private logger: Console = console,
+    private retryAttempts = 3
+  ) {}
 
   async getBlueExchangeRate(): Promise<number> {
     try {
-      const { data } = await this.axios.get(
-        'https://dolarapi.com/v1/dolares/blue'
-      );
+      const data = await retry(async () => {
+        const { data } = await this.axios.get(
+          'https://dolarapi.com/v1/dolares/blue'
+        );
+        if (!data?.venta || typeof data.venta !== 'number') {
+          throw new Error('Invalid exchange rate data');
+        }
+        return data;
+      }, this.retryAttempts);
+
       return data.venta;
     } catch (error) {
-      console.error('Error fetching exchange rate:', error);
-      throw new Error('No se pudo obtener el tipo de cambio');
+      this.logger.error('Failed to fetch exchange rate after retries:', error);
+      this.logger.warn(
+        `Using fallback exchange rate: ${this.fallbackExchangeRate}`
+      );
+      return this.fallbackExchangeRate;
     }
   }
 }

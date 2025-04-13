@@ -69,3 +69,22 @@ export const handleValidationErrors = (
     input_data: { ...req.body, ...req.query },
   });
 };
+
+export async function retry<T>(
+  fn: () => Promise<T>,
+  retries: number = 3,
+  delayMs: number = 500
+): Promise<T> {
+  let attempt = 0;
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (err) {
+      attempt++;
+      if (attempt >= retries) throw err;
+      await new Promise((res) => setTimeout(res, delayMs));
+    }
+  }
+  // Esto no se ejecuta nunca, pero TypeScript lo quiere igual
+  throw new Error('Unexpected retry failure');
+}
