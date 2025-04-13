@@ -116,7 +116,9 @@ The API is documented using Swagger. You can access it at http://localhost:3000/
 ## Roadmap
 
 - [x] Budgets and Budget Configurations.
-- [ ] Wages and auto calculation of Budgets per month.
+- [x] Wages and auto calculation of Budgets per month.
+- [ ] Recalculate Budgets when adding new Wages.
+- [ ] Recalculate Budgets remaining allocations if a new budget is added and the percentage per budget is changed.
 - [ ] Creation of Categories that will be used when adding expenses.
 - [ ] Expenses, discounting allocation from budgets when adding new expenses.
 - [ ] Transfer remaining allocation to another Budget to use in the incoming month if desired.

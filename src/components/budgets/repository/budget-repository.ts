@@ -5,6 +5,7 @@ import {
   BudgetConfigurationParams,
   CreateBudgetPayload,
   DeleteBudgetConfigurationPayload,
+  SingleUpdateBudgetAction,
 } from '../types/request';
 import { BudgetWithoutTimestamps } from '../types/db_model';
 import { BudgetConfigurationWithBudgets } from '../types/response';
@@ -37,6 +38,8 @@ export interface IBudgetRepository {
   createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean>;
 
   updateBudgets(budgetData: BudgetAction[]): Promise<boolean>;
+
+  singuleUpdateBudget(budgetData: SingleUpdateBudgetAction): Promise<boolean>;
 
   deleteBudgets(budgetIds: number[]): Promise<boolean>;
 }
@@ -229,6 +232,26 @@ export default class BudgetRepository implements IBudgetRepository {
             },
           });
         }
+      });
+      return true;
+    } catch (error: any) {
+      throw new DatabaseError('Unable to update budgets', { cause: error });
+    }
+  }
+
+  async singuleUpdateBudget(
+    budgetData: SingleUpdateBudgetAction
+  ): Promise<boolean> {
+    try {
+      await this.prismaClient.$transaction(async (prisma) => {
+        await prisma.budgets.update({
+          where: { id: budgetData.id },
+          data: {
+            remaining_allocation: budgetData.remaining_allocation,
+            updated_at: budgetData.updated_at,
+            monthly_wage_summary_id: budgetData.monthly_wage_summary_id,
+          },
+        });
       });
       return true;
     } catch (error: any) {

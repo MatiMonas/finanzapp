@@ -41,11 +41,26 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
   async getBudgetConfigurations(
     filterData: BudgetConfigurationParams
-  ): Promise<BudgetConfigurationWithBudgets[]> {
+  ): Promise<any[]> {
     const budgetConfigurations =
       await this.budgetRepository.findBudgetConfigurationWhere(filterData);
 
-    return budgetConfigurations;
+    return budgetConfigurations.map((config) => ({
+      id: config.id,
+      name: config.name,
+      is_public: config.is_public,
+      created_at: config.created_at,
+      updated_at: config.updated_at,
+      budgets: config.budgets.map((budget) => ({
+        id: budget.id,
+        name: budget.name,
+        percentage: budget.percentage,
+        remaining_allocation: budget.remaining_allocation,
+        monthly_wage_summary_id: budget.monthly_wage_summary_id,
+        created_at: budget.created_at,
+        updated_at: budget.updated_at,
+      })),
+    }));
   }
 
   async createBudget(

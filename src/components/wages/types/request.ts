@@ -3,7 +3,7 @@ export type WageBody = {
   amount: number;
   month: string;
   year: string;
-  currency: string;
+  currency: 'USD' | 'ARS';
 };
 
 export type WagesParams = Partial<{
@@ -11,5 +11,5 @@ export type WagesParams = Partial<{
   amount: number;
   month_and_year: string;
   exchange_rate: number;
-  currency: string;
+  currency: 'USD' | 'ARS';
 }>;

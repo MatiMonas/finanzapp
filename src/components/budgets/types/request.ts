@@ -11,8 +11,18 @@ export type BudgetAction = {
   id?: number;
   name?: string;
   percentage?: number;
+  remaining_allocation?: number;
+  budget_configuration_id?: number;
+  monthly_wage_summary_id?: number;
   create?: boolean;
   delete?: boolean;
+};
+
+export type SingleUpdateBudgetAction = {
+  id: number;
+  remaining_allocation: number;
+  updated_at: Date;
+  monthly_wage_summary_id: number;
 };
 
 export type PatchBudgetBody = {
@@ -52,6 +62,7 @@ export type BudgetConfigurationParams = Partial<{
   id: number;
   name: string;
   user_id: string;
+  is_active: boolean;
   created_at: Date;
   updated_at: Date;
   deleted_at?: Date;

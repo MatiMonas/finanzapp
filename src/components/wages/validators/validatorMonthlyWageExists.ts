@@ -13,18 +13,21 @@ export class ValidatorMonthlyWageExists extends Validator {
   async validate(body: any): Promise<boolean> {
     const { user_id, month, year } = body;
 
-    const month_and_year = moment(`${month}-${year}`, 'MM-YYYY').toString();
-    const wage = await this.wagesRepository.getWagesWhere({
+    const month_and_year = moment(`${month}-${year}`, 'MM-YYYY').format(
+      'YYYY-MM'
+    );
+    const monthlyWage = await this.wagesRepository.getMonthlyWageWhere({
       user_id,
       month_and_year,
     });
 
+    console.log(monthlyWage);
     body = {
       ...body,
       month_and_year,
     };
 
-    if (!wage) {
+    if (!monthlyWage) {
       body = {
         ...body,
         monthly_wage_summary_id: null,
@@ -35,9 +38,10 @@ export class ValidatorMonthlyWageExists extends Validator {
 
     body = {
       ...body,
-      monthly_wage_summary_id: wage.monthly_wage_summary_id,
+      monthly_wage_summary_id: monthlyWage.id,
     };
 
+    console.log(body);
     return super.validate(body);
   }
 }

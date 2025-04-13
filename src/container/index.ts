@@ -70,7 +70,11 @@ container.service(
 container.service(
   'wagesUsecase',
   (c): IWagesUsecase =>
-    new WagesUsecase(c.wagesRepository, c.wagesHttpRepository)
+    new WagesUsecase(
+      c.wagesRepository,
+      c.wagesHttpRepository,
+      c.budgetRepository
+    )
 );
 container.service(
   'wagesRepository',

@@ -23,7 +23,7 @@ model Users {
 
   wages                Wages[]
   monthly_wage_summary MonthlyWageSummary[]
-  // UserBalance                 UserBalance?
+
   // expenses                    Expenses[]
 
   created_at DateTime  @default(now())
@@ -33,20 +33,9 @@ model Users {
   @@map("users")
 }
 
-// model UserBalance {
-//   id      Int    @id @default(autoincrement()) @db.UnsignedInt
-//   total   Int    @default(0)
-//   user    Users  @relation(fields: [user_id], references: [id])
-//   user_id String @unique
-
-//   created_at DateTime  @default(now())
-//   updated_at DateTime  @updatedAt
-//   deleted_at DateTime?
-// }
-
 model Roles {
   id   Int    @id @default(autoincrement()) @db.UnsignedInt
-  name String @db.VarChar(10)
+  name String @unique @db.VarChar(10)
 
   users UserRoles[] @relation("user_roles")
 
@@ -77,6 +66,7 @@ model BudgetsConfigurations {
   name         String
   user_id      String
   is_public    Boolean @default(false)
+  is_active    Boolean @default(true)
   active_users Users[] @relation("user_active_budget_configuration")
 
   budgets Budgets[]
@@ -87,6 +77,7 @@ model BudgetsConfigurations {
   deleted_at DateTime?
 
   @@index([user_id], name: "idx_budget_configs_user_id")
+  @@index([id], name: "idx_budget_config_id")
   @@map("budgets_configuration")
 }
 
@@ -94,16 +85,19 @@ model BudgetsConfigurations {
 model Wages {
   id Int @id @default(autoincrement()) @db.UnsignedInt
 
-  amount         Float  @default(0.0) @db.Float
-  exchange_rate  Float // USD if currency is ARS, ARS if currency is USD
-  currency       String
+  amount         Float
+  currency       String // "USD" o "ARS"
+  exchange_rate  Float
+  amount_in_usd  Float
+  amount_in_ars  Float
   month_and_year String
 
   user_id String @db.Char(36)
   user    Users  @relation(fields: [user_id], references: [id])
 
-  monthly_wage_summary_id Int                @db.UnsignedInt
-  monthly_wage_summary    MonthlyWageSummary @relation(fields: [monthly_wage_summary_id], references: [id])
+  monthly_wage_summary_id Int @db.UnsignedInt
+
+  monthly_wage_summary MonthlyWageSummary @relation(fields: [monthly_wage_summary_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -156,6 +150,7 @@ model Budgets {
 
   @@index([user_id], name: "idx_budgets_user_id")
   @@index([budget_configuration_id], name: "idx_budgets_budget_config_id")
+  @@index([monthly_wage_summary_id], name: "idx_budgets_summary_id")
   @@map("budgets")
 }
 
