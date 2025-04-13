@@ -22,7 +22,6 @@ export default class WagesUsecase implements IWagesUsecase {
     ]);
 
     const data = await modelValidator.validate(payload);
-    // console.log(data);
 
     let monthlyWageSummary;
     if (!data.monthly_wage_summary_id) {
