@@ -9,48 +9,61 @@ datasource db {
 }
 
 model Users {
-  id                             String      @id @default(uuid()) @db.Char(36)
-  email                          String      @unique @db.VarChar(30)
-  username                       String      @unique @db.VarChar(25)
-  password                       String      @db.VarChar(255)
-  roles                          UserRoles[] @relation("user_roles")
-  active_budget_configuration_id Int?        @db.UnsignedInt
+  id       String      @id @default(uuid()) @db.Char(36)
+  email    String      @unique @db.VarChar(30)
+  username String      @unique @db.VarChar(25)
+  password String      @db.VarChar(255)
+  roles    UserRoles[] @relation("user_roles")
+
+  active_budget_configuration_id Int?                   @db.UnsignedInt
+  active_budget_configuration    BudgetsConfigurations? @relation(name: "user_active_budget_configuration", fields: [active_budget_configuration_id], references: [id])
+
+  budgets                Budgets[]
+  budgets_configurations BudgetsConfigurations[]
+
+  wages                Wages[]
+  monthly_wage_summary MonthlyWageSummary[]
+  // UserBalance                 UserBalance?
+  // expenses                    Expenses[]
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  active_budget_configuration BudgetsConfigurations?  @relation(name: "user_active_budget_configuration", fields: [active_budget_configuration_id], references: [id])
-  wages                       Wages[]
-  budgets                     Budgets[]
-  expenses                    Expenses[]
-  investments                 Investments[]
-  debts                       Debts[]
-  credit_cards                CreditCards[]
-  budgets_configurations      BudgetsConfigurations[]
-  monthly_wage_summary        MonthlyWageSummary[]
-
   @@map("users")
 }
+
+// model UserBalance {
+//   id      Int    @id @default(autoincrement()) @db.UnsignedInt
+//   total   Int    @default(0)
+//   user    Users  @relation(fields: [user_id], references: [id])
+//   user_id String @unique
+
+//   created_at DateTime  @default(now())
+//   updated_at DateTime  @updatedAt
+//   deleted_at DateTime?
+// }
 
 model Roles {
   id   Int    @id @default(autoincrement()) @db.UnsignedInt
   name String @db.VarChar(10)
 
+  users UserRoles[] @relation("user_roles")
+
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-
-  users UserRoles[] @relation("user_roles")
 
   @@map("roles")
 }
 
 model UserRoles {
-  user_id    String    @db.Char(36)
-  role_id    Int       @db.UnsignedInt
-  user       Users     @relation("user_roles", fields: [user_id], references: [id])
-  role       Roles     @relation("user_roles", fields: [role_id], references: [id])
+  user_id String @db.Char(36)
+  role_id Int    @db.UnsignedInt
+
+  user Users @relation("user_roles", fields: [user_id], references: [id])
+  role Roles @relation("user_roles", fields: [role_id], references: [id])
+
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
@@ -60,16 +73,18 @@ model UserRoles {
 }
 
 model BudgetsConfigurations {
-  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  id           Int     @id @default(autoincrement()) @db.UnsignedInt
   name         String
   user_id      String
-  is_public    Boolean   @default(false)
-  active_users Users[]   @relation("user_active_budget_configuration")
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  deleted_at   DateTime?
-  budgets      Budgets[]
-  users        Users[]
+  is_public    Boolean @default(false)
+  active_users Users[] @relation("user_active_budget_configuration")
+
+  budgets Budgets[]
+  users   Users[]
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@index([user_id], name: "idx_budget_configs_user_id")
   @@map("budgets_configuration")
@@ -77,175 +92,102 @@ model BudgetsConfigurations {
 
 // This table will be used to store a particular wage containing user + amount and we will relate add it to the monthlyWageSummary refering to the month and year
 model Wages {
-  id                      Int                 @id @default(autoincrement()) @db.UnsignedInt
-  user_id                 String              @db.Char(36)
-  user                    Users               @relation(fields: [user_id], references: [id])
-  amount                  Float               @default(0.0) @db.Float
-  exchange_rate           Float
-  created_at              DateTime            @default(now())
-  updated_at              DateTime            @updatedAt
-  deleted_at              DateTime?
-  monthly_wage_summary    MonthlyWageSummary? @relation(fields: [monthly_wage_summary_id], references: [id])
-  monthly_wage_summary_id Int?                @db.UnsignedInt
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  amount         Float  @default(0.0) @db.Float
+  exchange_rate  Float // USD if currency is ARS, ARS if currency is USD
+  currency       String
+  month_and_year String
+
+  user_id String @db.Char(36)
+  user    Users  @relation(fields: [user_id], references: [id])
+
+  monthly_wage_summary_id Int                @db.UnsignedInt
+  monthly_wage_summary    MonthlyWageSummary @relation(fields: [monthly_wage_summary_id], references: [id])
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@map("wages")
 }
 
 // Total wage of the month+year of the user that will be used to store the total amount of the wage where we will be discounting the expenses and calculating
-// budgets numbers
+// budgets numbers.
+
 model MonthlyWageSummary {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id    String    @db.Char(36)
-  user       Users     @relation(fields: [user_id], references: [id])
-  month      Int
-  year       Int
-  total_wage Float
+  id             Int    @id @default(autoincrement()) @db.UnsignedInt
+  user_id        String @db.Char(36)
+  user           Users  @relation(fields: [user_id], references: [id])
+  month_and_year String
+  total_wage     Float
+  remaining      Float
+
+  budgets Budgets[]
+  wages   Wages[]
+
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
-  budgets    Budgets[]
-  wages      Wages[]
 
-  @@index([user_id, year, month], name: "user_month_year_summary_idx")
+  @@index([user_id, month_and_year], name: "user_month_year_summary_idx")
   @@map("monthly_wage_summary")
 }
 
 model Budgets {
-  id                      Int                    @id @default(autoincrement()) @db.UnsignedInt
-  user_id                 String                 @db.Char(36)
-  user                    Users                  @relation(fields: [user_id], references: [id])
-  name                    String                 @db.VarChar(30)
-  percentage              Float                  @default(0.0) @db.Float
-  remaining_allocation    Float                  @default(0.0) @db.Float
-  created_at              DateTime               @default(now())
-  updated_at              DateTime               @updatedAt
-  deleted_at              DateTime?
+  id                   Int    @id @default(autoincrement()) @db.UnsignedInt
+  user_id              String @db.Char(36)
+  user                 Users  @relation(fields: [user_id], references: [id])
+  name                 String @db.VarChar(30)
+  percentage           Float  @default(0.0) @db.Float
+  remaining_allocation Float  @default(0.0) @db.Float
+
   budget_configuration    BudgetsConfigurations? @relation(fields: [budget_configuration_id], references: [id])
   budget_configuration_id Int?                   @db.UnsignedInt
-  categories              Categories[]
-  alerts                  Alerts[]
-  monthly_wage_summary_id Int?                   @db.UnsignedInt
-  monthly_wage_summary    MonthlyWageSummary?    @relation(fields: [monthly_wage_summary_id], references: [id])
+
+  monthly_wage_summary_id Int?                @db.UnsignedInt
+  monthly_wage_summary    MonthlyWageSummary? @relation(fields: [monthly_wage_summary_id], references: [id])
+
+  // categories              Categories[]
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
   @@index([user_id], name: "idx_budgets_user_id")
   @@index([budget_configuration_id], name: "idx_budgets_budget_config_id")
   @@map("budgets")
 }
 
-model Categories {
-  id         Int        @id @default(autoincrement()) @db.UnsignedInt
-  name       String     @db.VarChar(50)
-  budget_id  Int        @db.UnsignedInt
-  budget     Budgets    @relation(fields: [budget_id], references: [id])
-  expenses   Expenses[]
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  deleted_at DateTime?
+// model Categories {
+//   id         Int        @id @default(autoincrement()) @db.UnsignedInt
+//   name       String     @db.VarChar(50)
+//   budget_id  Int        @db.UnsignedInt
+//   budget     Budgets    @relation(fields: [budget_id], references: [id])
+//   expenses   Expenses[]
+//   created_at DateTime   @default(now())
+//   updated_at DateTime   @updatedAt
+//   deleted_at DateTime?
 
-  @@index([budget_id], name: "idx_categories_budget_id")
-  @@map("categories")
-}
+//   @@index([budget_id], name: "idx_categories_budget_id")
+//   @@map("categories")
+// }
 
-model Alerts {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
-  budget_id  Int       @db.UnsignedInt
-  budget     Budgets   @relation(fields: [budget_id], references: [id])
-  threshold  Float     @db.Float
-  color      String    @db.VarChar(10)
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  deleted_at DateTime?
+// model Expenses {
+//   id          Int        @id @default(autoincrement()) @db.UnsignedInt
+//   user_id     String     @db.Char(36)
+//   user        Users      @relation(fields: [user_id], references: [id])
+//   category_id Int        @db.UnsignedInt
+//   category    Categories @relation(fields: [category_id], references: [id])
+//   title       String     @db.VarChar(100)
+//   amount      Float      @default(0.0) @db.Float
+//   date        DateTime   @default(now())
+//   is_monthly  Boolean    @default(false)
+//   created_at  DateTime   @default(now())
+//   updated_at  DateTime   @updatedAt
+//   deleted_at  DateTime?
 
-  @@index([budget_id], name: "idx_alerts_budget_id")
-  @@map("alerts")
-}
-
-model Expenses {
-  id          Int        @id @default(autoincrement()) @db.UnsignedInt
-  user_id     String     @db.Char(36)
-  user        Users      @relation(fields: [user_id], references: [id])
-  category_id Int        @db.UnsignedInt
-  category    Categories @relation(fields: [category_id], references: [id])
-  title       String     @db.VarChar(100)
-  amount      Float      @default(0.0) @db.Float
-  date        DateTime   @default(now())
-  is_monthly  Boolean    @default(false)
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-  deleted_at  DateTime?
-
-  @@index([user_id, category_id], name: "idx_expenses_user_category")
-  @@index([date], name: "idx_expenses_date")
-  @@map("expenses")
-}
-
-model Investments {
-  id             Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id        String    @db.Char(36)
-  user           Users     @relation(fields: [user_id], references: [id])
-  name           String    @db.VarChar(100)
-  purchase_date  DateTime
-  purchase_value Float     @default(0.0) @db.Float
-  sale_date      DateTime?
-  sale_value     Float?    @db.Float
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-  deleted_at     DateTime?
-
-  @@index([user_id], name: "idx_investments_user_id")
-  @@index([purchase_date], name: "idx_investments_purchase_date")
-  @@map("investments")
-}
-
-model Debts {
-  id           Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id      String    @db.Char(36)
-  user         Users     @relation(fields: [user_id], references: [id])
-  creditor     String    @db.VarChar(100)
-  amount       Float     @default(0.0) @db.Float
-  due_date     DateTime
-  is_paid      Boolean   @default(false)
-  payment_date DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  deleted_at   DateTime?
-
-  @@index([user_id], name: "idx_debts_user_id")
-  @@index([due_date], name: "idx_debts_due_date")
-  @@map("debts")
-}
-
-model CreditCards {
-  id            Int            @id @default(autoincrement()) @db.UnsignedInt
-  user_id       String         @db.Char(36)
-  user          Users          @relation(fields: [user_id], references: [id])
-  name          String         @db.VarChar(50)
-  total_credit  Float          @default(0.0) @db.Float
-  total_debt    Float          @default(0.0) @db.Float
-  card_expenses CardExpenses[]
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  deleted_at    DateTime?
-
-  @@index([user_id], name: "idx_credit_cards_user_id")
-  @@map("credit_cards")
-}
-
-model CardExpenses {
-  id                     Int         @id @default(autoincrement()) @db.UnsignedInt
-  credit_card_id         Int         @db.UnsignedInt
-  credit_card            CreditCards @relation(fields: [credit_card_id], references: [id])
-  title                  String      @db.VarChar(100)
-  amount                 Float       @default(0.0) @db.Float
-  start_date             DateTime
-  end_date               DateTime
-  installments           Int         @db.UnsignedInt
-  remaining_installments Int         @db.UnsignedInt
-  created_at             DateTime    @default(now())
-  updated_at             DateTime    @updatedAt
-  deleted_at             DateTime?
-
-  @@index([credit_card_id], name: "idx_card_expenses_credit_card_id")
-  @@index([start_date, end_date], name: "idx_card_expenses_date_range")
-  @@map("card_expenses")
-}
+//   @@index([user_id, category_id], name: "idx_expenses_user_category")
+//   @@index([date], name: "idx_expenses_date")
+//   @@map("expenses")
+// }

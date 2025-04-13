@@ -6,6 +6,6 @@ export type BudgetWithoutTimestamps = {
   percentage: number;
   remaining_allocation: number;
   budget_configuration_id: number | null;
-  wage_id: number | null;
+  // wage_id: number | null;
   user_id: string;
 } | null;

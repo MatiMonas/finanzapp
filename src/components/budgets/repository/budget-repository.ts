@@ -82,7 +82,7 @@ export default class BudgetRepository implements IBudgetRepository {
           percentage: true,
           remaining_allocation: true,
           budget_configuration_id: true,
-          wage_id: true,
+          // wage_id: true,
           user_id: true,
         },
       });
@@ -191,9 +191,9 @@ export default class BudgetRepository implements IBudgetRepository {
       return await this.prismaClient.budgets.findUnique({
         where: { id: budgetId },
         include: {
-          alerts: true,
+          // alerts: true,
           budget_configuration: true,
-          wage: true,
+          // wage: true,
         },
       });
     } catch (error: any) {
