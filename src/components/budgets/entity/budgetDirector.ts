@@ -1,16 +1,18 @@
-import { Budget } from '.';
-import { CreateBudgetPayload } from '../types/request';
+import { CreateBudgetPayload } from '../types';
+
 import { BudgetBuilder } from './budgetBuilder';
 
-export class BudgetDirector {
-  private builder: BudgetBuilder;
+import { Budget } from './index';
 
-  constructor(builder: BudgetBuilder) {
-    this.builder = builder;
+export class BudgetDirector {
+  private budgetBuilder: BudgetBuilder;
+
+  constructor() {
+    this.budgetBuilder = new BudgetBuilder();
   }
 
   createBudget(budgetData: CreateBudgetPayload): Budget {
-    return this.builder
+    return this.budgetBuilder
       .setUserId(budgetData.user_id)
       .setName(budgetData.name)
       .setPercentage(budgetData.percentage)
