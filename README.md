@@ -1,136 +1,215 @@
-# FinanazAPI
+# FinanzApp
 
-## Overview
+A financial management API built with TypeScript, Express, and Prisma, following Clean Architecture principles. It allows users to manage budgets, wages, and expenses efficiently.
 
-FinanazAPI is built with TypeScript, Express, and Prisma, following Clean Architecture principles. It allows users to manage budgets and expenses efficiently.
+## 🚀 Quick Start
 
-## Table of Contents
+### Prerequisites
 
-- [Getting Started](#getting-started)
-- [Docker](#docker)
-- [Use Cases](#use-cases)
-  - [Budget Configurations, Budgets, and Wages](#budget-configurations-budgets-and-wages)
-    - [Creation of Budget Configurations](#creation-of-budget-configurations)
-- [API Documentation](#api-documentation)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
+- Node.js (v18 or higher)
+- MySQL (v8.0 or higher)
+- npm or bun
 
-## Getting Started
-
-TODO: Add build instructions to start the project, prerequisites, etc.
-
-## Docker
-
-To run the application using Docker, use the following commands:
+### 1. Install Dependencies
 
 ```bash
-sudo docker-compose up --build
+npm install
 ```
 
-To access the running container, use:
+### 2. Database Setup
+
+The project uses three different databases for different environments:
+
+- **finanzapp-local** - For local development
+- **finanzapp-test** - For running tests
+- **finanzapp** - For production
+
+#### Quick Setup (Recommended)
+```bash
+# Run the automated setup script
+./docs/scripts/setup-databases-simple.sh
+```
+
+#### Manual Setup
+```bash
+# Setup each database individually
+npm run db:setup:local    # Setup local database
+npm run db:setup:test     # Setup test database
+npm run db:setup:prod     # Setup production database
+```
+
+### 3. Start Development
 
 ```bash
-docker exec -it finanzapp /bin/sh
+# Start local development (uses finanzapp-local)
+npm run dev
+
+# Start with production database
+npm run dev:prod
 ```
 
-After making changes to the database schema, don't forget to run:
+### 4. Run Tests
 
 ```bash
-npx prisma generate || npx prisma migrate dev
+# Run tests (uses finanzapp-test)
+npm run test
+
+# Run tests with coverage
+npm run coverage
 ```
 
-## Usecases
+## 📊 Database Environments
 
-### Budget Configurations, Budgets, and Wages
+### Local Development
+- **Database**: `finanzapp-local`
+- **Configuration**: `.env.local`
+- **Command**: `npm run dev`
 
-#### Create an User
+### Testing
+- **Database**: `finanzapp-test`
+- **Configuration**: `.env.test`
+- **Command**: `npm run test`
 
-First you need to create an user, to do so you need to create at least the following roles at the `Roles` table.
+### Production
+- **Database**: `finanzapp`
+- **Configuration**: `.env`
+- **Command**: `npm run dev:prod`
 
-```sql
-INSERT INTO finanzapp.roles (name, updated_at)
-VALUES ('ADMIN', NOW()),
-       ('USER', NOW())
-       ('TEST',NOW());
-```
+## 🔧 Available Scripts
 
-Then execute the next curl
-
+### Development
 ```bash
-curl -X 'POST' \
-  'http://localhost:3000/api/v1/users' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "username": "testUser",
-  "password": "securePassword.1$",
-  "email": "tes1t@test.com",
-  "roles": [
-    1
-  ]
-}'
+npm run dev          # Local development (uses finanzapp-local)
+npm run dev:prod     # Development with production DB
+npm run build        # Build the project
+npm run start        # Start production server
 ```
 
-The endpoint will return the `user.id` that you will need to use in the following endpoints.
-
-```json
-{
-  "status": "success",
-  "data": "2487b372-7c48-43f2-8ab7-bd0ae8ac79ae"
-}
-```
-
-#### Creation of Budget Configurations
-
-To start calculating the Budget and utilize your Wages, you must first create a Budget Configuration. This configuration will be assigned to the Wage and should have a name (e.g., "Basic") along with a user_id.
-
-The Budget Configuration will have several associated Budgets. Each Budget must include a name and a percentage. The total sum of all Budgets' percentages must equal 100%.
-
-#### Example of Budget Configuration Creation
-
+### Testing
 ```bash
-curl -X 'POST' \
-  'http://localhost:3000/api/v1/budget-configurations' \
-  -H 'accept: */*' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "user_id": "c270dfc2-ac37-46b1-83ad-c3450d15425e",
-  "budget_configuration_name": "Test",
-  "budgets": [
-    {
-      "name": "Savings",
-      "percentage": 40
-    },
-    {
-      "name": "Food",
-      "percentage": 60
-    }
-  ]
-}'
+npm run test         # Run tests (uses finanzapp-test)
+npm run coverage     # Run tests with coverage
 ```
 
-## API Documentation
+### Database Management
+```bash
+npm run db:setup:local  # Setup local database
+npm run db:setup:test   # Setup test database
+npm run db:setup:prod   # Setup production database
+```
 
-The API is documented using Swagger. You can access it at http://localhost:3000/api-docs.
+### Migrations
+```bash
+npm run prisma:migrate     # Create migration for local
+npm run prisma:migrate:prod # Create migration for production
+npm run prisma:deploy      # Apply migrations to production
+npm run prisma:deploy:local # Apply migrations to local
+npm run prisma:deploy-test  # Apply migrations to test
+```
 
-## Roadmap
+## 🐳 Docker
 
-- [x] Budgets and Budget Configurations.
-- [x] Wages and auto calculation of Budgets per month.
-- [ ] Recalculate Budgets when adding new Wages.
-- [ ] Recalculate Budgets remaining allocations if a new budget is added and the percentage per budget is changed.
-- [ ] Creation of Categories that will be used when adding expenses.
-- [ ] Expenses, discounting allocation from budgets when adding new expenses.
-- [ ] Transfer remaining allocation to another Budget to use in the incoming month if desired.
-- [ ] Credit Cards and trailing installments per card.
-- [ ] Pending debts and due dates to fullfill those debts.
-- [ ] Investments with Sell/Buy price per date.
-- [ ] Authentication and Authorization.
-- [ ] Add groups to split/track expenses together with friend/partner/roomie
+### Start with Docker
+```bash
+# Start only the database
+docker compose up -d finanzapp-db
 
-## Contributing
+# Start complete application
+docker compose up
+```
 
-We welcome contributions to FinanazAPI! Your help is essential to improving the project and making it better for everyone.
+## 📚 Documentation
+
+### 📖 Main Documentation
+- **[Knowledge Base](./docs/knowledge.md)** - Understanding the application functionality
+- **[API Documentation](./docs/api.md)** - Complete API reference
+- **[Architecture Guide](./docs/architecture.md)** - System architecture and design patterns
+
+### 🚀 Setup & Configuration
+- **[Setup Instructions](./docs/setup/SETUP_INSTRUCTIONS.md)** - Detailed setup guide
+- **[Database Configuration](./docs/database/DATABASE_SETUP.md)** - Database setup and management
+- **[Environment Configuration](./docs/environment.md)** - Environment variables and configuration
+
+### 🔧 Development
+- **[Development Guide](./docs/development.md)** - Development workflow and best practices
+- **[Testing Guide](./docs/testing.md)** - Testing strategies and guidelines
+- **[Deployment Guide](./docs/deployment.md)** - Production deployment instructions
+
+### 📋 Quick Reference
+- **[Command Reference](./docs/commands.md)** - All available commands
+- **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
+- **[FAQ](./docs/faq.md)** - Frequently asked questions
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+#### MySQL Connection Error
+```bash
+# Check if MySQL is running
+docker compose ps
+
+# Restart MySQL
+docker compose restart finanzapp-db
+```
+
+#### Migration Error
+```bash
+# Regenerate Prisma client
+npm run prisma:generate
+
+# Apply migrations manually
+npx prisma migrate deploy
+```
+
+#### Database Doesn't Exist
+```bash
+# Create database manually
+mysql -u user -ppassword -h localhost -P 3307 -e "CREATE DATABASE \`finanzapp-local\`;"
+```
+
+### Verify Configuration
+```bash
+# Verify local database connection
+npx prisma db pull --schema=./prisma/schema.prisma
+
+# Verify environment variables
+node -e "console.log(require('dotenv').config())"
+```
+
+## 📋 Setup Checklist
+
+- [ ] MySQL running on port 3307
+- [ ] Database `finanzapp-local` exists
+- [ ] Database `finanzapp-test` exists
+- [ ] Database `finanzapp` exists
+- [ ] `.env.local` file configured
+- [ ] `.env.test` file configured
+- [ ] Migrations applied to all databases
+- [ ] `npm run dev` works without errors
+- [ ] `npm run test` works without errors
+
+## 🆘 Support
+
+If you encounter issues:
+
+1. **Check the troubleshooting guide**: [docs/troubleshooting.md](./docs/troubleshooting.md)
+2. **Verify MySQL connection**:
+   ```bash
+   mysql -u user -ppassword -h localhost -P 3307 -e "SELECT 1;"
+   ```
+3. **Verify databases**:
+   ```bash
+   mysql -u user -ppassword -h localhost -P 3307 -e "SHOW DATABASES;"
+   ```
+4. **Regenerate Prisma client**:
+   ```bash
+   npm run prisma:generate
+   ```
+
+## 🤝 Contributing
+
+We welcome contributions to FinanzApp! Your help is essential to improving the project and making it better for everyone.
 
 ### How to Contribute
 
@@ -145,6 +224,6 @@ We welcome contributions to FinanazAPI! Your help is essential to improving the 
 
 If you find a bug or have a feature request, please [open an issue](https://github.com/MatiMonas/finanzapp/issues) in the repository.
 
-### Feature Requests
+## 📄 License
 
-Feel free to submit suggestions for new features or improvements.
+This project is licensed under the ISC License.
