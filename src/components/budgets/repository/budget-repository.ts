@@ -1,14 +1,15 @@
-import { PrismaClient, Budgets, BudgetsConfigurations } from '@prisma/client';
-import { DatabaseError } from 'errors';
+import { PrismaClient, Budgets } from '@prisma/client';
+import { handlePrismaError } from 'utils/helpers/prismaErrorHandler';
+
 import {
   BudgetAction,
   BudgetConfigurationParams,
   CreateBudgetPayload,
   DeleteBudgetConfigurationPayload,
   SingleUpdateBudgetAction,
-} from '../types/request';
-import { BudgetWithoutTimestamps } from '../types/db_model';
-import { BudgetConfigurationWithBudgets } from '../types/response';
+  BudgetWithoutTimestamps,
+  BudgetConfigurationWithBudgets,
+} from '../types';
 
 export interface IBudgetRepository {
   findBudgetConfigurationWhere(
@@ -31,7 +32,7 @@ export interface IBudgetRepository {
 
   deleteBudgetConfiguration(
     budgetToDelete: DeleteBudgetConfigurationPayload
-  ): Promise<Boolean>;
+  ): Promise<boolean>;
 
   getBudgetDetails(budgetId: number): Promise<Budgets | null>;
 
@@ -63,10 +64,10 @@ export default class BudgetRepository implements IBudgetRepository {
           budgets: true,
         },
       });
-    } catch (error: any) {
-      throw new DatabaseError(
-        'Unable to find budget configurations with the specified criteria',
-        { cause: error }
+    } catch (error: unknown) {
+      handlePrismaError(
+        error,
+        'Unable to find budget configurations with the specified criteria'
       );
     }
   }
@@ -89,12 +90,10 @@ export default class BudgetRepository implements IBudgetRepository {
           user_id: true,
         },
       });
-    } catch (error: any) {
-      throw new DatabaseError(
-        'Unable to find budgets by budget configuration id',
-        {
-          cause: error,
-        }
+    } catch (error: unknown) {
+      handlePrismaError(
+        error,
+        'Unable to find budgets by budget configuration id'
       );
     }
   }
@@ -128,10 +127,8 @@ export default class BudgetRepository implements IBudgetRepository {
       );
 
       return createdBudgetConfiguration.id;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to create budget configuration', {
-        cause: error,
-      });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to create budget configuration');
     }
   }
 
@@ -147,16 +144,14 @@ export default class BudgetRepository implements IBudgetRepository {
         });
       });
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to update budget configuration name', {
-        cause: error,
-      });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to update budget configuration name');
     }
   }
 
   async deleteBudgetConfiguration(
     budgetToDelete: DeleteBudgetConfigurationPayload
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     const { user_id, budget_configuration_id } = budgetToDelete;
     try {
       return await this.prismaClient.$transaction(async (prisma) => {
@@ -181,10 +176,10 @@ export default class BudgetRepository implements IBudgetRepository {
 
         return true;
       });
-    } catch (error: any) {
-      throw new DatabaseError(
-        `Unable to delete budget configuration with id ${budget_configuration_id}`,
-        { cause: error }
+    } catch (error: unknown) {
+      handlePrismaError(
+        error,
+        `Unable to delete budget configuration with id ${budget_configuration_id}`
       );
     }
   }
@@ -199,10 +194,8 @@ export default class BudgetRepository implements IBudgetRepository {
           // wage: true,
         },
       });
-    } catch (error: any) {
-      throw new DatabaseError('Unable to get budget details', {
-        cause: error,
-      });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to get budget details');
     }
   }
   async createBudget(budgetData: CreateBudgetPayload[]): Promise<boolean> {
@@ -213,10 +206,8 @@ export default class BudgetRepository implements IBudgetRepository {
         });
       });
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to create budget', {
-        cause: error,
-      });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to create budget');
     }
   }
 
@@ -234,8 +225,8 @@ export default class BudgetRepository implements IBudgetRepository {
         }
       });
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to update budgets', { cause: error });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to update budgets');
     }
   }
 
@@ -254,8 +245,8 @@ export default class BudgetRepository implements IBudgetRepository {
         });
       });
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to update budgets', { cause: error });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to update budgets');
     }
   }
 
@@ -269,8 +260,8 @@ export default class BudgetRepository implements IBudgetRepository {
         });
       });
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to delete budgets', { cause: error });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to delete budgets');
     }
   }
 }

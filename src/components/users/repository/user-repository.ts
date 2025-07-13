@@ -1,14 +1,23 @@
-import { PrismaClient, Users } from '@prisma/client';
-import { DatabaseError } from 'errors';
+import { PrismaClient } from '@prisma/client';
+import { UserNotFoundError } from 'errors';
+import { handlePrismaError } from 'utils/helpers/prismaErrorHandler';
+import bcrypt from 'bcrypt';
+
 import {
   FindByUserEmailRequestData,
   FindUserBydIdRequestData,
+  FindByUserEmailBasicData,
+  FindUserBydIdBasicData,
 } from '../types/db_model';
 import { PostUserParams } from '../types';
 
 export interface IUserRepository {
-  findUserById(userId: string): Promise<FindUserBydIdRequestData>;
-  findUserByEmail(userEmail: string): Promise<FindByUserEmailRequestData>;
+  findUserById(userId: string): Promise<FindUserBydIdBasicData>;
+  findUserByIdWithRoles(userId: string): Promise<FindUserBydIdRequestData>;
+  findUserByEmail(userEmail: string): Promise<FindByUserEmailBasicData>;
+  findUserByEmailWithRoles(
+    userEmail: string
+  ): Promise<FindByUserEmailRequestData>;
   create(userData: PostUserParams): Promise<string>;
 }
 
@@ -19,7 +28,33 @@ export default class UserRepository implements IUserRepository {
     this.prismaClient = prismaClient;
   }
 
-  async findUserById(userId: string): Promise<FindUserBydIdRequestData> {
+  async findUserById(userId: string): Promise<FindUserBydIdBasicData> {
+    try {
+      const foundUser = await this.prismaClient.users.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!foundUser) {
+        throw new UserNotFoundError(`User with id "${userId}" not found.`);
+      }
+
+      return {
+        id: foundUser.id,
+        email: foundUser.email,
+      };
+    } catch (error: unknown) {
+      if (error instanceof UserNotFoundError) {
+        throw error;
+      }
+      handlePrismaError(error, 'Unable to find user by id');
+    }
+  }
+
+  async findUserByIdWithRoles(
+    userId: string
+  ): Promise<FindUserBydIdRequestData> {
     try {
       const foundUser = await this.prismaClient.users.findUnique({
         where: {
@@ -38,23 +73,26 @@ export default class UserRepository implements IUserRepository {
         },
       });
 
-      if (foundUser) {
-        return {
-          id: foundUser.id,
-          email: foundUser.email,
-          roles: foundUser.roles.map((userRole) => userRole.role.name),
-        };
+      if (!foundUser) {
+        throw new UserNotFoundError(`User with id "${userId}" not found.`);
       }
 
-      return null;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to find user by id', { cause: error });
+      const roles = foundUser.roles.map((userRole) => userRole.role.name);
+
+      return {
+        id: foundUser.id,
+        email: foundUser.email,
+        roles,
+      };
+    } catch (error: unknown) {
+      if (error instanceof UserNotFoundError) {
+        throw error;
+      }
+      handlePrismaError(error, 'Unable to find user by id');
     }
   }
 
-  async findUserByEmail(
-    userEmail: string
-  ): Promise<FindByUserEmailRequestData> {
+  async findUserByEmail(userEmail: string): Promise<FindByUserEmailBasicData> {
     try {
       const foundUser = await this.prismaClient.users.findUnique({
         where: {
@@ -62,44 +100,92 @@ export default class UserRepository implements IUserRepository {
         },
       });
 
-      return foundUser;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to find user by email', { cause: error });
+      if (!foundUser) {
+        throw new UserNotFoundError(
+          `User with email "${userEmail}" not found.`
+        );
+      }
+
+      return {
+        id: foundUser.id,
+        email: foundUser.email,
+      };
+    } catch (error: unknown) {
+      if (error instanceof UserNotFoundError) {
+        throw error;
+      }
+      handlePrismaError(error, 'Unable to find user by email');
+    }
+  }
+
+  async findUserByEmailWithRoles(
+    userEmail: string
+  ): Promise<FindByUserEmailRequestData> {
+    try {
+      const foundUser = await this.prismaClient.users.findUnique({
+        where: {
+          email: userEmail,
+        },
+        include: {
+          roles: {
+            include: {
+              role: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!foundUser) {
+        throw new UserNotFoundError(
+          `User with email "${userEmail}" not found.`
+        );
+      }
+
+      const roles = foundUser.roles.map((userRole) => userRole.role.name);
+
+      return {
+        id: foundUser.id,
+        email: foundUser.email,
+        roles,
+      };
+    } catch (error: unknown) {
+      if (error instanceof UserNotFoundError) {
+        throw error;
+      }
+      handlePrismaError(error, 'Unable to find user by email');
     }
   }
 
   async create(userData: PostUserParams): Promise<string> {
     try {
-      const { email, password, roles, username } = userData;
+      const { username, email, password, roles } = userData;
 
-      return await this.prismaClient.$transaction(async (prisma) => {
-        const { id } = await prisma.users.create({
-          data: {
-            username,
-            email,
-            password,
-          },
-        });
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-        for (const role_id of roles) {
-          await prisma.userRoles.upsert({
-            where: {
-              user_id_role_id: {
-                user_id: id,
-                role_id,
+      const newUser = await this.prismaClient.users.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          roles: {
+            create: roles.map((roleId) => ({
+              role: {
+                connect: {
+                  id: roleId,
+                },
               },
-            },
-            create: {
-              user_id: id,
-              role_id,
-            },
-            update: {},
-          });
-        }
-        return id;
+            })),
+          },
+        },
       });
-    } catch (error: any) {
-      throw new DatabaseError('Unable to create user', { cause: error });
+
+      return newUser.id;
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to create user');
     }
   }
 }
