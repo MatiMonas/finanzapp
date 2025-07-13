@@ -1,28 +1,16 @@
-import container from 'container';
 import Server from 'infrastructure/web/express';
-import createHandler from 'infrastructure/web/createHandler';
-import errorHandler from 'infrastructure/web/errorHandler';
-import setupSwagger from './infrastructure/web/swagger';
 
-const API_PREFIX = '/api/v1';
+import { RegisterRoutes } from './components/routes';
 
 function setupRoutes(server: Server) {
-  server.addRoutes(API_PREFIX, [
-    container.userRouter.getRouter(),
-    container.budgetRouter.getRouter(),
-    container.wagesRouter.getRouter(),
-  ]);
+  // Register TSOA auto-generated routes
+  RegisterRoutes(server.getServer());
 
-  server.addEndpoint(
-    'get',
-    '/health',
-    createHandler(async () => {
-      console.log('Health check');
-      return 'OK';
-    })
-  );
-  server.addMiddleware(errorHandler);
-  setupSwagger(server.getServer());
+  // Health check endpoint
+  server.addEndpoint('get', '/health', async (req, res) => {
+    console.log('Health check');
+    res.json({ status: 'OK' });
+  });
 }
 
 function startServer() {
