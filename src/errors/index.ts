@@ -84,6 +84,12 @@ export const WageAlreadyExistsError = errorFactory({
 });
 // -------------------------------------
 
+export const MissingMonthlyWageSummaryIdError = errorFactory({
+  name: 'MISSING_MONTHLY_WAGE_SUMMARY_ID',
+  statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+  code: 'MISSING_MONTHLY_WAGE_SUMMARY_ID',
+});
+
 export const DatabaseError = errorFactory({
   name: ERROR_NAMES.DATABASE_ERROR,
   statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
