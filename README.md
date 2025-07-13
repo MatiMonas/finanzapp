@@ -8,12 +8,12 @@ A financial management API built with TypeScript, Express, and Prisma, following
 
 - Node.js (v18 or higher)
 - MySQL (v8.0 or higher)
-- npm or bun
+- Bun (recommended) or bun
 
 ### 1. Install Dependencies
 
 ```bash
-npm install
+bun install
 ```
 
 ### 2. Database Setup
@@ -33,29 +33,29 @@ The project uses three different databases for different environments:
 #### Manual Setup
 ```bash
 # Setup each database individually
-npm run db:setup:local    # Setup local database
-npm run db:setup:test     # Setup test database
-npm run db:setup:prod     # Setup production database
+bun run db:setup:local    # Setup local database
+bun run db:setup:test     # Setup test database
+bun run db:setup:prod     # Setup production database
 ```
 
 ### 3. Start Development
 
 ```bash
 # Start local development (uses finanzapp-local)
-npm run dev
+bun run dev
 
 # Start with production database
-npm run dev:prod
+bun run dev:prod
 ```
 
 ### 4. Run Tests
 
 ```bash
 # Run tests (uses finanzapp-test)
-npm run test
+bun run test
 
 # Run tests with coverage
-npm run coverage
+bun run coverage
 ```
 
 ## 📊 Database Environments
@@ -63,48 +63,48 @@ npm run coverage
 ### Local Development
 - **Database**: `finanzapp-local`
 - **Configuration**: `.env.local`
-- **Command**: `npm run dev`
+- **Command**: `bun run dev`
 
 ### Testing
 - **Database**: `finanzapp-test`
 - **Configuration**: `.env.test`
-- **Command**: `npm run test`
+- **Command**: `bun run test`
 
 ### Production
 - **Database**: `finanzapp`
 - **Configuration**: `.env`
-- **Command**: `npm run dev:prod`
+- **Command**: `bun run dev:prod`
 
 ## 🔧 Available Scripts
 
 ### Development
 ```bash
-npm run dev          # Local development (uses finanzapp-local)
-npm run dev:prod     # Development with production DB
-npm run build        # Build the project
-npm run start        # Start production server
+bun run dev          # Local development (uses finanzapp-local)
+bun run dev:prod     # Development with production DB
+bun run build        # Build the project
+bun run start        # Start production server
 ```
 
 ### Testing
 ```bash
-npm run test         # Run tests (uses finanzapp-test)
-npm run coverage     # Run tests with coverage
+bun run test         # Run tests (uses finanzapp-test)
+bun run coverage     # Run tests with coverage
 ```
 
 ### Database Management
 ```bash
-npm run db:setup:local  # Setup local database
-npm run db:setup:test   # Setup test database
-npm run db:setup:prod   # Setup production database
+bun run db:setup:local  # Setup local database
+bun run db:setup:test   # Setup test database
+bun run db:setup:prod   # Setup production database
 ```
 
 ### Migrations
 ```bash
-npm run prisma:migrate     # Create migration for local
-npm run prisma:migrate:prod # Create migration for production
-npm run prisma:deploy      # Apply migrations to production
-npm run prisma:deploy:local # Apply migrations to local
-npm run prisma:deploy-test  # Apply migrations to test
+bun run prisma:migrate     # Create migration for local
+bun run prisma:migrate:prod # Create migration for production
+bun run prisma:deploy      # Apply migrations to production
+bun run prisma:deploy:local # Apply migrations to local
+bun run prisma:deploy-test  # Apply migrations to test
 ```
 
 ## 🐳 Docker
@@ -121,24 +121,30 @@ docker compose up
 ## 📚 Documentation
 
 ### 📖 Main Documentation
-- **[Knowledge Base](./docs/knowledge.md)** - Understanding the application functionality
-- **[API Documentation](./docs/api.md)** - Complete API reference
-- **[Architecture Guide](./docs/architecture.md)** - System architecture and design patterns
+- **[Knowledge Base](./docs/reference/knowledge.md)** - Understanding the application functionality
+- **[API Documentation](./docs/reference/swagger.json)** - Complete API reference (Swagger/OpenAPI)
+- **[Project Setup](./docs/setup/PROJECT_SETUP.md)** - Detailed project setup guide
 
 ### 🚀 Setup & Configuration
-- **[Setup Instructions](./docs/setup/SETUP_INSTRUCTIONS.md)** - Detailed setup guide
-- **[Database Configuration](./docs/database/DATABASE_SETUP.md)** - Database setup and management
-- **[Environment Configuration](./docs/environment.md)** - Environment variables and configuration
+- **[Project Setup](./docs/setup/PROJECT_SETUP.md)** - Detailed setup guide
+- **[Database Setup Script](./docs/scripts/setup-databases-simple.sh)** - Automated database setup
+- **[Environment Configuration](./docs/README.md)** - Environment variables and configuration
 
 ### 🔧 Development
-- **[Development Guide](./docs/development.md)** - Development workflow and best practices
-- **[Testing Guide](./docs/testing.md)** - Testing strategies and guidelines
-- **[Deployment Guide](./docs/deployment.md)** - Production deployment instructions
+- **[Development Commands](./docs/development/commands.md)** - All available development commands
+- **[Testing Guide](./docs/development/testing.md)** - Testing strategies and guidelines
+- **[Troubleshooting](./docs/development/troubleshooting.md)** - Common issues and solutions
+
+### 📋 API Endpoints
+- **[Users API](./docs/endpoints/users.md)** - User management endpoints
+- **[Wages API](./docs/endpoints/wages.md)** - Wage management endpoints
+- **[Budgets API](./docs/endpoints/budgets.md)** - Budget management endpoints
+- **[Endpoints Overview](./docs/endpoints/README.md)** - Complete API overview
 
 ### 📋 Quick Reference
-- **[Command Reference](./docs/commands.md)** - All available commands
-- **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
-- **[FAQ](./docs/faq.md)** - Frequently asked questions
+- **[Command Reference](./docs/development/commands.md)** - All available commands
+- **[Troubleshooting](./docs/development/troubleshooting.md)** - Common issues and solutions
+- **[Changelog](./docs/CHANGELOG.md)** - Project version history
 
 ## 🔍 Troubleshooting
 
@@ -156,10 +162,10 @@ docker compose restart finanzapp-db
 #### Migration Error
 ```bash
 # Regenerate Prisma client
-npm run prisma:generate
+bun run prisma:generate
 
 # Apply migrations manually
-npx prisma migrate deploy
+bunx prisma migrate deploy
 ```
 
 #### Database Doesn't Exist
@@ -171,7 +177,7 @@ mysql -u user -ppassword -h localhost -P 3307 -e "CREATE DATABASE \`finanzapp-lo
 ### Verify Configuration
 ```bash
 # Verify local database connection
-npx prisma db pull --schema=./prisma/schema.prisma
+bunx prisma db pull --schema=./prisma/schema.prisma
 
 # Verify environment variables
 node -e "console.log(require('dotenv').config())"
@@ -186,14 +192,14 @@ node -e "console.log(require('dotenv').config())"
 - [ ] `.env.local` file configured
 - [ ] `.env.test` file configured
 - [ ] Migrations applied to all databases
-- [ ] `npm run dev` works without errors
-- [ ] `npm run test` works without errors
+- [ ] `bun run dev` works without errors
+- [ ] `bun run test` works without errors
 
 ## 🆘 Support
 
 If you encounter issues:
 
-1. **Check the troubleshooting guide**: [docs/troubleshooting.md](./docs/troubleshooting.md)
+1. **Check the troubleshooting guide**: [docs/development/troubleshooting.md](./docs/development/troubleshooting.md)
 2. **Verify MySQL connection**:
    ```bash
    mysql -u user -ppassword -h localhost -P 3307 -e "SELECT 1;"
@@ -204,7 +210,7 @@ If you encounter issues:
    ```
 4. **Regenerate Prisma client**:
    ```bash
-   npm run prisma:generate
+   bun run prisma:generate
    ```
 
 ## 🤝 Contributing

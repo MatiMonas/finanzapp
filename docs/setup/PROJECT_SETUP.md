@@ -53,25 +53,25 @@ The project uses three different database environments:
 
 3. **Run migrations**:
    ```bash
-   npm run db:setup:local
-   npm run db:setup:test
-   npm run db:setup:prod
+   bun run db:setup:local
+   bun run db:setup:test
+   bun run db:setup:prod
    ```
 
 ### Database Commands
 
 ```bash
 # Setup databases
-npm run db:setup:local    # Setup local DB
-npm run db:setup:test     # Setup test DB
-npm run db:setup:prod     # Setup production DB
+bun run db:setup:local    # Setup local DB
+bun run db:setup:test     # Setup test DB
+bun run db:setup:prod     # Setup production DB
 
 # Migrations
-npm run prisma:migrate        # Create migration for local
-npm run prisma:migrate:prod   # Create migration for production
-npm run prisma:deploy         # Apply migrations to production
-npm run prisma:deploy:local   # Apply migrations to local
-npm run prisma:deploy-test    # Apply migrations to test
+bun run prisma:migrate        # Create migration for local
+bun run prisma:migrate:prod   # Create migration for production
+bun run prisma:deploy         # Apply migrations to production
+bun run prisma:deploy:local   # Apply migrations to local
+bun run prisma:deploy-test    # Apply migrations to test
 ```
 
 ---
@@ -134,7 +134,7 @@ JWT_SECRET_KEY="your-super-secret-jwt-key-change-this-in-production"
 2. **Install dependencies**:
 
    ```bash
-   npm install
+   bun install
    ```
 
 3. **Setup databases**:
@@ -145,19 +145,19 @@ JWT_SECRET_KEY="your-super-secret-jwt-key-change-this-in-production"
 
 4. **Start development server**:
    ```bash
-   npm run dev
+   bun run dev
    ```
 
 ### Development Commands
 
 ```bash
 # Development
-npm run dev          # Local development (uses finanzapp-local)
-npm run dev:prod     # Development with production DB
+bun run dev          # Local development (uses finanzapp-local)
+bun run dev:prod     # Development with production DB
 
 # Building
-npm run build        # Build for production
-npm run start        # Start production server
+bun run build        # Build for production
+bun run start        # Start production server
 ```
 
 ---
@@ -172,15 +172,15 @@ Tests automatically use the `finanzapp-test` database and run in isolated mode t
 
 ```bash
 # Run tests
-npm run test         # Unit tests
-npm run coverage     # Tests with coverage
+bun run test         # Unit tests
+bun run coverage     # Tests with coverage
 ```
 
 ### Test Configuration
 
 - **Database**: `finanzapp-test`
 - **Mode**: Isolated (each test cleans the database)
-- **Coverage**: Available with `npm run coverage`
+- **Coverage**: Available with `bun run coverage`
 
 ---
 
@@ -235,10 +235,10 @@ CREATE DATABASE IF NOT EXISTS \`finanzapp\`;
 
 ```bash
 # Regenerate Prisma client
-npm run prisma:generate
+bun run prisma:generate
 
 # Apply migrations manually
-npx prisma migrate deploy
+bunx prisma migrate deploy
 ```
 
 #### 4. Environment Variables Issues
@@ -258,7 +258,7 @@ mysql -u user -ppassword -h localhost -P 3306 -e "SELECT 1;"
 mysql -u user -ppassword -h localhost -P 3306 -e "SHOW DATABASES;"
 
 # Verify Prisma connection
-npx prisma db pull --schema=./prisma/schema.prisma
+bunx prisma db pull --schema=./prisma/schema.prisma
 ```
 
 ---
@@ -273,8 +273,8 @@ npx prisma db pull --schema=./prisma/schema.prisma
 - [ ] `.env.test` file configured
 - [ ] `.env` file configured
 - [ ] Migrations applied to all databases
-- [ ] `npm run dev` works without errors
-- [ ] `npm run test` works without errors
+- [ ] `bun run dev` works without errors
+- [ ] `bun run test` works without errors
 
 ---
 

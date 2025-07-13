@@ -48,17 +48,17 @@ main() {
     
     # Setup local database
     print_status "Setting up LOCAL database (finanzapp-local)..."
-    npm run db:setup:local
+    bun run db:setup:local
     echo ""
     
     # Setup test database
     print_status "Setting up TEST database (finanzapp-test)..."
-    npm run db:setup:test
+    bun run db:setup:test
     echo ""
     
     # Setup production database
     print_status "Setting up PRODUCTION database (finanzapp)..."
-    npm run db:setup:prod
+    bun run db:setup:prod
     echo ""
     
     print_status "🎉 Setup completed!"
@@ -69,12 +69,12 @@ main() {
     echo "   • PRODUCTION: finanzapp (port 3306)"
     echo ""
     echo "🚀 Available commands:"
-    echo "   • npm run dev          - Local development (uses finanzapp-local)"
-    echo "   • npm run dev:prod     - Development with production DB"
-    echo "   • npm run test         - Tests (uses finanzapp-test)"
-    echo "   • npm run db:setup:local  - Setup local DB"
-    echo "   • npm run db:setup:test   - Setup test DB"
-    echo "   • npm run db:setup:prod   - Setup production DB"
+    echo "   • bun run dev          - Local development (uses finanzapp-local)"
+    echo "   • bun run dev:prod     - Development with production DB"
+    echo "   • bun run test         - Tests (uses finanzapp-test)"
+    echo "   • bun run db:setup:local  - Setup local DB"
+    echo "   • bun run db:setup:test   - Setup test DB"
+    echo "   • bun run db:setup:prod   - Setup production DB"
     echo ""
     print_warning "If you encounter connection errors, make sure:"
     echo "   1. MySQL is running on port 3306"

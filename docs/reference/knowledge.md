@@ -223,7 +223,7 @@ This gives you a complete picture of your finances for each month, showing your 
 
 1. **Read the Setup Guide**: [Setup Instructions](./setup/SETUP_INSTRUCTIONS.md)
 2. **Configure Your Database**: [Database Setup](./database/DATABASE_SETUP.md)
-3. **Start the Application**: `npm run dev`
+3. **Start the Application**: `bun run dev`
 4. **Create Your First Budget**: Follow the workflow example above
 
 ## 🤝 Need Help?

@@ -33,11 +33,11 @@ node -e "console.log(require('dotenv').config())"
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Clear node_modules and reinstall
 rm -rf node_modules package-lock.json
-npm install
+bun install
 ```
 
 **Port Already in Use**
@@ -50,7 +50,7 @@ lsof -i :3000
 kill -9 <PID>
 
 # Or use a different port
-PORT=3001 npm run dev
+PORT=3001 bun run dev
 ```
 
 **Environment Variables Missing**
@@ -134,7 +134,7 @@ netstat -tlnp | grep 3307
 
 ```bash
 # Generate Prisma client
-npm run prisma:generate
+bun run prisma:generate
 
 # Or manually
 npx prisma generate
@@ -144,10 +144,10 @@ npx prisma generate
 
 ```bash
 # Reset local database
-npm run db:reset:local
+bun run db:reset:local
 
 # Apply migrations
-npm run prisma:deploy:local
+bun run prisma:deploy:local
 
 # Or manually
 npx prisma migrate reset
@@ -182,7 +182,7 @@ npx prisma migrate deploy
 
 ```bash
 # Setup test database
-npm run db:setup:test
+bun run db:setup:test
 
 # Or run the setup script
 ./docs/scripts/setup-databases-simple.sh
@@ -202,10 +202,10 @@ npx prisma db pull --schema=./prisma/schema.prisma
 
 ```bash
 # Reset test database
-npm run db:reset:test
+bun run db:reset:test
 
 # Re-run tests
-npm run test
+bun run test
 ```
 
 **Bun Testing Issues**
@@ -298,33 +298,33 @@ docker compose up --build
 npx tsc --noEmit
 
 # Fix type issues
-npm run type-check
+bun run type-check
 
 # Update TypeScript
-npm install typescript@latest
+bun install typescript@latest
 ```
 
 **Missing Types**
 
 ```bash
 # Install missing type definitions
-npm install @types/node @types/express
+bun install @types/node @types/express
 
 # Or install all dev dependencies
-npm install --save-dev
+bun install --save-dev
 ```
 
 **Build Cache Issues**
 
 ```bash
 # Clean build artifacts
-npm run clean
+bun run clean
 
 # Or manually
 rm -rf build dist
 
 # Rebuild
-npm run build
+bun run build
 ```
 
 ## 🔧 Environment Issues
@@ -370,23 +370,23 @@ echo "JWT_SECRET_KEY=\"your-secret-key\"" >> .env.local
 mysql -u user -ppassword -h localhost -P 3307 -e "CREATE DATABASE IF NOT EXISTS \`finanzapp-test\`;"
 
 # Run migrations on test database
-npm run prisma:deploy-test
+bun run prisma:deploy-test
 
 # Verify test setup
-npm run test
+bun run test
 ```
 
 **Test Data Issues**
 
 ```bash
 # Reset test database
-npm run db:reset:test
+bun run db:reset:test
 
 # Seed test data
-npm run db:seed
+bun run db:seed
 
 # Run tests
-npm run test
+bun run test
 ```
 
 ## 📊 Performance Issues
@@ -397,7 +397,7 @@ npm run test
 
 ```bash
 # Enable query logging
-DEBUG=prisma:query npm run dev
+DEBUG=prisma:query bun run dev
 
 # Check database indexes
 npx prisma db pull
@@ -412,13 +412,13 @@ mysql -u user -ppassword -h localhost -P 3307 -e "SHOW PROCESSLIST;"
 
 ```bash
 # Monitor memory usage
-npm run monitor:memory
+bun run monitor:memory
 
 # Check for memory leaks
-node --inspect npm run dev
+node --inspect bun run dev
 
 # Increase Node.js memory limit
-NODE_OPTIONS="--max-old-space-size=4096" npm run dev
+NODE_OPTIONS="--max-old-space-size=4096" bun run dev
 ```
 
 ## 🔍 Debugging Commands
@@ -427,20 +427,20 @@ NODE_OPTIONS="--max-old-space-size=4096" npm run dev
 
 ```bash
 # Start with debug logging
-DEBUG=* npm run dev
+DEBUG=* bun run dev
 
 # Start with specific debug namespace
-DEBUG=finanzapp:* npm run dev
+DEBUG=finanzapp:* bun run dev
 
 # Check application logs
-npm run logs
+bun run logs
 ```
 
 ### Database Debugging
 
 ```bash
 # Test database connection
-npm run db:test-connection
+bun run db:test-connection
 
 # Check database schema
 npx prisma db pull
@@ -478,13 +478,13 @@ curl -H "Origin: http://localhost:3000" -v http://localhost:3000/api/v1/users
 
 ```bash
 # Verify setup
-npm run dev
-npm run test
-npm run build
+bun run dev
+bun run test
+bun run build
 
 # Verify database
-npm run db:setup:local
-npm run db:setup:test
+bun run db:setup:local
+bun run db:setup:test
 
 # Verify environment
 node -e "console.log(require('dotenv').config())"
@@ -509,7 +509,7 @@ node -e "console.log(require('dotenv').config())"
 ### Information to Include
 
 - **Error message**: Copy the exact error
-- **Environment**: OS, Node.js version, npm version
+- **Environment**: OS, Node.js version, bun version
 - **Steps to reproduce**: What you did before the error
 - **Expected behavior**: What should have happened
 - **Actual behavior**: What actually happened

@@ -8,29 +8,29 @@ A complete reference of all available commands for the FinanzApp project.
 
 ```bash
 # Local development (uses finanzapp-local database)
-npm run dev
+bun run dev
 
 # Development with production database
-npm run dev:prod
+bun run dev:prod
 
 # Build the project
-npm run build
+bun run build
 
 # Start production server
-npm run start
+bun run start
 ```
 
 ### Testing Commands
 
 ```bash
 # Run all tests (uses finanzapp-test database)
-npm run test
+bun run test
 
 # Run tests with coverage report
-npm run coverage
+bun run coverage
 
 # Run tests in watch mode
-npm run test:watch
+bun run test:watch
 ```
 
 ## 📊 Database Commands
@@ -39,13 +39,13 @@ npm run test:watch
 
 ```bash
 # Setup local database (finanzapp-local)
-npm run db:setup:local
+bun run db:setup:local
 
 # Setup test database (finanzapp-test)
-npm run db:setup:test
+bun run db:setup:test
 
 # Setup production database (finanzapp)
-npm run db:setup:prod
+bun run db:setup:prod
 
 # Setup all databases at once
 ./docs/scripts/setup-databases-simple.sh
@@ -55,38 +55,38 @@ npm run db:setup:prod
 
 ```bash
 # Create new migration for local environment
-npm run prisma:migrate
+bun run prisma:migrate
 
 # Create new migration for production environment
-npm run prisma:migrate:prod
+bun run prisma:migrate:prod
 
 # Apply migrations to production database
-npm run prisma:deploy
+bun run prisma:deploy
 
 # Apply migrations to local database
-npm run prisma:deploy:local
+bun run prisma:deploy:local
 
 # Apply migrations to test database
-npm run prisma:deploy-test
+bun run prisma:deploy-test
 
 # Generate Prisma client
-npm run prisma:generate
+bun run prisma:generate
 ```
 
 ### Database Utilities
 
 ```bash
 # Reset local database
-npm run db:reset:local
+bun run db:reset:local
 
 # Reset test database
-npm run db:reset:test
+bun run db:reset:test
 
 # Reset production database
-npm run db:reset:prod
+bun run db:reset:prod
 
 # Seed database with sample data
-npm run db:seed
+bun run db:seed
 ```
 
 ## 🐳 Docker Commands
@@ -138,42 +138,42 @@ docker exec -i finanzapp-db mysql -u user -ppassword finanzapp-local < backup.sq
 node -e "console.log(require('dotenv').config())"
 
 # Validate environment configuration
-npm run env:validate
+bun run env:validate
 
 # Generate environment template
-npm run env:template
+bun run env:template
 ```
 
 ### Code Quality
 
 ```bash
 # Run linting
-npm run lint
+bun run lint
 
 # Fix linting issues
-npm run lint:fix
+bun run lint:fix
 
 # Run type checking
-npm run type-check
+bun run type-check
 
 # Run all code quality checks
-npm run quality
+bun run quality
 ```
 
 ### Build Commands
 
 ```bash
 # Build for development
-npm run build:dev
+bun run build:dev
 
 # Build for production
-npm run build:prod
+bun run build:prod
 
 # Clean build artifacts
-npm run clean
+bun run clean
 
 # Analyze bundle size
-npm run analyze
+bun run analyze
 ```
 
 ## 📋 Script Commands
@@ -188,26 +188,26 @@ npm run analyze
 ./docs/scripts/setup-databases-simple.sh
 
 # Quick project setup
-npm run setup
+bun run setup
 
 # Setup development environment
-npm run setup:dev
+bun run setup:dev
 ```
 
 ### Maintenance Commands
 
 ```bash
 # Update dependencies
-npm run update
+bun run update
 
 # Check for outdated packages
-npm run outdated
+bun run outdated
 
 # Audit security vulnerabilities
-npm run audit
+bun run audit
 
 # Fix security issues
-npm run audit:fix
+bun run audit:fix
 ```
 
 ## 🔍 Debugging Commands
@@ -216,32 +216,32 @@ npm run audit:fix
 
 ```bash
 # Start with debug logging
-DEBUG=* npm run dev
+DEBUG=* bun run dev
 
 # Start with specific debug namespace
-DEBUG=finanzapp:* npm run dev
+DEBUG=finanzapp:* bun run dev
 
 # View application logs
-npm run logs
+bun run logs
 
 # View error logs only
-npm run logs:error
+bun run logs:error
 ```
 
 ### Database Debugging
 
 ```bash
 # Test database connection
-npm run db:test-connection
+bun run db:test-connection
 
 # Verify database schema
-npm run db:verify-schema
+bun run db:verify-schema
 
 # Check database status
-npm run db:status
+bun run db:status
 
 # Reset database and run migrations
-npm run db:reset
+bun run db:reset
 ```
 
 ## 🧪 Testing Commands
@@ -250,35 +250,35 @@ npm run db:reset
 
 ```bash
 # Run all tests
-npm run test
+bun run test
 
 # Run specific test file
-npm run test -- src/components/users/__tests__/user.test.ts
+bun run test -- src/components/users/__tests__/user.test.ts
 
 # Run tests matching pattern
-npm run test -- --testNamePattern="User"
+bun run test -- --testNamePattern="User"
 
 # Run tests in specific directory
-npm run test -- src/components/budgets/
+bun run test -- src/components/budgets/
 
 # Run tests with verbose output
-npm run test -- --verbose
+bun run test -- --verbose
 ```
 
 ### Coverage
 
 ```bash
 # Generate coverage report
-npm run coverage
+bun run coverage
 
 # Generate coverage with HTML report
-npm run coverage:html
+bun run coverage:html
 
 # Check coverage thresholds
-npm run coverage:check
+bun run coverage:check
 
 # Generate coverage badge
-npm run coverage:badge
+bun run coverage:badge
 ```
 
 ## 📊 Monitoring Commands
@@ -287,29 +287,29 @@ npm run coverage:badge
 
 ```bash
 # Start with performance monitoring
-npm run dev:profile
+bun run dev:profile
 
 # Generate performance report
-npm run profile
+bun run profile
 
 # Monitor memory usage
-npm run monitor:memory
+bun run monitor:memory
 
 # Monitor CPU usage
-npm run monitor:cpu
+bun run monitor:cpu
 ```
 
 ### Health Checks
 
 ```bash
 # Check application health
-npm run health:check
+bun run health:check
 
 # Check database health
-npm run health:db
+bun run health:db
 
 # Check all services health
-npm run health:all
+bun run health:all
 ```
 
 ## 🚀 Deployment Commands
@@ -318,29 +318,29 @@ npm run health:all
 
 ```bash
 # Build for production
-npm run build:prod
+bun run build:prod
 
 # Deploy to production
-npm run deploy:prod
+bun run deploy:prod
 
 # Rollback deployment
-npm run deploy:rollback
+bun run deploy:rollback
 
 # Check deployment status
-npm run deploy:status
+bun run deploy:status
 ```
 
 ### Staging Deployment
 
 ```bash
 # Deploy to staging
-npm run deploy:staging
+bun run deploy:staging
 
 # Test staging environment
-npm run test:staging
+bun run test:staging
 
 # Promote staging to production
-npm run deploy:promote
+bun run deploy:promote
 ```
 
 ## 📝 Documentation Commands
@@ -349,29 +349,29 @@ npm run deploy:promote
 
 ```bash
 # Generate API documentation
-npm run docs:generate
+bun run docs:generate
 
 # Generate code documentation
-npm run docs:code
+bun run docs:code
 
 # Generate database documentation
-npm run docs:db
+bun run docs:db
 
 # Generate all documentation
-npm run docs:all
+bun run docs:all
 ```
 
 ### Documentation Validation
 
 ```bash
 # Validate API documentation
-npm run docs:validate
+bun run docs:validate
 
 # Check documentation links
-npm run docs:check-links
+bun run docs:check-links
 
 # Generate documentation site
-npm run docs:build
+bun run docs:build
 ```
 
 ## 🔧 Configuration Commands
@@ -380,26 +380,26 @@ npm run docs:build
 
 ```bash
 # Copy environment template
-npm run env:copy
+bun run env:copy
 
 # Validate environment variables
-npm run env:validate
+bun run env:validate
 
 # Generate environment documentation
-npm run env:docs
+bun run env:docs
 ```
 
 ### Database Configuration
 
 ```bash
 # Initialize database
-npm run db:init
+bun run db:init
 
 # Configure database settings
-npm run db:config
+bun run db:config
 
 # Test database configuration
-npm run db:test-config
+bun run db:test-config
 ```
 
 ## 📋 Quick Reference
@@ -408,14 +408,14 @@ npm run db:test-config
 
 ```bash
 # Development
-npm run dev                    # Start development server
-npm run test                   # Run tests
-npm run build                  # Build project
+bun run dev                    # Start development server
+bun run test                   # Run tests
+bun run build                  # Build project
 
 # Database
-npm run db:setup:local        # Setup local database
-npm run prisma:migrate        # Create migration
-npm run prisma:deploy         # Apply migrations
+bun run db:setup:local        # Setup local database
+bun run prisma:migrate        # Create migration
+bun run prisma:deploy         # Apply migrations
 
 # Docker
 docker compose up -d          # Start services
@@ -429,15 +429,15 @@ docker compose down           # Stop services
 
 ```bash
 # Database issues
-npm run db:test-connection    # Test database connection
-npm run prisma:generate       # Regenerate Prisma client
+bun run db:test-connection    # Test database connection
+bun run prisma:generate       # Regenerate Prisma client
 
 # Environment issues
 node -e "console.log(require('dotenv').config())"  # Check env vars
 
 # Build issues
-npm run clean                 # Clean build artifacts
-npm run build                 # Rebuild project
+bun run clean                 # Clean build artifacts
+bun run build                 # Rebuild project
 ```
 
 ## 🆘 Help Commands
@@ -446,13 +446,13 @@ npm run build                 # Rebuild project
 
 ```bash
 # Show all available commands
-npm run
+bun run
 
 # Show command help
-npm run --help
+bun run --help
 
 # Show specific command help
-npm run <command> --help
+bun run <command> --help
 ```
 
 ### Version Information
@@ -461,14 +461,14 @@ npm run <command> --help
 # Show Node.js version
 node --version
 
-# Show npm version
-npm --version
+# Show bun version
+bun --version
 
 # Show project version
-npm run version
+bun run version
 
 # Show all dependency versions
-npm list
+bun list
 ```
 
 ---

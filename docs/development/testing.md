@@ -239,7 +239,7 @@ expect(typeof result).toBe('boolean');
 
 ```bash
 # Setup test database
-npm run db:setup:test
+bun run db:setup:test
 
 # Verify connection
 npx prisma db pull --schema=./prisma/schema.prisma

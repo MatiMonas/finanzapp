@@ -5,15 +5,18 @@ Complete documentation for the FinanzApp project, organized by category for easy
 ## 🎯 Quick Navigation
 
 ### 🚀 **Getting Started**
+
 - [Project Setup Guide](./setup/PROJECT_SETUP.md) - Complete setup and configuration
 - [API Documentation](./endpoints/) - All available endpoints
 
 ### 📊 **Database & Configuration**
+
 - [Database Setup](./setup/PROJECT_SETUP.md#-database-configuration) - Database configuration guide
 - [Environment Setup](./setup/PROJECT_SETUP.md#-environment-setup) - Environment files configuration
 - [Setup Scripts](./scripts/) - Automated setup tools
 
 ### 🔧 **Development & Testing**
+
 - [Development Setup](./setup/PROJECT_SETUP.md#-development-setup) - Development environment
 - [Testing Guide](./development/testing.md) - Complete testing guide with Bun vs Jest differences
 - [Testing Configuration](./setup/PROJECT_SETUP.md#-testing-configuration) - Test setup and commands
@@ -21,6 +24,7 @@ Complete documentation for the FinanzApp project, organized by category for easy
 - [Development Commands](./development/commands.md) - Available development commands
 
 ### 📚 **API Reference**
+
 - [Users Endpoints](./endpoints/users.md) - User management API
 - [Budgets Endpoints](./endpoints/budgets.md) - Budget management API
 - [Wages Endpoints](./endpoints/wages.md) - Wage management API
@@ -57,36 +61,39 @@ docs/
 ## 🚀 Quick Start
 
 ### 1. First Time Setup
+
 ```bash
 # Clone and install
 git clone <repository-url>
 cd finanzapp
-npm install
+bun install
 
 # Setup databases
 ./docs/scripts/setup-databases-simple.sh
 
 # Start development
-npm run dev
+bun run dev
 ```
 
 ### 2. Development Commands
+
 ```bash
-npm run dev          # Local development (uses finanzapp-local)
-npm run dev:prod     # Development with production DB
-npm run test         # Tests (uses finanzapp-test)
-npm run coverage     # Tests with coverage
+bun run dev          # Local development (uses finanzapp-local)
+bun run dev:prod     # Development with production DB
+bun run test         # Tests (uses finanzapp-test)
+bun run coverage     # Tests with coverage
 ```
 
 ### 3. Database Setup
+
 ```bash
 # Automated setup
 ./docs/scripts/setup-databases-simple.sh
 
 # Manual setup
-npm run db:setup:local
-npm run db:setup:test
-npm run db:setup:prod
+bun run db:setup:local
+bun run db:setup:test
+bun run db:setup:prod
 ```
 
 ---
@@ -95,13 +102,14 @@ npm run db:setup:prod
 
 The project uses three database environments:
 
-| Environment | Database | Configuration | Usage |
-|-------------|----------|---------------|-------|
-| **Local** | `finanzapp-local` | `.env.local` | Daily development |
-| **Test** | `finanzapp-test` | `.env.test` | Automated tests |
-| **Production** | `finanzapp` | `.env` | Production environment |
+| Environment    | Database          | Configuration | Usage                  |
+| -------------- | ----------------- | ------------- | ---------------------- |
+| **Local**      | `finanzapp-local` | `.env.local`  | Daily development      |
+| **Test**       | `finanzapp-test`  | `.env.test`   | Automated tests        |
+| **Production** | `finanzapp`       | `.env`        | Production environment |
 
 **Configuration:**
+
 - **Host**: localhost
 - **Port**: 3306
 - **User**: user
@@ -112,6 +120,7 @@ The project uses three database environments:
 ## 🔧 Environment Files
 
 ### `.env.local` (Local Development)
+
 ```env
 DATABASE_URL="mysql://user:password@localhost:3306/finanzapp-local"
 NODE_ENV="local"
@@ -120,11 +129,13 @@ JWT_SECRET_KEY="your-super-secret-jwt-key-change-this-in-production"
 ```
 
 ### `.env.test` (Tests)
+
 ```env
 DATABASE_URL="mysql://user:password@localhost:3306/finanzapp-test"
 ```
 
 ### `.env` (Production)
+
 ```env
 DATABASE_URL="mysql://user:password@localhost:3306/finanzapp"
 NODE_ENV="production"
@@ -151,6 +162,7 @@ docker compose up
 ### Common Issues
 
 #### 1. MySQL connection error
+
 ```bash
 # Check if MySQL is running
 net start | findstr MySQL
@@ -160,6 +172,7 @@ mysql -u user -ppassword -h localhost -P 3306 -e "SELECT 1;"
 ```
 
 #### 2. Database doesn't exist
+
 ```bash
 # Create databases manually
 mysql -u user -ppassword -h localhost -P 3306 -e "
@@ -170,18 +183,20 @@ CREATE DATABASE IF NOT EXISTS \`finanzapp\`;
 ```
 
 #### 3. Migration error
+
 ```bash
 # Regenerate Prisma client
-npm run prisma:generate
+bun run prisma:generate
 
 # Apply migrations manually
-npx prisma migrate deploy
+bunx prisma migrate deploy
 ```
 
 ### Verify Configuration
+
 ```bash
 # Verify local database connection
-npx prisma db pull --schema=./prisma/schema.prisma
+bunx prisma db pull --schema=./prisma/schema.prisma
 
 # Verify environment variables
 node -e "console.log(require('dotenv').config())"
@@ -199,8 +214,8 @@ node -e "console.log(require('dotenv').config())"
 - [ ] `.env.test` file configured
 - [ ] `.env` file configured
 - [ ] Migrations applied to all databases
-- [ ] `npm run dev` works without errors
-- [ ] `npm run test` works without errors
+- [ ] `bun run dev` works without errors
+- [ ] `bun run test` works without errors
 
 ---
 
