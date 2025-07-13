@@ -1,13 +1,15 @@
-import Validator from '../../../validator';
+import { Budgets } from '@prisma/client';
+import { handlePrismaError } from 'utils/helpers/prismaErrorHandler';
 
+import Validator from '../../../validator';
 import {
   BudgetConfigurationParams,
+  PostBudgetConfigurationBody,
+  PatchBudgetBody,
   CreateBudgetPayload,
   DeleteBudgetConfigurationPayload,
-  PatchBudgetBody,
-  PostBudgetConfigurationBody,
-} from '../types/request';
-import { BudgetBuilder } from '../entity/budgetBuilder';
+  BudgetConfigurationResponse,
+} from '../types';
 import { BudgetDirector } from '../entity/budgetDirector';
 import { ValidatorBudgetPercentage } from '../validators/validatorBudgetPercentage';
 import { ValidatorBudgetConfigurationNameInUse } from '../validators/validatorBudgetConfigurationNameInUse';
@@ -15,23 +17,20 @@ import {
   BudgetChangeValidatedData,
   ValidatorBudgetChange,
 } from '../validators/validatorBudgetChange';
-import { DatabaseError } from 'errors';
 import { ValidatorIsBudgetConfigurationFromUser } from '../validators/validatorIsBudgetConfigurationFromUser';
-import { BudgetConfigurationWithBudgets } from '../types/response';
-import { Budgets } from '@prisma/client';
 import { IBudgetRepository } from '../repository/budget-repository';
 
 export interface IBudgetUsecase {
   getBudgetConfigurations(
     filterData: BudgetConfigurationParams
-  ): Promise<BudgetConfigurationWithBudgets[]>;
-  createBudget(budgetData: PostBudgetConfigurationBody): Promise<Boolean>;
+  ): Promise<BudgetConfigurationResponse[]>;
+  createBudget(budgetData: PostBudgetConfigurationBody): Promise<boolean>;
   partialUpdateBudgetConfiguration(
     budgetData: PatchBudgetBody
-  ): Promise<Boolean>;
+  ): Promise<boolean>;
   deleteBudgetConfiguration(
     budgetToDelete: DeleteBudgetConfigurationPayload
-  ): Promise<Boolean>;
+  ): Promise<boolean>;
 
   getBudgetDetails(budgetId: number): Promise<Budgets | null>;
 }
@@ -41,24 +40,19 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
   async getBudgetConfigurations(
     filterData: BudgetConfigurationParams
-  ): Promise<any[]> {
+  ): Promise<BudgetConfigurationResponse[]> {
     const budgetConfigurations =
       await this.budgetRepository.findBudgetConfigurationWhere(filterData);
 
     return budgetConfigurations.map((config) => ({
       id: config.id,
       name: config.name,
-      is_public: config.is_public,
-      created_at: config.created_at,
-      updated_at: config.updated_at,
       budgets: config.budgets.map((budget) => ({
         id: budget.id,
         name: budget.name,
         percentage: budget.percentage,
         remaining_allocation: budget.remaining_allocation,
         monthly_wage_summary_id: budget.monthly_wage_summary_id,
-        created_at: budget.created_at,
-        updated_at: budget.updated_at,
       })),
     }));
   }
@@ -71,8 +65,9 @@ export default class BudgetUsecase implements IBudgetUsecase {
       new ValidatorBudgetPercentage(),
     ]);
 
-    const validatedBudgetData: PostBudgetConfigurationBody =
-      await modelValidator.validate(budgetData);
+    const validatedBudgetData = (await modelValidator.validate(
+      budgetData
+    )) as PostBudgetConfigurationBody;
 
     const { budget_configuration_name, budgets, user_id } = validatedBudgetData;
     const budgetConfigurationId =
@@ -85,8 +80,7 @@ export default class BudgetUsecase implements IBudgetUsecase {
 
     for (const budget of budgets) {
       const { name, percentage } = budget;
-      const builder = new BudgetBuilder();
-      const director = new BudgetDirector(builder);
+      const director = new BudgetDirector();
       const budgetDataForDirector: CreateBudgetPayload = {
         user_id,
         name,
@@ -98,9 +92,8 @@ export default class BudgetUsecase implements IBudgetUsecase {
       budgetPayloads.push(budgetPayload);
     }
 
-    const createdBudgets = await this.budgetRepository.createBudget(
-      budgetPayloads
-    );
+    const createdBudgets =
+      await this.budgetRepository.createBudget(budgetPayloads);
 
     return createdBudgets;
   }
@@ -113,8 +106,9 @@ export default class BudgetUsecase implements IBudgetUsecase {
       new ValidatorBudgetChange(this.budgetRepository),
     ]);
 
-    const validatedBudgetData: BudgetChangeValidatedData =
-      await modelValidator.validate(budgetData);
+    const validatedBudgetData = (await modelValidator.validate(
+      budgetData
+    )) as BudgetChangeValidatedData;
 
     try {
       // 1. Update configuration name
@@ -153,26 +147,25 @@ export default class BudgetUsecase implements IBudgetUsecase {
       }
 
       return true;
-    } catch (error: any) {
-      throw new DatabaseError('Unable to update budget configuration', {
-        cause: error,
-      });
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Unable to update budget configuration');
+      return false; // This line will never be reached due to handlePrismaError throwing
     }
   }
 
   async deleteBudgetConfiguration(
     budgetToDelete: DeleteBudgetConfigurationPayload
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorIsBudgetConfigurationFromUser(this.budgetRepository),
     ]);
 
     const { budget_configuration_id, user_id } = budgetToDelete;
 
-    const validatedBudgetData = await modelValidator.validate({
+    const validatedBudgetData = (await modelValidator.validate({
       budget_configuration_id,
       user_id,
-    });
+    })) as DeleteBudgetConfigurationPayload;
 
     return await this.budgetRepository.deleteBudgetConfiguration(
       validatedBudgetData
