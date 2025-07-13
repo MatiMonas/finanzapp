@@ -1,69 +1,159 @@
-export type PostBudgetConfigurationBody = {
-  user_id: string;
-  budget_configuration_name: string;
-  budgets: {
-    name: string;
-    percentage: number;
-  }[];
-};
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+  Min,
+  Max,
+  IsNotEmpty,
+  ArrayMinSize,
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 
-export type BudgetAction = {
-  id?: number;
-  name?: string;
-  percentage?: number;
-  remaining_allocation?: number;
+@ValidatorConstraint({ name: 'ValidBudgetActions', async: false })
+class ValidBudgetActionsConstraint implements ValidatorConstraintInterface {
+  validate(budgets: BudgetAction[]) {
+    if (!Array.isArray(budgets)) return false;
+
+    for (const budget of budgets) {
+      if (
+        budget.id !== undefined &&
+        (typeof budget.id !== 'number' || budget.id < 1)
+      ) {
+        return false;
+      }
+      if (
+        budget.name !== undefined &&
+        (typeof budget.name !== 'string' || budget.name.trim() === '')
+      ) {
+        return false;
+      }
+      if (
+        budget.percentage !== undefined &&
+        (typeof budget.percentage !== 'number' ||
+          budget.percentage < 0 ||
+          budget.percentage > 100)
+      ) {
+        return false;
+      }
+      if (budget.create !== undefined && typeof budget.create !== 'boolean') {
+        return false;
+      }
+      if (budget.delete !== undefined && typeof budget.delete !== 'boolean') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  defaultMessage() {
+    return 'budgets must be valid';
+  }
+}
+
+export class BudgetIdParam {
+  @IsNumber({}, { message: 'id must be a number' })
+  @Min(1, { message: 'id must be a valid number' })
+  id!: number;
+}
+
+export class PostBudgetConfigurationBody {
+  @IsString({ message: 'user_id must be a string' })
+  @IsNotEmpty({ message: 'user_id must be a string' })
+  user_id!: string;
+
+  @IsString({ message: 'budget_configuration_name must be a string' })
+  @IsNotEmpty({ message: 'budget_configuration_name must be a string' })
+  budget_configuration_name!: string;
+
+  @IsArray({ message: 'budgets must be an array' })
+  @ArrayMinSize(1, { message: 'budgets must be an array' })
+  budgets!: BudgetItem[];
+}
+
+export class BudgetItem {
+  @IsString({ message: 'name must be a string' })
+  @IsNotEmpty({ message: 'name must be a string' })
+  name!: string;
+
+  @IsNumber({}, { message: 'percentage must be a number' })
+  @Min(0, { message: 'percentage must not be less than 0' })
+  @Max(100, { message: 'percentage must not be greater than 100' })
+  percentage!: number;
+}
+
+export class PatchBudgetBody {
+  @IsString({ message: 'user_id must be a string' })
+  @IsNotEmpty({ message: 'user_id must be a string' })
+  user_id!: string;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'budget_configuration_id must be a number' })
   budget_configuration_id?: number;
-  monthly_wage_summary_id?: number;
-  create?: boolean;
-  delete?: boolean;
-};
 
-export type SingleUpdateBudgetAction = {
-  id: number;
-  remaining_allocation: number;
-  updated_at: Date;
-  monthly_wage_summary_id: number;
-};
-
-export type PatchBudgetBody = {
-  user_id: string;
+  @IsOptional()
+  @IsString({ message: 'budget_configuration_name must be a string' })
+  @IsNotEmpty({ message: 'budget_configuration_name must be a string' })
   budget_configuration_name?: string;
+
+  @IsOptional()
+  @IsArray({ message: 'budgets must be an array' })
+  @Validate(ValidBudgetActionsConstraint)
   budgets?: BudgetAction[];
-};
+}
 
-export type BudgetIdParam = {
-  id: number;
-};
+export class BudgetAction {
+  @IsOptional()
+  @IsNumber({}, { message: 'id must be a number' })
+  @Min(1, { message: 'id must be a valid number' })
+  id?: number;
 
-export type PatchBudgetPayload = PatchBudgetBody & {
-  budget_configuration_id: BudgetIdParam['id'];
-};
+  @IsOptional()
+  @IsString({ message: 'name must be a string' })
+  @IsNotEmpty({ message: 'name must be a string' })
+  name?: string;
 
-export type CreateBudgetPayload = {
-  user_id: string;
-  name: string;
-  percentage: number;
-  budget_configuration_id: number;
-};
+  @IsOptional()
+  @IsNumber({}, { message: 'percentage must be a number' })
+  @Min(0, { message: 'percentage must not be less than 0' })
+  @Max(100, { message: 'percentage must not be greater than 100' })
+  percentage?: number;
 
-export type DeleteBudgetConfigurationParams = {
-  id: number;
-};
+  @IsOptional()
+  @IsBoolean({ message: 'create must be a boolean' })
+  create?: boolean;
 
-export type DeleteBudgetConfigurationBody = {
-  user_id: string;
-};
+  @IsOptional()
+  @IsBoolean({ message: 'delete must be a boolean' })
+  delete?: boolean;
+}
 
-export type DeleteBudgetConfigurationPayload = DeleteBudgetConfigurationBody & {
-  budget_configuration_id: DeleteBudgetConfigurationParams['id'];
-};
+export class DeleteBudgetConfigurationBody {
+  @IsString({ message: 'user_id must be a string' })
+  @IsNotEmpty({ message: 'user_id must be a string' })
+  user_id!: string;
 
-export type BudgetConfigurationParams = Partial<{
-  id: number;
-  name: string;
-  user_id: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at?: Date;
-}>;
+  @IsNumber({}, { message: 'budget_configuration_id must be a number' })
+  budget_configuration_id!: number;
+}
+
+export class BudgetConfigurationParams {
+  @IsOptional()
+  @IsNumber({}, { message: 'id must be a number' })
+  id?: number;
+
+  @IsOptional()
+  @IsString({ message: 'name must be a string' })
+  name?: string;
+
+  @IsOptional()
+  @IsString({ message: 'user_id must be a string' })
+  user_id?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'is_active must be a boolean' })
+  is_active?: boolean;
+}
