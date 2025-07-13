@@ -1,5 +1,6 @@
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { IBudgetRepository } from 'components/budgets/repository/budget-repository';
-import { PatchBudgetPayload } from 'components/budgets/types/request';
+import { PatchBudgetBody } from 'components/budgets/types';
 import {
   BudgetChangeValidatedData,
   ValidatorBudgetChange,
@@ -8,13 +9,13 @@ import { BudgetPercentageError, BudgetsNotFoundError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
 
 describe('ValidatorBudgetChange', () => {
-  let budgetRepositoryMock: jest.Mocked<IBudgetRepository>;
+  let budgetRepositoryMock: any;
   let validator: ValidatorBudgetChange;
 
   beforeEach(() => {
     budgetRepositoryMock = {
-      getBudgetsByConfigurationId: jest.fn(),
-    } as unknown as jest.Mocked<IBudgetRepository>;
+      getBudgetsByConfigurationId: () => Promise.resolve([]),
+    };
 
     validator = new ValidatorBudgetChange(budgetRepositoryMock);
   });
@@ -33,14 +34,12 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 70);
+    ((budget2.name = 'Housing'), (budget2.percentage = 70));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-    ]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -79,18 +78,15 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 20);
+    ((budget2.name = 'Housing'), (budget2.percentage = 20));
     const budget3 = { ...budget };
     budget3.id = 3;
-    (budget3.name = 'Food'), (budget3.percentage = 20);
+    ((budget3.name = 'Food'), (budget3.percentage = 20));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-      budget3,
-    ]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2, budget3]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -128,14 +124,12 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 40);
+    ((budget2.name = 'Housing'), (budget2.percentage = 40));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-    ]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [
@@ -173,13 +167,11 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 40);
+    ((budget2.name = 'Housing'), (budget2.percentage = 40));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-    ]);
-    const body: PatchBudgetPayload = {
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2]);
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, name: 'New Housing Name' }],
@@ -201,7 +193,7 @@ describe('ValidatorBudgetChange', () => {
   it('Should validate and pass when only updating budget_configuration_name', async () => {
     const user_id = '123e4567-e89b-12d3-a456-426614174000';
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id,
       budget_configuration_id: 1,
       budget_configuration_name: 'Basic 60% 40%',
@@ -222,9 +214,10 @@ describe('ValidatorBudgetChange', () => {
   });
 
   it('ERROR - Should throw BudgetsNotFoundError when no budgets are found', async () => {
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: 'someUUID',
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 70 }],
@@ -255,14 +248,12 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 40);
+    ((budget2.name = 'Housing'), (budget2.percentage = 40));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-    ]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 70 }],
@@ -295,14 +286,12 @@ describe('ValidatorBudgetChange', () => {
 
     const budget2 = { ...budget };
     budget2.id = 2;
-    (budget2.name = 'Housing'), (budget2.percentage = 40);
+    ((budget2.name = 'Housing'), (budget2.percentage = 40));
 
-    budgetRepositoryMock.getBudgetsByConfigurationId.mockResolvedValue([
-      budget,
-      budget2,
-    ]);
+    budgetRepositoryMock.getBudgetsByConfigurationId = () =>
+      Promise.resolve([budget, budget2]);
 
-    const body: PatchBudgetPayload = {
+    const body: PatchBudgetBody = {
       user_id: budget.user_id,
       budget_configuration_id: 1,
       budgets: [{ id: 1, percentage: 40 }],

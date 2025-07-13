@@ -1,44 +1,79 @@
-import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
+
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { PrismaClient } from '@prisma/client';
 import UserRepository, {
   IUserRepository,
 } from 'components/users/repository/user-repository';
 import { PostUserParams } from 'components/users/types';
-import { DatabaseError } from 'errors';
-
-import { TESTING_DATABASE_PARAMS } from 'utils/constants';
+import { DatabaseError, UserNotFoundError } from 'errors';
+import { createMockFn } from '__mocks__/testHelpers';
 import { cleanDatabase } from 'utils/helpers/cleanDatabase';
-
-jest.mock('utils/env.ts', () => TESTING_DATABASE_PARAMS);
 
 const prisma = new PrismaClient();
 let userRepository: IUserRepository;
 
+// Helper functions to reduce code duplication
+const createTestUserData = (
+  overrides: Partial<PostUserParams> = {}
+): PostUserParams => ({
+  username: 'test',
+  email: 'test@example.com',
+  password: 'securepassword',
+  roles: [1],
+  ...overrides,
+});
+
+const createTestUser = async (userData?: PostUserParams): Promise<string> => {
+  const data = userData || createTestUserData();
+  return await userRepository.create(data);
+};
+
+const setupErrorMock = (
+  method: 'create' | 'findUnique',
+  errorMessage: string = 'Prisma client error'
+) => {
+  const originalMethod = prisma.users[method];
+  const mockMethod = createMockFn(() =>
+    Promise.reject(new Error(errorMessage))
+  );
+  (prisma.users as any)[method] = mockMethod;
+  return { originalMethod, mockMethod };
+};
+
+const restoreMock = (method: 'create' | 'findUnique', originalMethod: any) => {
+  (prisma.users as any)[method] = originalMethod;
+};
+
+const ensureRoleExists = async () => {
+  await prisma.roles.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, name: 'ADMIN' },
+  });
+};
+
 describe('UserRepository', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     execSync('npx prisma db push --accept-data-loss ');
     userRepository = new UserRepository(prisma);
+    await prisma.roles.upsert({
+      where: { name: 'ADMIN' },
+      update: {},
+      create: { name: 'ADMIN' },
+    });
   });
 
-  beforeEach(async () => {
-    await prisma.roles.create({ data: { name: 'ADMIN' } });
-  });
   afterEach(async () => {
     await cleanDatabase();
+    // Restore original methods after each test
+    (prisma.users.create as any) = prisma.users.create;
+    (prisma.users.findUnique as any) = prisma.users.findUnique;
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
   describe('createUser', () => {
-    test('OK - Creates user', async () => {
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
-
+    it('OK - Creates user', async () => {
+      const userData = createTestUserData();
       const newUser = await userRepository.create(userData);
       const foundUser = await userRepository.findUserById(newUser);
 
@@ -46,122 +81,131 @@ describe('UserRepository', () => {
       expect(foundUser).not.toBe(null);
     });
 
-    test('ERROR - Handles Prisma client error', async () => {
-      jest
-        .spyOn(prisma.users, 'create')
-        .mockRejectedValueOnce(new Error('Prisma client error'));
-
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
+    it('ERROR - Handles Prisma client error', async () => {
+      const { originalMethod } = setupErrorMock('create');
 
       try {
-        await userRepository.create(userData);
+        await userRepository.create(createTestUserData());
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);
-        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.cause.message).toMatch(new RegExp('Prisma client error'));
         expect(error.message).toBe('Unable to create user');
+      } finally {
+        restoreMock('create', originalMethod);
       }
     });
 
-    test('Should not create an user if received role does not exists', async () => {
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [5],
-      };
+    it('Should not create an user if received role does not exists', async () => {
+      const userData = createTestUserData({ roles: [5] });
+
       try {
         await userRepository.create(userData);
       } catch (error: any) {
         expect(error.statusCode).toBe(500);
-        expect(error.cause.message).toMatch(
-          /Foreign key constraint failed on the field: `role_id`/
-        );
+        expect(error.cause.message).toContain("No 'Roles' record(s)");
         expect(error.message).toBe('Unable to create user');
       }
     });
   });
-  describe('findUserById', () => {
-    test('OK - Returns a user when the user exists', async () => {
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
 
-      const newUser = await userRepository.create(userData);
+  describe('findUserById', () => {
+    it('OK - Returns a user when the user exists', async () => {
+      const newUser = await createTestUser();
       const createdUser = await userRepository.findUserById(newUser);
       const userId = createdUser?.id;
 
       const user = await userRepository.findUserById(userId!);
 
       expect(user).not.toBeNull();
-      expect(user?.email).toBe(userData.email);
+      expect(user?.email).toBe('test@example.com');
+    });
+
+    it('OK - Returns user with roles when using findUserByIdWithRoles', async () => {
+      const newUser = await createTestUser();
+      const user = await userRepository.findUserByIdWithRoles(newUser);
+
+      expect(user).not.toBeNull();
+      expect(user?.email).toBe('test@example.com');
       expect(user?.roles).toContain('ADMIN');
     });
 
-    test('OK - Returns null when the user does not exist', async () => {
-      const user = await userRepository.findUserById('9999');
-      expect(user).toBe(null);
+    it('OK - Returns null when the user does not exist', async () => {
+      await expect(userRepository.findUserById('9999')).rejects.toThrow(
+        UserNotFoundError
+      );
+      await expect(userRepository.findUserById('9999')).rejects.toThrow(
+        `User with id "9999" not found.`
+      );
     });
 
-    test('Error - Handles Prisma client error', async () => {
-      jest
-        .spyOn(prisma.users, 'findUnique')
-        .mockRejectedValueOnce(new Error('Prisma client error'));
+    it('Error - Handles Prisma client error', async () => {
+      const { originalMethod } = setupErrorMock('findUnique');
 
       try {
         await userRepository.findUserById('UUID');
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);
-        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.cause.message).toMatch(new RegExp('Prisma client error'));
         expect(error.message).toBe('Unable to find user by id');
+      } finally {
+        restoreMock('findUnique', originalMethod);
       }
     });
   });
 
   describe('findUserByEmail', () => {
-    test('OK - Returns a user when the user exists', async () => {
-      const userData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'securepassword',
-        roles: [1],
-      };
+    beforeEach(async () => {
+      await prisma.userRoles.deleteMany({});
+      await prisma.users.deleteMany({});
+      await prisma.roles.deleteMany({});
+    });
 
-      await userRepository.create(userData);
+    it('OK - Returns a user when the user exists', async () => {
+      await ensureRoleExists();
+      await createTestUser();
 
       const user = await userRepository.findUserByEmail('test@example.com');
-
       expect(user).not.toBeNull();
       expect(user?.email).toBe('test@example.com');
-      // expect(user?.role).toBe('user');
     });
 
-    test('OK - Returns null when the user does not exists', async () => {
-      const user = await userRepository.findUserByEmail('test@example.com');
-      expect(user).toBe(null);
+    it('OK - Returns user with roles when using findUserByEmailWithRoles', async () => {
+      await ensureRoleExists();
+      await createTestUser();
+
+      const user =
+        await userRepository.findUserByEmailWithRoles('test@example.com');
+      expect(user).not.toBeNull();
+      expect(user?.email).toBe('test@example.com');
+      expect(user?.roles).toContain('ADMIN');
     });
 
-    test('Error - Handles Prisma client error', async () => {
-      jest
-        .spyOn(prisma.users, 'findUnique')
-        .mockRejectedValueOnce(new Error('Prisma client error'));
+    it('OK - Returns null when the user does not exists', async () => {
+      await prisma.userRoles.deleteMany({});
+      await prisma.users.deleteMany({ where: { email: 'test@example.com' } });
+
+      await expect(
+        userRepository.findUserByEmail('test@example.com')
+      ).rejects.toThrow(UserNotFoundError);
+      await expect(
+        userRepository.findUserByEmail('test@example.com')
+      ).rejects.toThrow(`User with email "test@example.com" not found.`);
+    });
+
+    it('Error - Handles Prisma client error', async () => {
+      const { originalMethod } = setupErrorMock('findUnique');
 
       try {
         await userRepository.findUserByEmail('test@example.com');
       } catch (error: any) {
         expect(error).toBeInstanceOf(DatabaseError);
         expect(error.statusCode).toBe(500);
-        expect(error.cause.message).toMatch(/Prisma client error/);
+        expect(error.cause.message).toMatch(new RegExp('Prisma client error'));
         expect(error.message).toBe('Unable to find user by email');
+      } finally {
+        restoreMock('findUnique', originalMethod);
       }
     });
   });

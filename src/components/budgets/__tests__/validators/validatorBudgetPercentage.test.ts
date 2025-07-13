@@ -1,4 +1,5 @@
-import { PostBudgetConfigurationBody } from 'components/budgets/types/request';
+import { describe, it, expect, beforeEach } from 'bun:test';
+import { PostBudgetConfigurationBody } from 'components/budgets/types';
 import { ValidatorBudgetPercentage } from 'components/budgets/validators/validatorBudgetPercentage';
 import { BudgetPercentageError } from 'errors';
 import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
@@ -10,7 +11,7 @@ describe('ValidatorBudgetPercentage', () => {
     validator = new ValidatorBudgetPercentage();
   });
 
-  test('OK - Budget percentages sums equal 100', async () => {
+  it('OK - Budget percentages sums equal 100', async () => {
     const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Test',
@@ -30,7 +31,7 @@ describe('ValidatorBudgetPercentage', () => {
     expect(result).toEqual(body);
   });
 
-  test('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
+  it('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
     const body: PostBudgetConfigurationBody = {
       user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
       budget_configuration_name: 'Basico',

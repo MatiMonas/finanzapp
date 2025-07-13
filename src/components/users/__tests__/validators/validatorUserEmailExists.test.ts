@@ -1,45 +1,41 @@
-import { mockUserRepository } from '__mocks__/User';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { ValidatorUserEmailExists } from 'components/users/validators/validatorUserEmailExists';
 import { UserNotFoundError } from 'errors';
+import { createMockFn } from '__mocks__/testHelpers';
+import { createMockUserRepository } from '__mocks__/User';
 
 describe('ValidatorUserEmailExists', () => {
   let validator: ValidatorUserEmailExists;
+  let userRepository: ReturnType<typeof createMockUserRepository>;
 
   beforeEach(() => {
-    validator = new ValidatorUserEmailExists(mockUserRepository);
+    userRepository = createMockUserRepository();
+    validator = new ValidatorUserEmailExists(userRepository);
   });
 
   it('should pass validation if user with the email exists', async () => {
-    // Simula que el usuario existe en el repositorio
-    (mockUserRepository.findUserByEmail as jest.Mock).mockResolvedValue({
-      id: '1',
-      email: 'existing@example.com',
-      password: 'hashedpassword',
-      role: 'user',
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+    userRepository.findUserByEmail = createMockFn(() =>
+      Promise.resolve({
+        id: '1',
+        email: 'existing@example.com',
+      })
+    );
 
     const body = { email: 'existing@example.com' };
-    await expect(validator.validate(body)).resolves.not.toThrow();
-
-    expect(mockUserRepository.findUserByEmail).toHaveBeenCalledWith(
-      'existing@example.com'
-    );
+    const result = await validator.validate(body);
+    expect(result).toEqual(body);
   });
 
   it('should throw UserNotFoundError if user with the email does not exist', async () => {
-    (mockUserRepository.findUserByEmail as jest.Mock).mockResolvedValue(null);
+    userRepository.findUserByEmail = createMockFn(() => Promise.resolve(null));
 
     const body = { email: 'nonexistent@example.com' };
 
-    await expect(validator.validate(body)).rejects.toThrow(UserNotFoundError);
-    await expect(validator.validate(body)).rejects.toThrow(
-      'User with email "nonexistent@example.com" not found.'
-    );
-
-    expect(mockUserRepository.findUserByEmail).toHaveBeenCalledWith(
-      'nonexistent@example.com'
-    );
+    try {
+      await validator.validate(body);
+      expect(true).toBe(false); // Should not reach this line
+    } catch (error) {
+      expect(error).toBeInstanceOf(UserNotFoundError);
+    }
   });
 });

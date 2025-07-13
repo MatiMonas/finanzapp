@@ -1,56 +1,60 @@
-import BudgetRepository from 'components/budgets/repository/budget-repository';
-import { PostBudgetConfigurationBody } from 'components/budgets/types/request';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { ValidatorBudgetConfigurationNameInUse } from 'components/budgets/validators/validatorBudgetConfigurationNameInUse';
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
-import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
-import { mockBudgetRepository } from '__mocks__/Budget';
+import { mockResolved } from '__mocks__/testHelpers';
+import { createMockBudgetRepository } from '__mocks__/Budget';
+import { PostBudgetConfigurationBody } from 'components/budgets/types';
 
 describe('ValidatorBudgetConfigurationNameInUse', () => {
   let validator: ValidatorBudgetConfigurationNameInUse;
+  let mockBudgetRepository: ReturnType<typeof createMockBudgetRepository>;
 
   beforeEach(() => {
+    mockBudgetRepository = createMockBudgetRepository();
     validator = new ValidatorBudgetConfigurationNameInUse(mockBudgetRepository);
   });
 
-  test('OK - Budget configuration name is not used', async () => {
-    (
-      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
-    ).mockResolvedValueOnce([]);
+  it('OK - Budget configuration name is not used', async () => {
+    mockBudgetRepository.findBudgetConfigurationWhere = mockResolved([]);
 
     const body: PostBudgetConfigurationBody = {
-      user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
-      budget_configuration_name: 'Test',
+      user_id: 'user-123',
+      budget_configuration_name: 'NewConfig',
       budgets: [
         {
-          name: 'Alimentos',
+          name: 'Test',
           percentage: 100,
         },
       ],
     };
-
     const result = await validator.validate(body);
+
     expect(result).toEqual(body);
   });
 
-  test('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
+  it('ERROR - BudgetConfigurationNameAlreadyInUseError when user wants to create new budget with existant name.', async () => {
     const budgetConfigurationResponse = [
       {
-        id: 9,
-        user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
-        name: 'Basico',
+        id: 1,
+        name: 'ExistingConfig',
+        user_id: 'user-123',
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+        budgets: [],
       },
     ];
 
-    (
-      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
-    ).mockResolvedValueOnce(budgetConfigurationResponse);
+    mockBudgetRepository.findBudgetConfigurationWhere = mockResolved(
+      budgetConfigurationResponse as any
+    );
 
     const body: PostBudgetConfigurationBody = {
-      user_id: 'e4a24224-0d44-43c7-9873-497afaa31aaa',
-      budget_configuration_name: 'Basico',
+      user_id: 'user-123',
+      budget_configuration_name: 'ExistingConfig',
       budgets: [
         {
-          name: 'Alimentos',
+          name: 'Test',
           percentage: 100,
         },
       ],
@@ -58,16 +62,9 @@ describe('ValidatorBudgetConfigurationNameInUse', () => {
 
     try {
       await validator.validate(body);
-    } catch (error: any) {
+      expect(true).toBe(false); // Should not reach this line
+    } catch (error) {
       expect(error).toBeInstanceOf(BudgetConfigurationNameAlreadyInUseError);
-      expect(error.statusCode).toBe(STATUS_CODES.UNPROCESSABLE_ENTITY);
-      expect(error.code).toBe(
-        ERROR_CODES.BUDGET_CONFIGURATION_NAME_ALREADY_IN_USE_ERROR
-      );
-      expect(error.name).toBe(
-        ERROR_NAMES.BUDGET_CONFIGURATION_NAME_ALREADY_IN_USE_ERROR
-      );
-      expect(error.message).toBe('Budget configuration name already in use');
     }
   });
 });

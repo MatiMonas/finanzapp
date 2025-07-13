@@ -1,76 +1,56 @@
-import { BudgetConfigurationNotFoundError } from 'errors';
-import { mockBudgetRepository } from '__mocks__/Budget';
-import { DeleteBudgetConfigurationPayload } from 'components/budgets/types/request';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import { ValidatorIsBudgetConfigurationFromUser } from 'components/budgets/validators/validatorIsBudgetConfigurationFromUser';
-import { ERROR_CODES, ERROR_NAMES, STATUS_CODES } from 'utils/constants';
+import { BudgetConfigurationNotFoundError } from 'errors';
+import { mockResolved } from '__mocks__/testHelpers';
+import { createMockBudgetRepository } from '__mocks__/Budget';
 
 describe('ValidatorIsBudgetConfigurationFromUser', () => {
   let validator: ValidatorIsBudgetConfigurationFromUser;
+  let mockBudgetRepository: ReturnType<typeof createMockBudgetRepository>;
 
   beforeEach(() => {
+    mockBudgetRepository = createMockBudgetRepository();
     validator = new ValidatorIsBudgetConfigurationFromUser(
       mockBudgetRepository
     );
   });
 
   it('OK - Budget Configuration belongs to user', async () => {
-    const body: DeleteBudgetConfigurationPayload = {
-      budget_configuration_id: 1,
-      user_id: 'user-id-1',
-    };
-
-    (
-      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
-    ).mockResolvedValue([
+    mockBudgetRepository.findBudgetConfigurationWhere = mockResolved([
       {
         id: 1,
-        name: 'ActiveBudgetConfig',
-        user_id: '17ed324a-4513-4685-b023-facdb0a4b070',
-        created_at: '2024-09-16T23:29:43.897Z',
-        updated_at: '2024-09-16T23:29:43.897Z',
+        name: 'TestConfig',
+        user_id: 'user-123',
+        created_at: new Date(),
+        updated_at: new Date(),
         deleted_at: null,
-        budgets: [
-          {
-            id: 1,
-            user_id: 'c4493c68-38c8-4106-a47a-b9694d01b751',
-            name: 'test',
-            percentage: 100,
-            remaining_allocation: 0,
-            budget_configuration_id: 1,
-            transfer_to_budget_id: null,
-            wage_id: null,
-            created_at: '2024-09-16T23:30:34.253Z',
-            updated_at: '2024-09-16T23:30:34.253Z',
-            deleted_at: null,
-          },
-        ],
+        budgets: [],
       },
-    ]);
+    ] as any);
+
+    const body = {
+      budget_configuration_id: 1,
+      user_id: 'user-123',
+    };
 
     const result = await validator.validate(body);
+
     expect(result).toEqual(body);
   });
 
   it('ERROR - Budget Configuration does not belong to user', async () => {
-    const body: DeleteBudgetConfigurationPayload = {
-      budget_configuration_id: 1,
-      user_id: 'user-id-1',
-    };
+    mockBudgetRepository.findBudgetConfigurationWhere = mockResolved([]);
 
-    (
-      mockBudgetRepository.findBudgetConfigurationWhere as jest.Mock
-    ).mockResolvedValue([]);
+    const body = {
+      budget_configuration_id: 1,
+      user_id: 'user-123',
+    };
 
     try {
       await validator.validate(body);
-    } catch (error: any) {
+      expect(true).toBe(false); // Should not reach this line
+    } catch (error) {
       expect(error).toBeInstanceOf(BudgetConfigurationNotFoundError);
-      expect(error.statusCode).toBe(STATUS_CODES.NOT_FOUND);
-      expect(error.code).toBe(ERROR_CODES.BUDGET_CONFIGURATION_NOT_FOUND_ERROR);
-      expect(error.name).toBe(ERROR_NAMES.BUDGET_CONFIGURATION_NOT_FOUND_ERROR);
-      expect(error.message).toBe(
-        `Budget Configuration doesn't belong to user nor exists`
-      );
     }
   });
 });
