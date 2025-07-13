@@ -1,13 +1,18 @@
-import UserRepository from 'components/users/repository/user-repository';
 import UserUsecase from 'components/users/usecase';
 
+import { createMockFn } from './testHelpers';
+
 export const mockUserUseCase = {
-  test: jest.fn().mockResolvedValue('ok'),
-  create: jest.fn(),
+  test: () => Promise.resolve('ok'),
+  create: createMockFn(),
 } as unknown as UserUsecase;
 
-export const mockUserRepository = {
-  findUserById: jest.fn(),
-  findUserByEmail: jest.fn(),
-  create: jest.fn(),
-} as unknown as UserRepository;
+export function createMockUserRepository() {
+  return {
+    create: createMockFn(),
+    findUserById: createMockFn(),
+    findUserByEmail: createMockFn(),
+    findUserByIdWithRoles: createMockFn(),
+    findUserByEmailWithRoles: createMockFn(),
+  };
+}
