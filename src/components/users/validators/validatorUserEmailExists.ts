@@ -1,6 +1,6 @@
 import { UserNotFoundError } from 'errors';
-import Validator from '../../../validator';
 
+import Validator from '../../../validator';
 import { IUserRepository } from '../repository/user-repository';
 
 type BodyValidatorEmail = {

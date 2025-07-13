@@ -1,9 +1,9 @@
-import { BudgetAction, PatchBudgetPayload } from '../types/request';
 import { BudgetPercentageError, BudgetsNotFoundError } from 'errors';
-import Validator from '../../../validator';
 
-import { BudgetWithoutTimestamps } from '../types/db_model';
+import { BudgetAction, PatchBudgetBody } from '../types';
+import Validator from '../../../validator';
 import { IBudgetRepository } from '../repository/budget-repository';
+import { BudgetWithoutTimestamps } from '../types';
 
 export type BudgetChangeValidatedData = {
   budget_configuration_id: number;
@@ -22,13 +22,17 @@ export class ValidatorBudgetChange extends Validator {
     this.budgetRepository = BudgetRepository;
   }
 
-  async validate(body: PatchBudgetPayload) {
+  async validate(body: PatchBudgetBody) {
     const {
       budgets,
       budget_configuration_id,
       user_id,
       budget_configuration_name,
     } = body;
+
+    if (!budget_configuration_id) {
+      throw new Error('budget_configuration_id is required');
+    }
 
     const data: BudgetChangeValidatedData = {
       budget_configuration_id,
@@ -38,8 +42,9 @@ export class ValidatorBudgetChange extends Validator {
       create: [],
     };
 
-    budget_configuration_name &&
-      (data.budget_configuration_name = budget_configuration_name);
+    if (budget_configuration_name) {
+      data.budget_configuration_name = budget_configuration_name;
+    }
 
     if (budgets && budgets.length > 0) {
       const existingBudgets =
@@ -51,7 +56,7 @@ export class ValidatorBudgetChange extends Validator {
         throw new BudgetsNotFoundError('No budgets found');
       }
 
-      let totalPercentage = existingBudgets.reduce(
+      const totalPercentage = existingBudgets.reduce(
         (total: number, budget: BudgetWithoutTimestamps) => {
           return budget && budget.percentage
             ? total + budget.percentage
@@ -62,17 +67,17 @@ export class ValidatorBudgetChange extends Validator {
 
       budgets.forEach((budget) => {
         if (budget.delete && budget.id) {
-          this.handleDelete(budget, existingBudgets, data, totalPercentage);
+          this.handleDelete(budget, existingBudgets, data);
           return;
         }
 
         if (budget.create) {
-          this.handleCreate(budget, data, totalPercentage);
+          this.handleCreate(budget, data);
           return;
         }
 
         if (budget.id && (budget.percentage || budget.name)) {
-          this.handleUpdate(budget, existingBudgets, data, totalPercentage);
+          this.handleUpdate(budget, existingBudgets, data);
         }
       });
 
@@ -89,37 +94,26 @@ export class ValidatorBudgetChange extends Validator {
   private handleDelete(
     budget: BudgetAction,
     existingBudgets: BudgetWithoutTimestamps[],
-    data: BudgetChangeValidatedData,
-    totalPercentage: number
+    data: BudgetChangeValidatedData
   ) {
     const existingBudget = existingBudgets.find((b) => b?.id === budget.id);
     if (existingBudget) {
-      totalPercentage -= existingBudget.percentage!;
       data.update.push(budget);
     }
   }
 
-  private handleCreate(
-    budget: BudgetAction,
-    data: BudgetChangeValidatedData,
-    totalPercentage: number
-  ) {
-    if (budget.percentage) {
-      totalPercentage += budget.percentage;
-    }
+  private handleCreate(budget: BudgetAction, data: BudgetChangeValidatedData) {
     data.create.push(budget);
   }
 
   private handleUpdate(
     budget: BudgetAction,
     existingBudgets: BudgetWithoutTimestamps[],
-    data: BudgetChangeValidatedData,
-    totalPercentage: number
+    data: BudgetChangeValidatedData
   ) {
     const existingBudget = existingBudgets.find((b) => b?.id === budget.id);
     if (existingBudget) {
-      totalPercentage += budget.percentage! - existingBudget.percentage!;
+      data.update.push(budget);
     }
-    data.update.push(budget);
   }
 }

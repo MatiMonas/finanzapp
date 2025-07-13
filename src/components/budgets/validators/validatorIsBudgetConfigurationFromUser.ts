@@ -1,7 +1,8 @@
-import Validator from '../../../validator';
-import { IBudgetRepository } from '../repository/budget-repository';
-import { DeleteBudgetConfigurationPayload } from '../types/request';
 import { BudgetConfigurationNotFoundError } from 'errors';
+
+import Validator from '../../../validator';
+import { DeleteBudgetConfigurationPayload } from '../types';
+import { IBudgetRepository } from '../repository/budget-repository';
 
 export class ValidatorIsBudgetConfigurationFromUser extends Validator {
   protected budgetRespoitory: IBudgetRepository;

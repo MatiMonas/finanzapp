@@ -1,6 +1,8 @@
-import Validator from 'validator';
-import { IWagesRepository } from '../repository/wages_repository';
 import moment from 'moment';
+
+import Validator from '../../../validator';
+import { IWagesRepository } from '../repository/wages_repository';
+import { WageBodyWithMetadata } from '../types';
 
 export class ValidatorMonthlyWageExists extends Validator {
   protected wagesRepository: IWagesRepository;
@@ -10,7 +12,7 @@ export class ValidatorMonthlyWageExists extends Validator {
     this.wagesRepository = wagesRepository;
   }
 
-  async validate(body: any): Promise<boolean> {
+  async validate(body: WageBodyWithMetadata): Promise<WageBodyWithMetadata> {
     const { user_id, month, year } = body;
 
     const month_and_year = moment(`${month}-${year}`, 'MM-YYYY').format(
@@ -21,26 +23,14 @@ export class ValidatorMonthlyWageExists extends Validator {
       month_and_year,
     });
 
-    console.log(monthlyWage);
-    body = {
-      ...body,
-      month_and_year,
-    };
+    (body as WageBodyWithMetadata).month_and_year = month_and_year;
 
     if (!monthlyWage) {
-      body = {
-        ...body,
-        monthly_wage_summary_id: null,
-      };
-
-      return super.validate(body);
+      (body as WageBodyWithMetadata).monthly_wage_summary_id = null;
+      return super.validate(body) as WageBodyWithMetadata;
     }
 
-    body = {
-      ...body,
-      monthly_wage_summary_id: monthlyWage.id,
-    };
-
-    return super.validate(body);
+    (body as WageBodyWithMetadata).monthly_wage_summary_id = monthlyWage.id;
+    return super.validate(body) as WageBodyWithMetadata;
   }
 }

@@ -1,4 +1,5 @@
 import { EmailAlreadyInUseError } from 'errors';
+
 import { IUserRepository } from '../repository/user-repository';
 import Validator from '../../../validator';
 

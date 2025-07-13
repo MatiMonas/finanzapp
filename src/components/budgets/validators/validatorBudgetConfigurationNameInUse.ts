@@ -1,7 +1,7 @@
-import { PostBudgetConfigurationBody } from '../types/request';
-import Validator from '../../../validator';
-
 import { BudgetConfigurationNameAlreadyInUseError } from 'errors';
+
+import { PostBudgetConfigurationBody } from '../types';
+import Validator from '../../../validator';
 import { IBudgetRepository } from '../repository/budget-repository';
 
 export class ValidatorBudgetConfigurationNameInUse extends Validator {
