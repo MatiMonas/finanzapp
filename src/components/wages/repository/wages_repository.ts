@@ -1,20 +1,19 @@
-import { Wages, PrismaClient } from '@prisma/client';
-import { DatabaseError } from 'errors';
-import { WagesParams } from '../types/request';
+import { PrismaClient, Wages } from '@prisma/client';
+import { handlePrismaError } from 'utils/helpers/prismaErrorHandler';
 
-import { MonthlyWageSummary, Wage } from '../types/db_model';
+import { WagesParams, MonthlyWageSummary, Wage } from '../types';
 
 export interface IWagesRepository {
   getWagesWhere(where: WagesParams): Promise<Wages | null>;
   getMonthlyWageWhere(
     where: MonthlyWageSummary
   ): Promise<MonthlyWageSummary | null>;
-  createWage(data: Wage): Promise<any>;
-  createMonthlyWage(data: MonthlyWageSummary): Promise<any>;
+  createWage(data: Wage): Promise<Wages>;
+  createMonthlyWage(data: MonthlyWageSummary): Promise<MonthlyWageSummary>;
   updateMonthlyWageSummary(
     monthlyWageSummaryId: number,
     amountToAdd: number
-  ): Promise<any>;
+  ): Promise<MonthlyWageSummary>;
 }
 
 export default class WagesRepository implements IWagesRepository {
@@ -33,8 +32,8 @@ export default class WagesRepository implements IWagesRepository {
           ...where,
         },
       });
-    } catch (error) {
-      throw new DatabaseError('Error finding monthly wage');
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Error finding monthly wage');
     }
   }
   async getWagesWhere(where: WagesParams): Promise<Wages | null> {
@@ -44,24 +43,26 @@ export default class WagesRepository implements IWagesRepository {
           ...where,
         },
       });
-    } catch (error) {
-      throw new DatabaseError('Error finding wage');
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Error finding wage');
     }
   }
 
-  async createWage(data: Wage): Promise<any> {
+  async createWage(data: Wage): Promise<Wages> {
     try {
       const wage = await this.prismaClient.wages.create({
         data,
       });
 
       return wage;
-    } catch (error) {
-      throw new DatabaseError('Error creating wage');
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Error creating wage');
     }
   }
 
-  async createMonthlyWage(data: MonthlyWageSummary): Promise<any> {
+  async createMonthlyWage(
+    data: MonthlyWageSummary
+  ): Promise<MonthlyWageSummary> {
     try {
       const monthlyWage = await this.prismaClient.monthlyWageSummary.create({
         data: {
@@ -73,15 +74,15 @@ export default class WagesRepository implements IWagesRepository {
       });
 
       return monthlyWage;
-    } catch (error) {
-      throw new DatabaseError('Error creating monthly wage');
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Error creating monthly wage');
     }
   }
 
   async updateMonthlyWageSummary(
     monthlyWageSummaryId: number,
     amountToAdd: number
-  ): Promise<any> {
+  ): Promise<MonthlyWageSummary> {
     try {
       const updated = await this.prismaClient.monthlyWageSummary.update({
         where: { id: monthlyWageSummaryId },
@@ -96,8 +97,8 @@ export default class WagesRepository implements IWagesRepository {
       });
 
       return updated;
-    } catch (error) {
-      throw new DatabaseError('Error updating monthly wage summary');
+    } catch (error: unknown) {
+      handlePrismaError(error, 'Error updating monthly wage summary');
     }
   }
 }

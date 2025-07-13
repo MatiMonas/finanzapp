@@ -1,0 +1,752 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"WageResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WageBody": {
+				"properties": {
+					"user_id": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"month": {
+						"type": "string"
+					},
+					"year": {
+						"type": "string"
+					},
+					"currency": {
+						"type": "string",
+						"enum": [
+							"USD",
+							"ARS"
+						]
+					}
+				},
+				"required": [
+					"user_id",
+					"amount",
+					"month",
+					"year",
+					"currency"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TestResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PostUserParams": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"roles": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"username",
+					"email",
+					"password",
+					"roles"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BudgetDetailsResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"percentage": {
+						"type": "number",
+						"format": "double"
+					},
+					"remaining_allocation": {
+						"type": "number",
+						"format": "double"
+					},
+					"budget_configuration_id": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"monthly_wage_summary_id": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"user_id",
+					"name",
+					"percentage",
+					"remaining_allocation",
+					"budget_configuration_id",
+					"monthly_wage_summary_id",
+					"created_at",
+					"updated_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DefaultSelection_Prisma._36_BudgetsPayload_": {
+				"properties": {
+					"monthly_wage_summary_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"budget_configuration_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"remaining_allocation": {
+						"type": "number",
+						"format": "double"
+					},
+					"percentage": {
+						"type": "number",
+						"format": "double"
+					},
+					"deleted_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"monthly_wage_summary_id",
+					"budget_configuration_id",
+					"remaining_allocation",
+					"percentage",
+					"deleted_at",
+					"updated_at",
+					"created_at",
+					"user_id",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"Budgets": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_BudgetsPayload_",
+				"description": "Model Budgets"
+			},
+			"DefaultSelection_Prisma._36_BudgetsConfigurationsPayload_": {
+				"properties": {
+					"deleted_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"is_active": {
+						"type": "boolean"
+					},
+					"is_public": {
+						"type": "boolean"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"deleted_at",
+					"updated_at",
+					"created_at",
+					"is_active",
+					"is_public",
+					"user_id",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"BudgetConfigurationWithBudgets": {
+				"properties": {
+					"deleted_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"is_active": {
+						"type": "boolean"
+					},
+					"is_public": {
+						"type": "boolean"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"budgets": {
+						"items": {
+							"$ref": "#/components/schemas/Budgets"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"deleted_at",
+					"updated_at",
+					"created_at",
+					"is_active",
+					"is_public",
+					"user_id",
+					"id",
+					"name",
+					"budgets"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BudgetResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"success",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BudgetItem": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"percentage": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"percentage"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PostBudgetConfigurationBody": {
+				"properties": {
+					"user_id": {
+						"type": "string"
+					},
+					"budget_configuration_name": {
+						"type": "string"
+					},
+					"budgets": {
+						"items": {
+							"$ref": "#/components/schemas/BudgetItem"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"user_id",
+					"budget_configuration_name",
+					"budgets"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BudgetAction": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"percentage": {
+						"type": "number",
+						"format": "double"
+					},
+					"create": {
+						"type": "boolean"
+					},
+					"delete": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PatchBudgetBody": {
+				"properties": {
+					"user_id": {
+						"type": "string"
+					},
+					"budget_configuration_name": {
+						"type": "string"
+					},
+					"budgets": {
+						"items": {
+							"$ref": "#/components/schemas/BudgetAction"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"user_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DeleteBudgetConfigurationBody": {
+				"properties": {
+					"user_id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"user_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"api_key": {
+				"type": "apiKey",
+				"name": "access_token",
+				"in": "query"
+			}
+		}
+	},
+	"info": {
+		"title": "finanzapp",
+		"version": "1.0.0",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/wages": {
+			"post": {
+				"operationId": "CreateWage",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/WageResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new wage record for a user in a specific month and year",
+				"tags": [
+					"Wages"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "Wage data including user_id, amount, month, year and currency",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/WageBody",
+								"description": "Wage data including user_id, amount, month, year and currency"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users": {
+			"get": {
+				"operationId": "Test",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TestResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Test endpoint to verify the Users component is working correctly",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new user in the system with their credentials and assigned roles",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "User data including username, email, password and roles",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PostUserParams",
+								"description": "User data including username, email, password and roles"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/budgets/{id}": {
+			"get": {
+				"operationId": "GetBudget",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/BudgetDetailsResponse"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Get a budget by ID",
+				"tags": [
+					"Budgets"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/budgets/configurations": {
+			"get": {
+				"operationId": "GetBudgetConfigurations",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BudgetConfigurationWithBudgets"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all budget configurations for a user",
+				"tags": [
+					"Budgets"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "user_id",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "is_active",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateBudgetConfiguration",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BudgetResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new budget configuration",
+				"tags": [
+					"Budgets"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PostBudgetConfigurationBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/budgets/configurations/{id}": {
+			"patch": {
+				"operationId": "UpdateBudgetConfiguration",
+				"responses": {
+					"204": {
+						"description": "No Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BudgetResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update a budget configuration",
+				"tags": [
+					"Budgets"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PatchBudgetBody"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteBudgetConfiguration",
+				"responses": {
+					"204": {
+						"description": "No Content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BudgetResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Delete a budget configuration",
+				"tags": [
+					"Budgets"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DeleteBudgetConfigurationBody"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

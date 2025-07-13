@@ -6,3 +6,4 @@ build
 secret*.yml
 package-lock.json
 coverage
+bun.lock

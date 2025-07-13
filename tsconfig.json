@@ -20,7 +20,9 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "src/enviroment.d.ts",

@@ -53,7 +53,7 @@ export const isValidDateFormat = (val: string): boolean => {
  */
 export const handleValidationErrors = (
   result: SafeParseError<'error'>,
-  req: Request<any, any, any, any>,
+  req: Request<unknown, unknown, unknown, unknown>,
   res: Response
 ) => {
   const flattenedErrors = result.error.flatten();
@@ -66,7 +66,10 @@ export const handleValidationErrors = (
       field_errors: fieldErrors || undefined,
       form_errors: formErrors.length > 0 ? formErrors : undefined,
     },
-    input_data: { ...req.body, ...req.query },
+    input_data: {
+      ...(typeof req.body === 'object' && req.body !== null ? req.body : {}),
+      ...(typeof req.query === 'object' && req.query !== null ? req.query : {}),
+    },
   });
 };
 

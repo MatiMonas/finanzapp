@@ -16,13 +16,13 @@ type NormalMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
-) => any;
+) => void;
 type ErrorMiddleware = (
   error: ExceptionError,
   req: Request,
   res: Response,
   next: NextFunction
-) => any;
+) => void;
 
 type Middleware = NormalMiddleware | ErrorMiddleware;
 

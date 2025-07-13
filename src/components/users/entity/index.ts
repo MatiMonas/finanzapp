@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import env from 'utils/env';
+
 import { verifyPassword } from '../utils/functions';
 const { JWT_SECRET_KEY } = env;
 interface IUser {
@@ -26,7 +27,7 @@ export class User implements IUser {
     };
 
     const options = {
-      expiresIn: '1h',
+      expiresIn: 3600,
     };
 
     return jwt.sign(payload, JWT_SECRET_KEY as string, options);

@@ -1,6 +1,8 @@
-import { User } from '.';
 import { PostUserParams } from '../types';
+
 import { UserBuilder } from './userBuilder';
+
+import { User } from '.';
 
 export class UserDirector {
   private builder: UserBuilder;

@@ -1,5 +1,4 @@
 import Validator from '../../../validator';
-
 import { IUserRepository } from '../repository/user-repository';
 import { PostUserParams } from '../types';
 import { ValidatorEmailIsInUse } from '../validators/validatorEmailIsInUse';
@@ -19,9 +18,9 @@ export default class UserUsecase implements IUserUsecase {
       new ValidatorEmailIsInUse(this.userRepository),
     ]);
 
-    const validatedUserData: PostUserParams = await modelValidator.validate(
+    const validatedUserData = (await modelValidator.validate(
       userData
-    );
+    )) as PostUserParams;
 
     const builder = new UserBuilder();
     const director = new UserDirector(builder);

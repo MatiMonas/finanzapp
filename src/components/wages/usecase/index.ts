@@ -1,12 +1,14 @@
-import Validator from 'validator';
+import { IBudgetRepository } from 'components/budgets/repository/budget-repository';
+import { MissingMonthlyWageSummaryIdError } from 'errors';
+
+import Validator from '../../../validator';
 import { IWagesHttpRepository } from '../repository/wages_http-repository';
 import { IWagesRepository } from '../repository/wages_repository';
-import { WageBody } from '../types/request';
+import { WageBody } from '../types';
 import { ValidatorMonthlyWageExists } from '../validators/validatorMonthlyWageExists';
-import { IBudgetRepository } from 'components/budgets/repository/budget-repository';
 
 export interface IWagesUsecase {
-  createWage(payload: any): Promise<Boolean>;
+  createWage(payload: WageBody): Promise<boolean>;
 }
 
 export default class WagesUsecase implements IWagesUsecase {
@@ -16,52 +18,67 @@ export default class WagesUsecase implements IWagesUsecase {
     private budgetsRepository: IBudgetRepository
   ) {}
 
-  async createWage(payload: WageBody): Promise<Boolean> {
+  async createWage(payload: WageBody): Promise<boolean> {
     const modelValidator = Validator.createValidatorChain([
       new ValidatorMonthlyWageExists(this.wagesRepository),
     ]);
 
-    const data = await modelValidator.validate(payload);
+    const data = (await modelValidator.validate(payload)) as WageBody & {
+      month_and_year: string;
+      monthly_wage_summary_id?: number | null;
+    };
 
     const updatedData = await this.handleMonthlyWageSummary(data);
+
     const { amountInUSD, amountInARS, exchangeRate } =
       await this.calculateAmounts(updatedData.amount, updatedData.currency);
 
     await this.wagesRepository.createWage({
       user_id: data.user_id,
       amount: data.amount,
-      exchange_rate: exchangeRate,
-      amount_in_usd: amountInUSD,
-      amount_in_ars: amountInARS,
       currency: data.currency,
       month_and_year: data.month_and_year,
-      monthly_wage_summary_id: data.monthly_wage_summary_id,
+      exchange_rate: exchangeRate,
+      monthly_wage_summary_id: data.monthly_wage_summary_id as number,
+      amount_in_usd: amountInUSD,
+      amount_in_ars: amountInARS,
     });
 
     await this.updateBudgetsAllocations(
       updatedData.user_id,
       updatedData.amount,
-      updatedData.monthly_wage_summary_id
+      updatedData.monthly_wage_summary_id!
     );
 
     return true;
   }
 
-  private async handleMonthlyWageSummary(data: any) {
+  private async handleMonthlyWageSummary(
+    data: WageBody & { monthly_wage_summary_id?: number | null }
+  ) {
+    const monthAndYear = `${data.month}/${data.year}`;
+
     if (!data.monthly_wage_summary_id) {
       const summary = await this.wagesRepository.createMonthlyWage({
         user_id: data.user_id,
-        month_and_year: data.month_and_year,
+        month_and_year: monthAndYear,
         total_wage: data.amount,
         remaining: data.amount,
       });
 
       data.monthly_wage_summary_id = summary.id;
-    } else
+
+      if (data.monthly_wage_summary_id == null) {
+        throw new MissingMonthlyWageSummaryIdError(
+          'monthly_wage_summary_id is required'
+        );
+      }
+    } else if (data.monthly_wage_summary_id) {
       await this.wagesRepository.updateMonthlyWageSummary(
-        data.monthly_wage_summary_id,
+        data.monthly_wage_summary_id as number,
         data.amount
       );
+    }
 
     return data;
   }

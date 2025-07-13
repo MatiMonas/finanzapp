@@ -12,10 +12,10 @@ export default class Container<T> {
   /**
    *
    * @param {string} name Name of the dependency to instantiate in the container
-   * @param {(c) => any} cbCreator Function that builds the dependency
+   * @param {(c) => unknown} cbCreator Function that builds the dependency
    * @returns {Container}
    */
-  service(name: keyof T, cbCreator: (c: T) => any) {
+  service(name: keyof T, cbCreator: (c: T) => unknown) {
     Object.defineProperty(this, name, {
       get: () => {
         const alreadyDeclared = Object.prototype.hasOwnProperty.call(
@@ -24,7 +24,7 @@ export default class Container<T> {
         );
 
         if (!alreadyDeclared) {
-          //@ts-ignore
+          //@ts-expect-error this is a workaround to avoid type errors
           this.services[name] = cbCreator(this);
         }
 

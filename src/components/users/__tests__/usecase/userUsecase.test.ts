@@ -1,46 +1,47 @@
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import UserUsecase from 'components/users/usecase';
-import { mockUserRepository } from '__mocks__/User';
+import { createMockUserRepository } from '__mocks__/User';
 import { PostUserParams } from 'components/users/types';
-import Validator from '../../../../validator';
-import { UserBuilder } from 'components/users/entity/userBuilder';
+import { createMockFn } from '__mocks__/testHelpers';
 import { UserDirector } from 'components/users/entity/userDirector';
+import { User } from 'components/users/entity';
+
+const mockUser = new User('testuser', 'test@example.com', 'hashedpassword', [
+  1,
+]);
 
 describe('UserUseCase', () => {
   let userUseCase: UserUsecase;
+  let mockUserRepository: ReturnType<typeof createMockUserRepository>;
+  let originalBuildUser: any;
 
   beforeEach(() => {
-    userUseCase = new UserUsecase(mockUserRepository as any);
+    mockUserRepository = createMockUserRepository();
+    userUseCase = new UserUsecase(mockUserRepository);
+
+    originalBuildUser = UserDirector.prototype.buildUser;
+    UserDirector.prototype.buildUser = createMockFn(() =>
+      Promise.resolve(mockUser)
+    );
   });
 
-  describe('create', () => {
-    it('OK - should return true if user was succesfully created', async () => {
-      const mockUserData: PostUserParams = {
-        username: 'test',
-        email: 'test@example.com',
-        password: 'password123',
-        roles: [1],
-      };
+  afterEach(() => {
+    UserDirector.prototype.buildUser = originalBuildUser;
+  });
 
-      const mockValidatedUserData = { ...mockUserData };
+  it('OK - should return true if user was succesfully created', async () => {
+    const mockUserData: PostUserParams = {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: 'TestPass123!',
+      roles: [1],
+    };
 
-      Validator.createValidatorChain = jest.fn().mockReturnValue({
-        validate: jest.fn().mockResolvedValue(mockValidatedUserData),
-      });
+    mockUserRepository.create = createMockFn(() => Promise.resolve('user-id'));
 
-      const mockBuilder = new UserBuilder();
-      const mockDirector = new UserDirector(mockBuilder);
-      mockDirector.buildUser = jest
-        .fn()
-        .mockResolvedValue({ ...mockUserData, password: 'hashedpassword' });
+    const result = await userUseCase.create(mockUserData);
 
-      userUseCase = new UserUsecase(mockUserRepository as any);
-
-      (mockUserRepository.create as jest.Mock).mockResolvedValue('user-id');
-
-      const result = await userUseCase.create(mockUserData);
-
-      expect(result).toBe('user-id');
-    });
+    expect(result).toBe('user-id');
   });
 
   it('should return "ok" when calling test method', () => {

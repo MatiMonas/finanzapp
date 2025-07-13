@@ -1,13 +1,22 @@
-import WagesHttpRepository from 'components/wages/repository/wages_http-repository';
-import WagesRepository from 'components/wages/repository/wages_repository';
 import WagesUsecase from 'components/wages/usecase';
 
+import { createMockFn } from './testHelpers';
+
 export const mockWagesUseCase = {
-  createWage: jest.fn(),
+  createWage: createMockFn(),
 } as unknown as WagesUsecase;
 
-export const mockWagesRepository = {
-  createWage: jest.fn(),
-} as unknown as WagesRepository;
+export function createMockWagesRepository() {
+  return {
+    getMonthlyWageWhere: createMockFn(),
+    createMonthlyWage: createMockFn(),
+    createWage: createMockFn(),
+    updateMonthlyWageSummary: createMockFn(),
+  };
+}
 
-export const mockWagesHttpRepository = {} as unknown as WagesHttpRepository;
+export function createMockWagesHttpRepository() {
+  return {
+    getBlueExchangeRate: createMockFn(),
+  };
+}

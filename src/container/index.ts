@@ -2,17 +2,14 @@ import axios from 'axios';
 import ContainerServices from 'container/container.interface';
 import Container from 'container/container';
 import prismaClient from 'infrastructure/persistance/prisma';
-
-import UsersRouter from 'components/users/http/router';
 import UserUsecase, { IUserUsecase } from 'components/users/usecase';
 import UserRepository, {
   IUserRepository,
 } from 'components/users/repository/user-repository';
-
-import BudgetRouter, { IBudgetRouter } from 'components/budgets/http/router';
 import BudgetUsecase, { IBudgetUsecase } from 'components/budgets/usecase';
-
-import WagesRouter, { IWagesRouter } from 'components/wages/http/router';
+import BudgetRepository, {
+  IBudgetRepository,
+} from 'components/budgets/repository/budget-repository';
 import WagesUsecase, { IWagesUsecase } from 'components/wages/usecase';
 import WagesRepository, {
   IWagesRepository,
@@ -20,14 +17,11 @@ import WagesRepository, {
 import WagesHttpRepository, {
   IWagesHttpRepository,
 } from 'components/wages/repository/wages_http-repository';
-import BudgetRepository, {
-  IBudgetRepository,
-} from 'components/budgets/repository/budget-repository';
 
 type IContainer<T> = {
   [Property in keyof T]: T[Property];
 } & {
-  service: (name: keyof T, cbCreator: (c: T) => any) => any;
+  service: (name: keyof T, cbCreator: (c: T) => unknown) => Container<T>;
 };
 
 const container =
@@ -38,7 +32,6 @@ container.service('prismaClient', () => prismaClient());
 container.service('axios', () => axios);
 
 // USER SERVICES
-container.service('userRouter', (c) => new UsersRouter(c.userUsecase));
 container.service(
   'userUsecase',
   (c): IUserUsecase => new UserUsecase(c.userRepository)
@@ -50,10 +43,6 @@ container.service(
 
 // BUDGET SERVICES
 container.service(
-  'budgetRouter',
-  (c): IBudgetRouter => new BudgetRouter(c.budgetUsecase)
-);
-container.service(
   'budgetUsecase',
   (c): IBudgetUsecase => new BudgetUsecase(c.budgetRepository)
 );
@@ -63,10 +52,6 @@ container.service(
 );
 
 //  WAGES SERVICES
-container.service(
-  'wagesRouter',
-  (c): IWagesRouter => new WagesRouter(c.wagesUsecase)
-);
 container.service(
   'wagesUsecase',
   (c): IWagesUsecase =>
